@@ -57,40 +57,7 @@
 
   <ItemGroup>
     <!-- Use following lines to add additional files to source generation. -->
-    <AdditionalFiles Include="TypedDs\TestGroupTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\TestBaseTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Ds\Nmt.ds.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_directoryproperty.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_nmt.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_nmtgroup.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_nmtlog.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryGroup.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryItemTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryPropertyTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDocGroupTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDocItemPropertyTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDocItemTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDocLinkTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseDocPropertyTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseEntityTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseGroupTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseInfoLogTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseProcessLogTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BasePropertyTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\BaseTable.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.ds.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_infolog.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmt.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtbom.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtcolorsys.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtoperation.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtpicture.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtstock.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtsupplier.dt.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtsupplierqntprice.dt.brudixy.yaml" />    
-    <AdditionalFiles Include="TypedDs\UserTypes\TestUserTypeTuple.st.brudixy.yaml" />
-    <AdditionalFiles Include="TypedDs\UserTypes\TestUserTypeClass.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\**\*.brudixy.yaml" />
   </ItemGroup>
 
   <ItemGroup>
