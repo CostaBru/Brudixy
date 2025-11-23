@@ -47,12 +47,19 @@
       <Compile Include="..\Brudixy.TypeGenerator.Core\XProperty.cs" Link="XProperty.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\RowSubTypeInfo.cs" Link="RowSubTypeInfo.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\YamlSchemaReader.cs" Link="YamlSchemaReader.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\YamlDotNetLoader.cs" Link="YamlDotNetLoader.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.Core.cs" />
     </ItemGroup>
     
     <ItemGroup>
         <ProjectReference Include="..\Brudixy.Generators\Brudixy.Generators.csproj" />
         <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" />
         <PackageReference Include="YamlDotNet" Version="13.2.0" GeneratePathProperty="true" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="$(PKGYamlDotNet)\lib\netstandard2.0\YamlDotNet.dll"
+                        LogicalName="Brudixy.TypeGenerator.Properties.Resources.YamlDotNet" />
     </ItemGroup>
 
     <PropertyGroup>

@@ -28,8 +28,7 @@ namespace Brudixy.TypeGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
         {
-            
-/*#if DEBUG
+            /*#if DEBUG
             if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
@@ -55,12 +54,20 @@ namespace Brudixy.TypeGenerator
 
             try
             {
+                YamlDotNetLoader.EnsureInstalled();
+                
                 var brudixyFiles = new Dictionary<string, string>();
 
                 var singleTables = new List<string>();
                 var dataSets = new List<(string name, string yaml)>();
 
                 var yamlSources = ReadSchemaFiles(context);
+
+                // Only proceed with YAML processing if there are schema files.
+                if (yamlSources.Count == 0)
+                {
+                    return;
+                }
 
                 context.AddSource("Files.log", string.Join(Environment.NewLine, yamlSources.Select(s => "//" + s.path)));
 
@@ -93,8 +100,46 @@ namespace Brudixy.TypeGenerator
                     }
                 }
 
+                // Ensure YamlDotNet is available before constructing the schema reader.
+                try
+                {
+                    YamlDotNetLoader.EnsureInstalled();
+                }
+                catch (Exception ex)
+                {
+                    // Emit a diagnostic instead of crashing the compilation.
+                    var descriptor = new DiagnosticDescriptor(
+                        id: "BRXTY001",
+                        title: "Failed to load embedded YamlDotNet for Brudixy.TypeGenerator",
+                        messageFormat: "Brudixy.TypeGenerator could not load the embedded YamlDotNet assembly. YAML-based generation is disabled. Details: {0}",
+                        category: "Brudixy.TypeGenerator",
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true);
+
+                    context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, ex.Message));
+                    return;
+                }
+
+                ISchemaReader schemaReader;
+                try
+                {
+                    schemaReader = new YamlSchemaReader();
+                }
+                catch (Exception ex)
+                {
+                    var descriptor = new DiagnosticDescriptor(
+                        id: "BRXTY002",
+                        title: "Failed to initialize YamlSchemaReader",
+                        messageFormat: "Brudixy.TypeGenerator failed to initialize the YAML schema reader. YAML-based generation is disabled. Details: {0}",
+                        category: "Brudixy.TypeGenerator",
+                        defaultSeverity: DiagnosticSeverity.Warning,
+                        isEnabledByDefault: true);
+
+                    context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, ex.Message));
+                    return;
+                }
+
                 var fileSystemAccess = new FileSystemAccess(brudixyFiles);
-                var schemaReader = new YamlSchemaReader();
             
                 foreach (var table in singleTables)
                 {
