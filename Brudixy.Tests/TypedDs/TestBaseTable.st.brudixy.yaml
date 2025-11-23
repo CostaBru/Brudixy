@@ -1,0 +1,63 @@
+---
+Table: TestBaseTable
+CodeGenerationOptions:
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Abstract: true
+  ExtraUsing:
+    - using System.Runtime.CompilerServices;
+    - using NUnit.Framework;
+PrimaryKey:
+  - id
+Columns:
+  id: Int32
+  createdt: DateTime?
+  creatorid: int?
+  lmdt: DateTime?
+  lmlogin: string | 256
+  isdeleted: bool?
+  guid: Guid?
+  employee_creator_name: String
+  employee_lm_name: String
+  type: int?
+ColumnOptions:
+  id: 
+    IsUnique: true
+    AllowNull: false
+    XProperties:
+      BinSec: 
+        Type: Boolean
+        Value: true
+  createdt: 
+    HasIndex: true
+  creatorid: 
+    Type: Int32   
+  guid:    
+    HasIndex: true
+    IsUnique: true
+  employee_lm_name:
+    CodeProperty: EmployeeLmName
+  XProperties:
+    Width: 
+      Type: Int32
+    Tooltip: 
+      Type: String
+    Alignment: 
+      Type: Int32
+    Editor: 
+      Type: Int32
+XProperties:
+  TimeZone: 
+    Type: String 
+  CheckErrors: 
+    Type: Boolean
+    Value: true
+GroupedProperties:
+  RecordCreator: createdt|creatorid|employee_creator_name
+  RecordEditor: lmdt|lmlogin|employee_lm_name
+GroupedPropertyOptions:
+  RecordCreator:
+    IsReadOnly: true
+    Type: Tuple
+  RecordEditor:
+    Type: Tuple 
+  

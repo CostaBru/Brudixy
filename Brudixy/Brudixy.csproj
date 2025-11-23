@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+    </PropertyGroup>
+
+    <!-- NuGet Package Configuration -->
+    <PropertyGroup>
+        <PackageId>Brudixy</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Brudixy Contributors</Authors>
+        <Company>Brudixy</Company>
+        <Product>Brudixy</Product>
+        <Description>Extended DataSet functionality for Brudixy - Advanced data structure library for .NET with enhanced data manipulation APIs.</Description>
+        <PackageTags>dataset;datatable;collections;performance;data-management</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" />
+      <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="DataSet.cs" />
+    </ItemGroup>
+
+</Project>

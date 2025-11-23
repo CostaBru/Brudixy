@@ -1,0 +1,100 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+    </PropertyGroup>
+
+    <!-- NuGet Package Configuration -->
+    <PropertyGroup>
+        <PackageId>Brudixy.Core</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Brudixy Contributors</Authors>
+        <Company>Brudixy</Company>
+        <Product>Brudixy</Product>
+        <Description>Core library for Brudixy - Advanced data structure library for .NET with high-performance collections, change tracking, and serialization support.</Description>
+        <PackageTags>dataset;datatable;collections;performance;indexing;change-tracking</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+  
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+    <_Parameter1>Brudixy.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Brudixy</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Akade.IndexedSet" Version="1.4.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0-eap1" />
+    <PackageReference Include="Konsarpoo" Version="5.3.0" /> 
+    <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.6.0-preview8.19405.3" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0-1.final" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Net.Compilers" Version="3.11.0-1.final" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Note that this is not a "normal" ProjectReference.
+         It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
+    <ProjectReference Include="..\Brudixy.Generators\Brudixy.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\Annotations.cs" />
+    <Compile Remove="Data\CoreDataSet.cs" />
+    <Compile Remove="Data\CoreDataSet.ChangeTracking.cs" />
+    <Compile Remove="Data\CoreDataSet.Json.cs" />
+    <Compile Remove="Data\CoreDataSet.Relations.cs" />
+    <Compile Remove="Data\CoreDataSet.Xml.cs" />
+    <Compile Remove="Data\Storage\StringDataItem.cs" />
+    <Compile Remove="Data\Storage\JsonStorage.cs" />
+    <Compile Remove="Data\Storage\ObjectStorage.cs" />
+    <Compile Remove="Data\Storage\StringStorage.cs" />
+    <Compile Remove="Data\Storage\XmlStorage.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Brudixy.csproj.DotSettings" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+---
+Table: t_nmtgroup
+CodeGenerationOptions:
+  Namespace: Flexols.Data
+  Class: NmtGroupTable
+  RowClass: NmtGroupRow
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseInterfaceNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: TestGroupTable
+  BaseRowClass: TestGroupTableRow
+Columns:
+  grouptype: Int32?
+  query: String?
+XProperties:
+  SqlViewName: 
+      Type: String
+      Value: v_nmtgroup

@@ -1,0 +1,16 @@
+Table: BaseDirectoryTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  groupid: Int32
+  sn: Int32
+  doclmdt: DateTime
+  doclmid: Int32
+  isactive: Boolean
+  code: String
+ColumnOptions:
+  code:
+    MaxLength: 512

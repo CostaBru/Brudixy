@@ -1,0 +1,14 @@
+Table: BaseEntityTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  name: String
+  comment: String
+ColumnOptions:
+  name:
+    MaxLength: 256
+  comment:
+    MaxLength: 1024

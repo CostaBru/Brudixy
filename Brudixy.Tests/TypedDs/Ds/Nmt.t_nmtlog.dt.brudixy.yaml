@@ -1,0 +1,20 @@
+---
+Table: t_nmtlog
+CodeGenerationOptions:
+  Namespace: Flexols.Data
+  Class: NmtLog
+  RowClass: NmtLogRow
+  AppendRowMethodName: Log
+PrimaryKey:
+  - dt
+  - id
+Columns:
+  dt: DateTime
+  id: Int32
+  nmtid: Int32
+  log: String    
+ColumnOptions:     
+  nmtid: 
+      HasIndex: True
+     
+

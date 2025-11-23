@@ -1,0 +1,113 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>preview</LangVersion>
+        <RootNamespace>Brudixy.Tests</RootNamespace>
+        
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
+    </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+ 
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0-eap1" />
+    <PackageReference Include="Konsarpoo" Version="5.3.0" />
+    <PackageReference Include="nunit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.11.0-1.final" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0-1.final" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Net.Compilers" Version="3.11.0-1.final" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Brudixy.Tests.csproj.DotSettings" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Note that this is not a "normal" ProjectReference.
+         It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->    
+    <ProjectReference Include="..\Brudixy.TypeGenerator\Brudixy.TypeGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" />
+    <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" />
+    <ProjectReference Include="..\Brudixy\Brudixy.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Use following lines to add additional files to source generation. -->
+    <AdditionalFiles Include="TypedDs\TestGroupTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\TestBaseTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Ds\Nmt.ds.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_directoryproperty.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_nmt.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_nmtgroup.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Ds\Nmt.t_nmtlog.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryGroup.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryItemTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryPropertyTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDirectoryTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDocGroupTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDocItemPropertyTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDocItemTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDocLinkTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseDocPropertyTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseEntityTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseGroupTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseInfoLogTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseProcessLogTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BasePropertyTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\BaseTable.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.ds.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_infolog.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmt.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtbom.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtcolorsys.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtoperation.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtpicture.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtstock.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtsupplier.dt.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\Test\dsNomenclature.t_nmtsupplierqntprice.dt.brudixy.yaml" />    
+    <AdditionalFiles Include="TypedDs\UserTypes\TestUserTypeTuple.st.brudixy.yaml" />
+    <AdditionalFiles Include="TypedDs\UserTypes\TestUserTypeClass.st.brudixy.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="TypedDs\Ds\DirectoryPropertyTable.cs" />
+    <Compile Remove="TypedDs\Ds\Interfaces.cs" />
+    <Compile Remove="TypedDs\Ds\dsNmt.cs" />
+    <Compile Remove="TypedDs\Ds\NmtGroupTable.cs" />
+    <Compile Remove="TypedDs\Ds\NmtLog.cs" />
+    <Compile Remove="TypedDs\Ds\NmtTable.cs" />
+    <Compile Remove="TypedDs\BaseTable.cs" />
+    <Compile Remove="TypedDs\BaseTable.RowInterfaces.cs" />
+    <Compile Remove="TypedDs\GroupTable.cs" />
+    <Compile Remove="TypedDs\GroupTable.RowInterfaces.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TypedDs\Test\" />
+  </ItemGroup>
+
+</Project>

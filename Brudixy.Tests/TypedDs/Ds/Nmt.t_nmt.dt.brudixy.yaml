@@ -1,0 +1,77 @@
+---
+Table: t_nmt
+CodeGenerationOptions:
+  Namespace: Flexols.Data
+  Class: NmtTable
+  RowClass: NmtTableRow
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseInterfaceNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: TestBaseTable
+  BaseRowClass: TestBaseTableRow
+Columns:
+  code: String
+  systemobjectid: Int32
+  groupid: Int32
+  supplierorderdoctypeid : Int32
+  extcode: String
+  fullname: String
+  fixtype: Int32
+  measureid: Int32
+  dimsysid: Int32
+  dim1: Decimal
+  dim2: Decimal
+  dim3: Decimal
+  weight: Decimal
+  weightmeasureid: Int32
+  square: Decimal
+  squaremeasureid: Int32
+  volume: Decimal
+  volumemeasureid: Int32
+  fixpricesys: Int32
+  price: Decimal
+ColumnOptions:
+  systemobjectid: 
+    AllowNull: false 
+    IsService: true
+  extcode:  
+    MaxLength: 256
+  fullname: 
+    MaxLength: 512  
+XProperties:
+  SqlViewName: 
+    Type: String 
+    Value: v_nmt
+Indexes:
+  TypePrice:
+    Columns:
+      - fixtype
+      - price
+    Unique: True
+  FullNameExtCode:
+    Columns:
+      - fullname
+      - extcode
+  volumemeasureid:
+    Columns:
+      - volumemeasureid
+    Unique: True
+  supplierorderdoctypeid:
+     Columns:
+      - supplierorderdoctypeid
+RowSubTypes:
+  ProductType: "fixtype = 1"
+  SemimaterialType: "fixtype = 2"
+  AnyItem: ""
+RowSubTypeOptions:
+  ProductType:
+    XProperties:
+      ExternalCode:
+        Type: String
+  SemimaterialType:
+    XProperties:
+      ProductionCode:
+        Type: String
+  AnyItem:
+    XProperties:
+      Test:
+        Type: Boolean

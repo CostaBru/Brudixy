@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+    </PropertyGroup>
+
+    <!-- NuGet Package Configuration -->
+    <PropertyGroup>
+        <PackageId>Brudixy.Generators</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Brudixy Contributors</Authors>
+        <Company>Brudixy</Company>
+        <Product>Brudixy</Product>
+        <Description>Roslyn source generators for Brudixy data item implementations. Generates strongly-typed row classes, indexes, and storage implementations.</Description>
+        <PackageTags>source-generator;roslyn;code-generation;brudixy;analyzer</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <DevelopmentDependency>true</DevelopmentDependency>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.11.0-1.final" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0-1.final" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Net.Compilers" Version="3.11.0-1.final" PrivateAssets="all">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="CreateIndexGenerator.cs" />
+      <Compile Remove="CreateDataItemGenerator.cs" />
+      <Compile Remove="StructIndexStorageTypeGenerator.cs" />
+      <Compile Remove="ValueRangeStorageTypeGenerator.cs" />
+      <Compile Remove="ValueStorageTypeGenerator.cs" />
+      <Compile Remove="ValueArrayStorageTypeGenerator.cs" />
+      <Compile Remove="IndexStorageTypeGenerator.cs" />
+      <Compile Remove="CreateStorageTypeGenerator.cs" />
+      <Compile Remove="CreateRangeIndexGenerator.cs" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+Table: t_nmtstock
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+Columns:
+  nmtid: Int32
+  warehouseid: Int32
+  periodallocationid: Int32
+  maxqnt: Decimal
+  minqnt: Decimal
+  comment: String
+  nmt_name: String
+  warehouse_name: String
+  periodallocation_name: String
+ColumnOptions:
+  nmt_name:
+    MaxLength: 512
+  warehouse_name:
+    MaxLength: 512
+  periodallocation_name:
+    MaxLength: 512

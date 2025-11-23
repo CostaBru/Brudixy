@@ -1,0 +1,9 @@
+Table: BaseDirectoryPropertyTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BasePropertyTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  objectid: Int32
+  systemobjectid: Int32

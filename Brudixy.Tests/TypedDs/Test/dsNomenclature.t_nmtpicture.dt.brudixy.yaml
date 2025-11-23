@@ -1,0 +1,18 @@
+Table: t_nmtpicture
+PrimaryKey:
+- id
+Columns:
+  id: Int32
+  createdt: DateTime
+  creatorid: Int32
+  lmdt: DateTime
+  lmlogin: String
+  isdeleted: Boolean
+  guid: Guid
+  lmid: Int32
+  picture: Byte[]
+ColumnOptions:
+  id:
+    IsUnique: true
+  lmlogin:
+    MaxLength: 256

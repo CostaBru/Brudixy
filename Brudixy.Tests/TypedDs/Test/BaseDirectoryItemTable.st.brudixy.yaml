@@ -1,0 +1,21 @@
+Table: BaseDirectoryItemTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  sn: Int32
+  isactive: Boolean
+  system_isaccess: Boolean
+  iserror: Boolean
+  islocked: Boolean
+  ismain: Boolean
+  docmark: Int32
+  extcode: String
+  employee_actor_name: String
+ColumnOptions:
+  extcode:
+    MaxLength: 256
+  employee_actor_name:
+    MaxLength: 512

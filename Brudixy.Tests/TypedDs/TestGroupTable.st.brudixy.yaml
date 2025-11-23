@@ -1,0 +1,27 @@
+---
+Table: TestGroupTable
+CodeGenerationOptions:
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseTableFileName: \TestBaseTable.st.brudixy.yaml
+  Sealed: False
+Columns:
+  parentid: int?
+  name: string | 256
+  cmp: Brudixy.DataTable | Complex
+  sn: int?
+  image: byte[]
+  storeType: int?
+  storeTypeCode: string
+ColumnOptions:
+  name:
+    HasIndex: true
+  storeType:
+    EnumType: TableStorageType
+  storeTypeCode:
+    EnumType: TableStorageType
+Relations:
+  FK_id_parentid:     
+      ParentKey:
+        - id
+      ChildKey:
+        - parentid

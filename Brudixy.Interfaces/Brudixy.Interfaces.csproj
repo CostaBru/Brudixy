@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
+
+    <!-- NuGet Package Configuration -->
+    <PropertyGroup>
+        <PackageId>Brudixy.Interfaces</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Brudixy Contributors</Authors>
+        <Company>Brudixy</Company>
+        <Product>Brudixy</Product>
+        <Description>Interface definitions and shared contracts for the Brudixy ecosystem. Contains core interfaces, delegates, and annotations.</Description>
+        <PackageTags>interfaces;contracts;brudixy;dataset</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup> 
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+ 
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0-eap1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0-1.final" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Net.Compilers" Version="3.11.0-1.final" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Note that this is not a "normal" ProjectReference.
+         It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
+    <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Annotations.cs" />
+    <Compile Remove="Interfaces\ICoreDataSet.cs" />
+    <Compile Remove="Interfaces\ICoreReadOnlyDataSet.cs" />
+    <Compile Remove="Interfaces\IReadOnlyDataSet.cs" />
+    <Compile Remove="Interfaces\IDataSet.cs" />
+  </ItemGroup>
+  
+
+</Project>

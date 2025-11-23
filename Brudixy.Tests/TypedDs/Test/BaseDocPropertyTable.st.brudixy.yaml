@@ -1,0 +1,6 @@
+Table: BaseDocPropertyTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BasePropertyTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False

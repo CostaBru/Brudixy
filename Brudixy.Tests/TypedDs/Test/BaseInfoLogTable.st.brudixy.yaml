@@ -1,0 +1,36 @@
+Table: BaseInfoLogTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  systemobjectid: Int32
+  objectid: Int32
+  infologtypeid: Int32
+  messagedt: DateTime
+  code: String
+  message: String
+  oldstrvalue: String
+  olddtvalue: DateTime
+  oldintvalue: Int32
+  olddblvalue: Double
+  newstrvalue: String
+  newdtvalue: DateTime
+  newint: Int32
+  newdblvalue: Double
+  infologtype_code: String
+  infologtype_name: String
+  fixvaluetype: Int32
+  isnotify: Boolean
+  changereasoncode: String
+  stacktrace: String
+ColumnOptions:
+  code:
+    MaxLength: 256
+  infologtype_code:
+    MaxLength: 256
+  infologtype_name:
+    MaxLength: 512
+  changereasoncode:
+    MaxLength: 256

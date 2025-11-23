@@ -1,0 +1,18 @@
+Table: BaseGroupTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  parentid: Int32?
+  code: String?
+  grouptype: Int32?
+  sn: Int32?
+  query: String?
+  layoutcode: String?
+ColumnOptions:
+  code:
+    MaxLength: 256
+  layoutcode:
+    MaxLength: 1024

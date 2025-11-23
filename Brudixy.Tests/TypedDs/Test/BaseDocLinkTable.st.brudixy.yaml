@@ -1,0 +1,33 @@
+Table: BaseDocLinkTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  sn: Int32
+  systemobject1id: Int32
+  doc1id: Int32
+  systemobject2id: Int32
+  doc2id: Int32
+  typeid: Int32
+  isparentdoc: Boolean
+  doclinktype_name: String
+  doclinktype_code: String
+  link_name: String
+  docid: Int32
+  systemobjectid: Int32
+  systemobject_relation_id: Int32
+  systemobject_relation_code: String
+  systemobject_relation_shortname: String
+ColumnOptions:
+  doclinktype_name:
+    MaxLength: 512
+  doclinktype_code:
+    MaxLength: 256
+  link_name:
+    MaxLength: 256
+  systemobject_relation_code:
+    MaxLength: 256
+  systemobject_relation_shortname:
+    MaxLength: 256

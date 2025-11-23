@@ -1,0 +1,44 @@
+Table: t_nmtcolorsys
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+Columns:
+  nmtid: Int32
+  sn: Int32
+  comment: String
+  colorsysid: Int32
+  color1id: Int32
+  color2id: Int32
+  color3id: Int32
+  iscreatesuppliereorder: Boolean
+  supplierorderdoctypeid: Int32
+  isaccountingrest: Boolean
+  waste: Decimal
+  supplierid: Int32
+  isroundtomaterialsize: Boolean
+  fixroundtype: Int32
+  leadtime: DateTime
+  colorsys_colorname1: String
+  colorsys_colorname2: String
+  colorsys_colorname3: String
+  color_name1: String
+  color_name2: String
+  color_name3: String
+  supplierorderdoctype_name: String
+  colorsys_name: String
+ColumnOptions:
+  colorsys_colorname1:
+    MaxLength: 256
+  colorsys_colorname2:
+    MaxLength: 256
+  colorsys_colorname3:
+    MaxLength: 256
+  color_name1:
+    MaxLength: 512
+  color_name2:
+    MaxLength: 512
+  color_name3:
+    MaxLength: 512
+  supplierorderdoctype_name:
+    DisplayName: upplierorderdoctype_name
+    MaxLength: 512

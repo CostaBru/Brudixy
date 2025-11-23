@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+    </PropertyGroup>
+
+    <!-- NuGet Package Configuration -->
+    <PropertyGroup>
+        <PackageId>Brudixy.TypeGenerator</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Brudixy Contributors</Authors>
+        <Company>Brudixy</Company>
+        <Product>Brudixy</Product>
+        <Description>YAML-based source generator for Brudixy. Generates strongly-typed DataSet and DataTable classes from YAML schema definitions with full indexing and relation support.</Description>
+        <PackageTags>source-generator;roslyn;yaml;code-generation;brudixy;analyzer;schema</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <DevelopmentDependency>true</DevelopmentDependency>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs" Link="BuiltinSupportStorageTypes.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\BaseTableParseException.cs" Link="BaseTableParseException.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\CodeGenerator.cs" Link="CodeGenerator.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfo.cs" Link="ColumnInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfoOverride.cs" Link="ColumnInfoOverride.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DataRelationObj.cs" Link="DataRelationObj.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DataSetObj.cs" Link="DataSetObj.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DataTableObj.cs" Link="DataTableObj.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DictExt.cs" Link="DictExt.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\GroupColumInfo.cs" Link="GroupColumInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\IFileSystemAccessor.cs" Link="IFileSystemAccessor.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\Index.cs" Link="Index.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\IndexedDict.cs" Link="IndexedDict.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\ISchemaReader.cs" Link="ISchemaReader.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\TableProp.cs" Link="TableProp.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\XProperty.cs" Link="XProperty.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\RowSubTypeInfo.cs" Link="RowSubTypeInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\YamlSchemaReader.cs" Link="YamlSchemaReader.cs" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Brudixy.Generators\Brudixy.Generators.csproj" />
+        <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" />
+        <PackageReference Include="YamlDotNet" Version="13.2.0" GeneratePathProperty="true" PrivateAssets="all" />
+    </ItemGroup>
+
+    <PropertyGroup>
+        <GetTargetPathDependsOn>$(GetTargetPathDependsOn); GetDependencyTargetPaths</GetTargetPathDependsOn>
+    </PropertyGroup>
+
+    <Target Name="GetDependencyTargetPaths">
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="$(PKGYamlDotNet)\lib\netstandard2.0\YamlDotNet.dll" IncludeRuntimeDependency="false" />
+        </ItemGroup>
+    </Target>
+    
+</Project>

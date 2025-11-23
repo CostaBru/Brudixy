@@ -1,0 +1,7 @@
+---
+Table: TestClassTable
+PrimaryKey:
+  - id
+Columns:
+  id: UserClass | Class
+ 

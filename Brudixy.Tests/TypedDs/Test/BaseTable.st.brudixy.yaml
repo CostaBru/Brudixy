@@ -1,0 +1,23 @@
+Table: BaseTable
+CodeGenerationOptions:
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+PrimaryKey:
+- id
+Columns:
+  id: Int32
+  createdt: DateTime?
+  creatorid: Int32?
+  lmdt: DateTime?
+  lmlogin: String?
+  isdeleted: Boolean?
+  guid: Guid?
+  employee_creator_name: String?
+  employee_lm_name: String?
+  test_string: String?
+ColumnOptions:
+  id:
+    IsUnique: true
+    AllowNull: false
+  lmlogin:
+    MaxLength: 256

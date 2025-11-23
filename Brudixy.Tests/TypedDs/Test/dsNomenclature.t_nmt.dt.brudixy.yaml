@@ -1,0 +1,198 @@
+Table: t_nmt
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseDirectoryTable
+Columns:
+  supplierorderdoctypeid: int?
+  extcode: string?
+  fullname: string?
+  fixtype: int?
+  measureid: int?
+  dimsysid: int?
+  dim1: decimal?
+  dim2: decimal?
+  dim3: decimal?
+  weight: decimal?
+  weightmeasureid: int?
+  square: decimal?
+  squaremeasureid: int?
+  volume: decimal?
+  volumemeasureid: int?
+  fixpricesys: int?
+  price: decimal?
+  pricetable: Byte[]
+  currencyid: int?
+  colorsysid: int?
+  color1id: int?
+  color2id: int?
+  color3id: int?
+  sysbarcode1id: int?
+  sysbarcode2id: int?
+  managerid: int?
+  fixsourceview: int?
+  waste: decimal?
+  leadtime: DateTime?
+  radiusmin: int?
+  isaccountingrest: bool
+  mftypeid: int?
+  isshowinfittinglist: bool
+  isinstanceaccounting: bool
+  isframefitting: bool
+  productiontypeid: int?
+  pricingtypeid: int?
+  iscalcwaste: bool
+  minsaleqnt: decimal?
+  orderpoint: decimal?
+  tareid: int?
+  fixmrptype: int
+  ismanualorder: bool
+  category: string?
+  materialtypeid: int?
+  ordersn: int?
+  grossdimsysid: int?
+  grossdim1: decimal?
+  grossdim2: decimal?
+  grossdim3: decimal?
+  warehouseid: int?
+  description: string?
+  restmeasureid: int?
+  cuttingtypeid: int?
+  isoptimization: bool
+  extcode2: string?
+  waste2: decimal?
+  waste3: decimal?
+  waste4: decimal?
+  waste5: decimal?
+  pictureid: int?
+  isspecificationprice: bool
+  manager2id: int?
+  isroundtomaterialsize: bool
+  fixroundtype: int
+  packunit: int
+  fixfillingtype: int
+  fixroutingtype: int
+  routingalgorithmid: int
+  measure_name: string?
+  measure_fullname: string?
+  measure_square_name: string?
+  measure_weight_name: string?
+  measure_volume_name: string?
+  measure_rest_name: string?
+  dimsys_name: string?
+  dimsys_gross_name: string?
+  mftype_name: string?
+  productiontype_name: string?
+  pricingtype_name: string?
+  materialtype_name: string?
+  sysbarcode_name1: string?
+  sysbarcode_name2: string?
+  employee_manager_name: string?
+  employee_manager_name2: string?
+  nmt_tare_name: string?
+  warehouse_name: string?
+  currency_name: string?
+  cuttingtype_name: string?
+  color_name1: string?
+  color_name2: string?
+  color_name3: string?
+  colorsys_name: string?
+  colorsys_colorname1: string?
+  colorsys_colorname2: string?
+  colorsys_colorname3: string?
+  dimsys_dimname1: string?
+  dimsys_dimname2: string?
+  dimsys_dimname3: string?
+  dimsys_grossdimname1: string?
+  dimsys_grossdimname2: string?
+  dimsys_grossdimname3: string?
+  dimsys_measure_name: string?
+  grossdimsys_measure_name: string?
+  supplierorderdoctype_name: string?
+  supplierorderdoctype_code: string?
+  colorsys_code: string?
+  workorderdoctypeid: int?
+  workorderdoctype_name: string?
+  workorderdoctype_code: string?
+ColumnOptions:
+  extcode:
+    MaxLength: 256
+  fullname:
+    MaxLength: 512
+  category:
+    MaxLength: 2
+  extcode2:
+    MaxLength: 256    
+  measure_name:
+    MaxLength: 512
+  measure_fullname:
+    MaxLength: 512
+  measure_square_name:
+    MaxLength: 512
+  measure_weight_name:
+    MaxLength: 512
+  measure_volume_name:
+    MaxLength: 512
+  measure_rest_name:
+    MaxLength: 512
+  dimsys_name:
+    MaxLength: 512
+  dimsys_gross_name:
+    MaxLength: 512
+  mftype_name:
+    MaxLength: 512
+  productiontype_name:
+    MaxLength: 512
+  pricingtype_name:
+    MaxLength: 512
+  materialtype_name:
+    MaxLength: 512
+  sysbarcode_name1:
+    MaxLength: 512
+  sysbarcode_name2:
+    MaxLength: 512
+  employee_manager_name:
+    MaxLength: 512
+  employee_manager_name2:
+    MaxLength: 512
+  nmt_tare_name:
+    MaxLength: 512
+  warehouse_name:
+    MaxLength: 512
+  currency_name:
+    MaxLength: 256
+  cuttingtype_name:
+    MaxLength: 512
+  color_name1:
+    MaxLength: 512
+  color_name2:
+    MaxLength: 512
+  color_name3:
+    MaxLength: 512
+  colorsys_name:
+    MaxLength: 512
+  colorsys_colorname1:
+    MaxLength: 256
+  colorsys_colorname2:
+    MaxLength: 256
+  colorsys_colorname3:
+    MaxLength: 256
+  dimsys_dimname1:
+    MaxLength: 256
+  dimsys_dimname2:
+    MaxLength: 256
+  dimsys_dimname3:
+    MaxLength: 256
+  dimsys_grossdimname1:
+    MaxLength: 256
+  dimsys_grossdimname2:
+    MaxLength: 256
+  dimsys_grossdimname3:
+    MaxLength: 256
+  dimsys_measure_name:
+    MaxLength: 512
+  grossdimsys_measure_name:
+    MaxLength: 512
+  supplierorderdoctype_name:
+    MaxLength: 512
+  supplierorderdoctype_code:
+    MaxLength: 256

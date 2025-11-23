@@ -1,0 +1,16 @@
+Table: BaseDocGroupTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseGroupTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  grouptype: Int32?
+  sn: Int32?
+  query: String?
+  layoutcode: String?
+  refreshinterval: Int32?
+  managerid: Int32?
+ColumnOptions:
+  layoutcode:
+    MaxLength: 512

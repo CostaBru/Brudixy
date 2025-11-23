@@ -1,0 +1,32 @@
+---
+Table: t_directoryproperty
+CodeGenerationOptions:
+  Namespace: Flexols.Data
+  Class: DirectoryPropertyTable
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseInterfaceNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: TestBaseTable
+  BaseRowClass: TestBaseTableRow
+Columns:
+  systemobjectid: Int32   
+  objectid: Int32  
+  propertyid: Int32
+  value: String  
+  property_code: String
+ColumnOptions:
+  systemobjectid: 
+    AllowNull: false
+  objectid: 
+    AllowNull: false
+  propertyid: 
+    AllowNull: false
+  property_code: 
+    XProperties:
+      SqlViewProp: 
+        Type: Boolean
+        Value: true
+XProperties:
+  SqlViewName: 
+    Type: String
+    Value: v_nmtproperty
+    

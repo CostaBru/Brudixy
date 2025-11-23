@@ -1,0 +1,7 @@
+---
+Table: TestTupleTable
+PrimaryKey:
+  - id
+Columns:
+  id: (int val1, int val2)
+ 

@@ -1,0 +1,53 @@
+﻿---
+Table: dsNmt
+CodeGenerationOptions:
+  Namespace: Flexols.Data
+Tables:
+  - t_nmt
+  - t_nmtgroup
+  - t_directoryproperty
+  - t_nmtlog
+TableOptions:
+   t_nmt: 
+      CodeProperty: ItemsTable
+   t_nmtgroup:
+      CodeProperty: GroupsTable
+   t_directoryproperty:
+      CodeProperty: PropertiesTable
+   t_nmtlog:
+      CodeProperty: LogTable
+Relations:
+  FK_NmtGroup_NmtTable: 
+      ParentTable: t_nmtgroup
+      ChildTable: t_nmt
+      ParentKey:
+        - id
+      ChildKey:
+        - groupid
+  FK_NmtGroupTable_NmtGroupTable: 
+      ParentTable: t_nmtgroup
+      ChildTable: t_nmtgroup
+      ParentKey:
+        - id
+      ChildKey:
+        - parentid
+  FK_directoryproperty_ref_NmtTable: 
+      ParentTable: t_nmt
+      ChildTable: t_directoryproperty
+      ParentKey:
+        - id
+        - systemobjectid
+      ChildKey:
+        - objectid
+        - systemobjectid 
+  FK_nmtlog_ref_NmtTable:
+      ParentTable: t_nmt
+      ChildTable: t_nmtlog
+      ParentKey:
+        - id
+      ChildKey:
+        - nmtid
+XProperties:
+  CheckErrors: 
+    Type: Boolean
+    Value: true

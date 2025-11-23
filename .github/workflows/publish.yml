@@ -1,0 +1,95 @@
+name: Publish NuGet Packages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Extract version
+      id: version
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+        else
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update project versions
+      run: |
+        VERSION=${{ steps.version.outputs.VERSION }}
+        echo "Setting version to $VERSION"
+        
+        # Update all project files with the new version
+        find . -name "*.csproj" -type f | while read file; do
+          if grep -q "<Version>" "$file"; then
+            sed -i "s|<Version>.*</Version>|<Version>$VERSION</Version>|g" "$file"
+          fi
+        done
+
+    - name: Restore dependencies
+      run: dotnet restore Brudixy.sln
+
+    - name: Build solution
+      run: dotnet build Brudixy.sln --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test Brudixy.sln --configuration Release --no-build --verbosity normal
+
+    - name: Pack NuGet packages
+      run: |
+        dotnet pack Brudixy.Interfaces/Brudixy.Interfaces.csproj --configuration Release --no-build --output ./packages
+        dotnet pack Brudixy.Core/Brudixy.Core.csproj --configuration Release --no-build --output ./packages
+        dotnet pack Brudixy/Brudixy.csproj --configuration Release --no-build --output ./packages
+        dotnet pack Brudixy.Interfaces.Generators/Brudixy.Interfaces.Generators.csproj --configuration Release --no-build --output ./packages
+        dotnet pack Brudixy.Generators/Brudixy.Generators.csproj --configuration Release --no-build --output ./packages
+        dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj --configuration Release --no-build --output ./packages
+
+    - name: List packages
+      run: ls -la ./packages
+
+    - name: Upload NuGet packages as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: ./packages/*.nupkg
+
+    - name: Push to NuGet.org
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+      run: |
+        dotnet nuget push "./packages/*.nupkg" \
+          --api-key ${{ secrets.NUGET_API_KEY }} \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate
+
+    - name: Create GitHub Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./packages/*.nupkg
+        generate_release_notes: true
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

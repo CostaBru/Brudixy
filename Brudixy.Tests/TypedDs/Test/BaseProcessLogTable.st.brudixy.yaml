@@ -1,0 +1,25 @@
+Table: BaseProcessLogTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseInterfaceNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  BaseRowClass: BaseEntityTableRow
+  Class: BaseProcessLogTable
+  RowClass: BaseProcessLogTableRow
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  systemobjectid: Int32
+  objectid: Int32
+  eventdt: DateTime
+  code: String
+  fromstatecode: String
+  tostatecode: String
+  acctrans: String
+ColumnOptions:
+  code:
+    MaxLength: 256
+  fromstatecode:
+    MaxLength: 256
+  tostatecode:
+    MaxLength: 256

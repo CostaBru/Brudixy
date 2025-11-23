@@ -1,0 +1,4 @@
+Table: t_infolog
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseInfoLogTable

@@ -1,0 +1,70 @@
+Table: dsNomenclature
+CodeGenerationOptions:
+  Namespace: Flexols.Production.sNomenclature
+Tables:
+- t_nmt
+- t_infolog
+- t_nmtbom
+- t_nmtsupplier
+- t_nmtsupplierqntprice
+- t_nmtpicture
+- t_nmtcolorsys
+- t_nmtstock
+- t_nmtoperation
+Relations:
+  FK_infolog_x0020__ref_nmt:
+    ParentTable: t_nmt
+    ChildTable: t_infolog
+    ParentKey:
+    - id
+    ChildKey:
+    - objectid
+  FK_nmt_ref_nmtbom:
+    ParentTable: t_nmt
+    ChildTable: t_nmtbom
+    ParentKey:
+    - id
+    ChildKey:
+    - nmtid
+  FK_nmt_ref_nmtsupplier:
+    ParentTable: t_nmt
+    ChildTable: t_nmtsupplier
+    ParentKey:
+    - id
+    ChildKey:
+    - nmtid
+  FK_nmtsupplier_ref_nmtsupplierqntprice:
+    ParentTable: t_nmtsupplier
+    ChildTable: t_nmtsupplierqntprice
+    ParentKey:
+    - id
+    ChildKey:
+    - nmtsupplierid
+  FK_nmt_ref_nmtcolorsys:
+    ParentTable: t_nmt
+    ChildTable: t_nmtcolorsys
+    ParentKey:
+    - id
+    ChildKey:
+    - nmtid
+  fk_nmt_ref_nmtstock:
+    ParentTable: t_nmt
+    ChildTable: t_nmtstock
+    ParentKey:
+    - id
+    ChildKey:
+    - nmtid
+  t_nmt_ref_nmtoperation:
+    ParentTable: t_nmt
+    ChildTable: t_nmtoperation
+    ParentKey:
+    - id
+    ChildKey:
+    - nmtid
+  FK_nmt_ref_nmtpicture:
+    ParentTable: t_nmt
+    ChildTable: t_nmtpicture
+    ParentKey:
+    - pictureid
+    ChildKey:
+    - id

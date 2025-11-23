@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latestmajor</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" />
+        <PackageReference Include="YamlDotNet" Version="13.2.0" GeneratePathProperty="true" PrivateAssets="all" />
+      <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs" Link="BuiltinSupportStorageTypes.cs" />
+
+    </ItemGroup>
+
+</Project>

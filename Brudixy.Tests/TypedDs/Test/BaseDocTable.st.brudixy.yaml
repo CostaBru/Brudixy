@@ -1,0 +1,25 @@
+Table: BaseDocTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  groupid: Int32
+  doctypeid: Int32
+  docstateid: Int32
+  managerid: Int32
+  departmentid: Int32
+  sn: Int32
+  docdt: DateTime
+  istest: Boolean
+  doclmdt: DateTime
+  doclmid: Int32
+  doctype_name: String
+  doctype_code: String
+  docstate_name: String
+  docstate_code: String
+  employee_manager_name: String
+  department_name: String
+  organizationid: Int32
+  organization_name: String

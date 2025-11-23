@@ -1,0 +1,17 @@
+Table: BasePropertyTable
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseEntityTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  propertyid: Int32
+  value: String
+  property_name: String
+  property_code: String
+  property_fixvaluetype: Int32
+ColumnOptions:
+  property_name:
+    MaxLength: 1024
+  property_code:
+    MaxLength: 1024

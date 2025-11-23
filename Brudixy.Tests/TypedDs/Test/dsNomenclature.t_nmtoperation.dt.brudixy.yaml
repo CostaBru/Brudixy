@@ -1,0 +1,20 @@
+Table: t_nmtoperation
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+Columns:
+  nmtid: Int32
+  operationid: Int32
+  sn: Int32
+  operation_name: String
+  operation_code: String
+  price: Decimal
+  price2: Decimal
+  price3: Decimal
+  price4: Decimal
+  price5: Decimal
+ColumnOptions:
+  operation_name:
+    MaxLength: 512
+  operation_code:
+    MaxLength: 256

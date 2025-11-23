@@ -1,0 +1,11 @@
+Table: t_nmtsupplierqntprice
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+Columns:
+  comment: String
+  nmtsupplierid: Int32
+  price: Decimal
+  minqnt: Decimal
+  maxqnt: Decimal
+  pricetable: Byte[]

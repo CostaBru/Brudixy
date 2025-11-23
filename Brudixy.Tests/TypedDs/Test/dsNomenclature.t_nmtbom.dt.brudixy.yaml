@@ -1,0 +1,14 @@
+Table: t_nmtbom
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+Columns:
+  nmtid: Int32
+  sn: Int32
+  comment: String
+  childnmtid: Int32
+  qnt: Decimal
+  nmt_name: String
+ColumnOptions:
+  nmt_name:
+    MaxLength: 512

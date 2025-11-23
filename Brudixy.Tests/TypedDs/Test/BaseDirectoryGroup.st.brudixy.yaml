@@ -1,0 +1,12 @@
+Table: BaseDirectoryGroup
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseGroupTable
+  Namespace: Flexols.Core.Common.Base.Data.BaseTables
+  Sealed: False
+Columns:
+  sn: Int32
+  extCode: String
+ColumnOptions:
+  extCode:
+    MaxLength: 256

@@ -1,0 +1,23 @@
+Table: t_nmtsupplier
+CodeGenerationOptions:
+  BaseNamespace: Flexols.Core.Common.Base.Data.BaseTables
+  BaseClass: BaseTable
+Columns:
+  sn: Int32
+  comment: String
+  supplierid: Int32
+  price: Decimal
+  currencyid: Int32
+  discount: Decimal
+  ismain: Boolean
+  minqnt: Decimal
+  leadtime: DateTime
+  nmtid: Int32
+  isqntprice: Boolean
+  code: String
+  packunit1: Int32
+  packunit2: Int32
+  supplier_name: String
+ColumnOptions:
+  code:
+    MaxLength: 256
