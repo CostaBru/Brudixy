@@ -290,6 +290,8 @@ Columns:
   user_tuple: (int id, string name)
   user_class: SalesInfo | Class
   complex: Brudixy.DataTable | Complex
+PrimaryKey:
+  - id
 ";
 
       var name = @"c:\test\Core\Abs\Test.st.brudixy.yaml";

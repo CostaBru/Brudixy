@@ -130,6 +130,8 @@ namespace Brudixy.TypeGenerator.Core
                 
                 ParseColumnType(kv, columnObject);
 
+                columnObject.AllowNull = PrimaryKey.Contains(kv.Key) == false;
+                
                 m_columnObjects[kv.Key] = columnObject;
             }
 
@@ -143,7 +145,7 @@ namespace Brudixy.TypeGenerator.Core
                 
                 var resultColOption = m_columnObjects.GetOrAdd(kv.Key, new ColumnInfo());
                 
-                resultColOption.AllowNull = ConvertToBool(kv.Value.GetOrDefault(nameof(ColumnInfo.AllowNull))) ?? true;
+                resultColOption.AllowNull = ConvertToBool(kv.Value.GetOrDefault(nameof(ColumnInfo.AllowNull))) ?? PrimaryKey.Contains(kv.Key) == false;
                 resultColOption.HasIndex = ConvertToBool(kv.Value.GetOrDefault(nameof(ColumnInfo.HasIndex))) ?? false;
                 resultColOption.IsService = ConvertToBool(kv.Value.GetOrDefault(nameof(ColumnInfo.IsService))) ?? false;
                 resultColOption.Auto = ConvertToBool(kv.Value.GetOrDefault(nameof(ColumnInfo.Auto))) ?? false;

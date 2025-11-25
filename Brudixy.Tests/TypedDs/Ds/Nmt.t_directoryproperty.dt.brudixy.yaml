@@ -11,15 +11,9 @@ Columns:
   systemobjectid: Int32   
   objectid: Int32  
   propertyid: Int32
-  value: String  
-  property_code: String
+  value: String?  
+  property_code: String?
 ColumnOptions:
-  systemobjectid: 
-    AllowNull: false
-  objectid: 
-    AllowNull: false
-  propertyid: 
-    AllowNull: false
   property_code: 
     XProperties:
       SqlViewProp: 

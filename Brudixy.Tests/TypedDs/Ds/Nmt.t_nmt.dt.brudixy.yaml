@@ -11,32 +11,28 @@ CodeGenerationOptions:
 Columns:
   code: String
   systemobjectid: Int32
-  groupid: Int32
-  supplierorderdoctypeid : Int32
-  extcode: String
-  fullname: String
-  fixtype: Int32
-  measureid: Int32
-  dimsysid: Int32
-  dim1: Decimal
-  dim2: Decimal
-  dim3: Decimal
-  weight: Decimal
-  weightmeasureid: Int32
-  square: Decimal
-  squaremeasureid: Int32
-  volume: Decimal
-  volumemeasureid: Int32
-  fixpricesys: Int32
-  price: Decimal
+  groupid: Int32?
+  supplierorderdoctypeid : Int32?
+  extcode: String? | 256
+  fullname: String? | 512
+  fixtype: Int32?
+  measureid: Int32?
+  dimsysid: Int32?
+  dim1: Decimal?
+  dim2: Decimal?
+  dim3: Decimal?
+  weight: Decimal?
+  weightmeasureid: Int32?
+  square: Decimal?
+  squaremeasureid: Int32?
+  volume: Decimal?
+  volumemeasureid: Int32?
+  fixpricesys: Int32?
+  price: Decimal?
 ColumnOptions:
   systemobjectid: 
     AllowNull: false 
-    IsService: true
-  extcode:  
-    MaxLength: 256
-  fullname: 
-    MaxLength: 512  
+    IsService: true 
 XProperties:
   SqlViewName: 
     Type: String 

@@ -74,7 +74,221 @@ namespace Brudixy.Tests
             dataTable.Dispose();
         }
 
-       
+        [Test]
+        public void TestJson()
+        {
+          var str = @"{
+  ""Name"": ""Table"",
+  ""Attributes"": [
+    {
+      ""TableName"": ""db""
+    },
+    {
+      ""V"": ""1.0""
+    }
+  ],
+  ""Elements"": [
+    {
+      ""Name"": ""TableData"",
+      ""Value"": {
+        ""Name"": ""TableData"",
+        ""Elements"": [
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""Session""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              },
+              {
+                ""Name"": ""Row"",
+                ""Elements"": [
+                  {
+                    ""Name"": ""Id"",
+                    ""Value"": ""134085188562391953""
+                  },
+                  {
+                    ""Name"": ""Name"",
+                    ""Value"": ""New Visit""
+                  },
+                  {
+                    ""Name"": ""Age"",
+                    ""Value"": """"
+                  },
+                  {
+                    ""Name"": ""ClientId"",
+                    ""Value"": """"
+                  },
+                  {
+                    ""Name"": ""Year"",
+                    ""Value"": """"
+                  },
+                  {
+                    ""Name"": ""SessionType"",
+                    ""Value"": ""GeneralQuestion""
+                  },
+                  {
+                    ""Name"": ""UtcTimeStamp"",
+                    ""Value"": ""2025-11-25T04:34:16.2391953Z""
+                  },
+                  {
+                    ""Name"": ""Protected"",
+                    ""Value"": ""false""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""Conversations""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""LogItem""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""Documents""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""AnalysisResultItems""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""AnalysisResults""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""RecommendationItems""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          },
+          {
+            ""Name"": ""Table"",
+            ""Attributes"": [
+              {
+                ""TableName"": ""Recommendations""
+              },
+              {
+                ""V"": ""1.0""
+              }
+            ],
+            ""Elements"": [
+              {
+                ""Name"": ""TableData"",
+                ""Value"": {
+                  ""Name"": ""TableData""
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}";
+          var jElement = JElement.Parse(str);
+        }
 
 
         [Test]

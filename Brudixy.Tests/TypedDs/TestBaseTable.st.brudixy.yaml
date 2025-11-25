@@ -16,8 +16,8 @@ Columns:
   lmlogin: string | 256
   isdeleted: bool?
   guid: Guid?
-  employee_creator_name: String
-  employee_lm_name: String
+  employee_creator_name: String?
+  employee_lm_name: String?
   type: int?
 ColumnOptions:
   id: 
@@ -27,8 +27,6 @@ ColumnOptions:
       BinSec: 
         Type: Boolean
         Value: true
-  createdt: 
-    HasIndex: true
   creatorid: 
     Type: Int32   
   guid:    

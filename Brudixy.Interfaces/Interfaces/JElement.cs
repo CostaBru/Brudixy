@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Brudixy.Interfaces.Interfaces;
 
 namespace Brudixy.Interfaces
 {
@@ -111,6 +112,16 @@ namespace Brudixy.Interfaces
             RestoreValue(jElement);
 
             return jElement;
+        }
+
+        public static JElement Parse(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return null;
+            }
+            var node = JsonNode.Parse(json);
+            return Parse(node);
         }
 
         private static void RestoreValue(JElement jElement)

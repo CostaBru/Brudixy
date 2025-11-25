@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
-namespace Brudixy.Interfaces
+namespace Brudixy.Interfaces.Interfaces
 {
     public class JElementConverter : JsonConverter<JElement>
     {
-
         public override void Write(Utf8JsonWriter writer, JElement value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
@@ -36,17 +34,26 @@ namespace Brudixy.Interfaces
 
         public override JElement Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return Read(ref reader, options, new Dictionary<string, JElement>());
+            return ReadInternal(ref reader, options);
         }
 
-        private JElement Read(ref Utf8JsonReader reader, JsonSerializerOptions options, Dictionary<string, JElement> processedElements)
+        private JElement ReadInternal(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
+            if (reader.TokenType == JsonTokenType.None)
+            {
+                if (!reader.Read())
+                {
+                    throw new JsonException();
+                }
+            }
+
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonException();
             }
 
             var jElement = new JElement();
+
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
