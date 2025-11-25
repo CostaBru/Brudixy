@@ -68,7 +68,7 @@ namespace Brudixy
 
         protected virtual DataColumnContainer CreateDataColumnContainer(DataColumnObj columnObj) => new DataColumnContainer(columnObj);
         
-        public void InitNew()
+        protected override void InitNew()
         {
             var dataColumnContainers = this
                 .GetDataColumnContainers()

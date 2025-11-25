@@ -725,7 +725,7 @@ namespace Brudixy.Tests
 
             var dataRow = table.GetRowBy(3);
 
-            var dataRowContainer = (DataRowContainer)dataRow.ToContainer();
+            var dataRowContainer = dataRow.ToContainer();
             
             dataRowContainer.SetXProperty("Test", true);
 

@@ -331,6 +331,15 @@ namespace Brudixy.Tests
         }
 
         [Test]
+        public void TestEmptyContainerSetup()
+        {
+            var nmtGroupRowContainer = new NmtGroupRowContainer();
+            nmtGroupRowContainer.id = 1;
+
+            Assert.AreEqual(1, nmtGroupRowContainer.id);
+        }
+
+        [Test]
         public void TestDatasetLogging()
         {
             var dsNmt = new dsNmt();
@@ -967,7 +976,6 @@ namespace Brudixy.Tests
         public void TestTypedContainerInitNew()
         {
             var container = new t_nmtRowContainer();
-            container.InitNew();
 
             container.id = 1;
             container.name = "test";

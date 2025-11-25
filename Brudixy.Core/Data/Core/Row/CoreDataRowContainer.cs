@@ -59,6 +59,10 @@ namespace Brudixy
         public void SetModified()
         {
             RowRecordState = RowState.Modified;
+
+            Props.OriginalData?.Dispose();
+            
+            Props.OriginalData = CreateOriginalData();
         }
 
         string ICoreDataRowReadOnlyAccessor.ToString(ICoreTableReadOnlyColumn column)
@@ -108,19 +112,48 @@ namespace Brudixy
             return container;
         }
 
-        internal CoreContainerDataProps ContainerDataProps;
-        internal CoreContainerMetadataProps MetadataProps;
+        internal CoreContainerDataProps ContainerDataProps
+        {
+            get
+            {
+                if (m_containerDataProps == null)
+                {
+                    InitNew();
+                }
+                
+                return m_containerDataProps;
+            }
+            set => m_containerDataProps = value;
+        }
+
+        internal CoreContainerMetadataProps MetadataProps
+        {
+            get
+            {
+                if (m_metadataProps == null)
+                {
+                    InitNew();
+                }
+                
+                return m_metadataProps;
+            }
+            set => m_metadataProps = value;
+        }
+
+        protected virtual void InitNew()
+        {
+        }
 
         public virtual void Init(CoreContainerMetadataProps metadataProps, CoreContainerDataProps props, ICoreDataRowReadOnlyAccessor rowAccessor = null)
         {
-            MetadataProps = metadataProps;
-            ContainerDataProps = props;
+            m_metadataProps = metadataProps;
+            m_containerDataProps = props;
         }
 
         public virtual void Init(ICoreDataRowReadOnlyAccessor rowAccessor, IReadOnlyCollection<string> skipFields = null)
         {
-            ContainerDataProps = InitContainerDataProps(rowAccessor, skipFields);
-            MetadataProps = new CoreContainerMetadataProps(rowAccessor, CreateColumnContainer);
+            m_containerDataProps = InitContainerDataProps(rowAccessor, skipFields);
+            m_metadataProps = new CoreContainerMetadataProps(rowAccessor, CreateColumnContainer);
         }
 
         protected virtual CoreContainerDataProps InitContainerDataProps(ICoreDataRowReadOnlyAccessor rowAccessor, IReadOnlyCollection<string> skipFields)
@@ -156,13 +189,27 @@ namespace Brudixy
             return predefinedColumns;
         }
 
-        protected virtual void SetValue<T>(ref T value, ref T field, ref T prefField, string name)
+        private class DummyFieldContainer : IFieldContainer
         {
-            var oldValue = field;
+            public void Set(string col, object objValue)
+            {
+            }
 
+            public object Get(string col)
+            {
+                return null;
+            }
+        }
+
+        protected virtual void SetValue<T>(ref T value, string name, Action<string, T> updateField)
+        {
             Map<int, object> cascadePrevValues = null;
 
-            var columnHandle = GetColumn(name).ColumnHandle;
+            var column = GetColumn(name);
+            
+            var columnHandle = column.ColumnHandle;
+
+            var oldValue = Field<T>(name);
 
             OnBeforeSet(name, columnHandle, ref value, oldValue, out var cancel, ref cascadePrevValues);
             if (cancel)
@@ -170,21 +217,20 @@ namespace Brudixy
                 return;
             }
 
-            prefField = field;
-            field = value;
-
+            OnDataChange();
+            
+            updateField(name, value);
+            
             OnAfterSet(name, columnHandle, oldValue, value, cascadePrevValues);
 
             LogChange(name, value, oldValue);
         }
 
-        protected virtual void OnAfterSet<T>(string s, int name, T oldValue, T value,
-            Map<int, object> cascadePrevValues)
+        protected virtual void OnAfterSet<T>(string s, int name, T oldValue, T value, Map<int, object> cascadePrevValues)
         {
         }
 
-        protected virtual void OnBeforeSet<T>(string s, int name, ref T value, T oldValue, out bool cancel,
-            ref Map<int, object> cascadePrevValues)
+        protected virtual void OnBeforeSet<T>(string s, int name, ref T value, T oldValue, out bool cancel, ref Map<int, object> cascadePrevValues)
         {
             cancel = false;
         }
@@ -229,39 +275,57 @@ namespace Brudixy
 
         protected virtual void SetData(CoreDataColumnContainer column, object value)
         {
+            OnDataChange();
+            
             if (value == null)
             {
                 WriteValue(column, null);
-                return;
-            }
-
-            var conversionType = CoreDataTable.GetColumnType(column.Type, column.TypeModifier, column.AllowNull, column.DataType);
-
-            DoCheckAndFix(ref value, column);
-            
-            CopyIfNeededBoxed(ref value);
-
-            if (value is IConvertible)
-            {
-                object convertedValue;
-
-                if (value is string str)
-                {
-                    convertedValue = CoreDataTable.ConvertStringToObject(column.Type,
-                        column.TypeModifier,
-                        str,
-                        conversionType);
-                }
-                else
-                {
-                    convertedValue = Tool.ConvertBoxed(value, conversionType);
-                }
-
-                WriteValue(column, convertedValue);
             }
             else
             {
-                WriteValue(column, value);
+                var conversionType = CoreDataTable.GetColumnType(column.Type, column.TypeModifier, column.AllowNull, column.DataType);
+
+                DoCheckAndFix(ref value, column);
+            
+                CopyIfNeededBoxed(ref value);
+
+                if (value is IConvertible)
+                {
+                    object convertedValue;
+
+                    if (value is string str)
+                    {
+                        convertedValue = CoreDataTable.ConvertStringToObject(column.Type,
+                            column.TypeModifier,
+                            str,
+                            conversionType);
+                    }
+                    else
+                    {
+                        convertedValue = Tool.ConvertBoxed(value, conversionType);
+                    }
+
+                    WriteValue(column, convertedValue);
+                }
+                else
+                {
+                    WriteValue(column, value);
+                }
+            }
+        }
+
+        private void OnDataChange()
+        {
+            if (IsInitializing == false)
+            {
+                Interlocked.Increment(ref Props.Age); 
+            }
+
+            if (RowRecordState == RowState.Unchanged)
+            {
+                Props.OriginalData = CreateOriginalData();
+                
+                RowRecordState = RowState.Modified;
             }
         }
 
@@ -364,7 +428,7 @@ namespace Brudixy
             Props.OriginalData = null;
         }
 
-        protected virtual Data<object> CreateOriginalData()
+        protected Data<object> CreateOriginalData()
         {
             var data = new Data<object>(GetColumnCount());
 
@@ -676,10 +740,6 @@ namespace Brudixy
 
         private void SetColValue(CoreDataColumnContainer column, object value)
         {
-            var rowState = RowRecordState;
-
-            EnsureOriginalData();
-
             if (value != null)
             {
                 var columnType = CoreDataTable.GetColumnType(column.Type, column.TypeModifier, column.AllowNull, column.DataType);
@@ -687,30 +747,20 @@ namespace Brudixy
                 if (value is IConvertible)
                 {
                     var newValue = Tool.ConvertBoxed(value, columnType);
-                    SetCore(column.ColumnName, column, newValue, true);
+                    SetCore(column.ColumnName, column, newValue);
                 }
                 else
                 {
-                    SetCore(column.ColumnName, column, value, true);
+                    SetCore(column.ColumnName, column, value);
                 }
             }
             else
             {
-                SetCore(column.ColumnName, column, null, true);
-            }
-
-            if (IsInitializing == false)
-            {
-                Interlocked.Increment(ref Props.Age); 
-            }
-
-            if (rowState == RowState.Unchanged)
-            {
-                RowRecordState = RowState.Modified;
+                SetCore(column.ColumnName, column, null);
             }
         }
 
-        protected virtual void SetCore(string column, CoreDataColumnContainer colObj, object newValue, bool setData)
+        protected virtual void SetCore(string column, CoreDataColumnContainer colObj, object newValue)
         {
             var oldValue = GetData(colObj);
 
@@ -725,10 +775,7 @@ namespace Brudixy
                 return;
             }
 
-            if (setData)
-            {
-                SetData(colObj, newValue);
-            }
+            SetData(colObj, newValue);
 
             OnAfterSet(column, columnHandle, oldValue, newValue, cascadePrevValues);
             
@@ -1114,7 +1161,10 @@ namespace Brudixy
 
         public void SetAdded()
         {
-            RowRecordState = RowState.Modified;
+            RowRecordState = RowState.Added;
+            
+            Props.OriginalData?.Dispose();
+            Props.OriginalData = null;
         }
 
         private void ClearChangedFields()
@@ -1187,7 +1237,9 @@ namespace Brudixy
         }
 
         protected int m_initLockCount;
-       
+        private CoreContainerMetadataProps m_metadataProps;
+        private CoreContainerDataProps m_containerDataProps;
+
         protected object DebugKeyValue
         {
             get
@@ -1279,7 +1331,7 @@ namespace Brudixy
 
                 if (isNull)
                 {
-                    SetCore(container.ColumnName, container, null, true);
+                    SetCore(container.ColumnName, container, null);
                 }
                 else
                 {
@@ -1288,22 +1340,12 @@ namespace Brudixy
                     if (value is IConvertible)
                     {
                         var newValue = Tool.ConvertBoxed(value, columnType);
-                        SetCore(container.ColumnName, container, newValue, true);
+                        SetCore(container.ColumnName, container, newValue);
                     }
                     else
                     {
-                        SetCore(container.ColumnName, container, value, true);
+                        SetCore(container.ColumnName, container, value);
                     }
-                }
-
-                if (IsInitializing == false)
-                {
-                    Interlocked.Increment(ref Props.Age); 
-                }
-
-                if (rowState == RowState.Unchanged)
-                {
-                    RowRecordState = RowState.Modified;
                 }
             }
         }
@@ -1619,6 +1661,8 @@ namespace Brudixy
             }
 
             CopyIfNeeded(ref newValue);
+            
+            OnDataChange();
 
             if (Props.ExtProperties.ContainsKey(propertyCode))
             {
@@ -1635,16 +1679,6 @@ namespace Brudixy
             OnAfterXPropSet(propertyCode, oldValue: oldValue, newValue: newValue);
 
             LogChange(propertyCode, value: newValue, prevValue: oldValue);
-            
-            if (RowRecordState == RowState.Unchanged)
-            {
-                RowRecordState = RowState.Modified;
-            }
-
-            if (IsInitializing == false)
-            {
-                Interlocked.Increment(ref Props.Age); 
-            }
         }
 
         private static readonly ConcurrentDictionary<Type, bool> s_immutableTypeCache = new();

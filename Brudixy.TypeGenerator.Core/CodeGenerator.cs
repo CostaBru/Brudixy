@@ -1769,7 +1769,7 @@ namespace Brudixy.TypeGenerator.Core
             HashSet<string> skipColumns)
         {
 
-            stringBuilder.Append     ($"{Indend3}internal sealed class {FieldContainerStorageName}").AppendLine(); 
+            stringBuilder.Append     ($"{Indend3}internal sealed class {FieldContainerStorageName} : IFieldContainer").AppendLine(); 
             stringBuilder.AppendLine(@$"{Indend3}{{");
 
 
@@ -2136,14 +2136,6 @@ namespace Brudixy.TypeGenerator.Core
             stringBuilder
                 .Append($"{Indend3}private {FieldContainerStorageName} storage = new {FieldContainerStorageName}();")
                 .AppendLine();
-
-            stringBuilder
-                .Append($"{Indend3}private {FieldContainerStorageName} o;")
-                .AppendLine();
-
-            stringBuilder
-                .Append(@$"{Indend3}private {FieldContainerStorageName} GetOrig() {{   if (o == null) {{  return o = new {FieldContainerStorageName}(); }} return o; }}")
-                .AppendLine();
         }
 
         private static void GenerateContainerGetData(StringBuilder stringBuilder)
@@ -2171,31 +2163,6 @@ namespace Brudixy.TypeGenerator.Core
             stringBuilder.AppendLine(@$"{Indend3}}}");
         }
 
-        private static void GenerateContainerRejectData(StringBuilder stringBuilder)
-        {
-            stringBuilder.AppendLine();
-            
-            stringBuilder.AppendLine(
-                @$"{Indend3}protected override void RejectChangesCore() {{ base.RejectChangesCore(); if(o != null) {{ storage.Init(o); o = null; }} }}");
-        }
-
-        private static void GenerateContainerGetOriginalValue(StringBuilder stringBuilder)
-        {
-            stringBuilder.AppendLine(@$"{Indend3}protected override bool TryGetOriginalValue(CoreDataColumnContainer column, out object value)");
-
-            stringBuilder.AppendLine(@$"{Indend3}{{");
-            
-            stringBuilder.AppendLine(@$"{Indend4}if (o != null)");
-            stringBuilder.AppendLine(@$"{Indend4}{{");
-            stringBuilder.AppendLine(@$"{Indend5}var dc = (DataColumnContainer)column;");
-            stringBuilder.AppendLine(@$"{Indend5}if (FieldContainer.Columns.Contains(dc.ColumnName))");
-            stringBuilder.AppendLine(@$"{Indend5}{{  value = o.Get(dc.ColumnName); return true; }}");
-            stringBuilder.AppendLine(@$"{Indend4}}}");
-            stringBuilder.AppendLine(@$"{Indend4}return base.TryGetOriginalValue(column, out value);");
-            
-            stringBuilder.Append(@$"{Indend3}}}");
-        }
-
         private static void GenerateRowContainerClass(StringBuilder stringBuilder,
             DataTableObj table,
             string tableRowClassName,
@@ -2207,13 +2174,13 @@ namespace Brudixy.TypeGenerator.Core
             var baseContainerDefinition = string.Empty;
             var baseContainerInterfaceDefinition = string.Empty;
 
-            if (!string.IsNullOrEmpty(baseDataRowClassFull))
+            if (string.IsNullOrEmpty(baseDataRowClassFull))
             {
-                baseContainerDefinition = $": global::{baseDataRowClassFull}Container";
+                baseContainerDefinition = ": DataRowContainer";
             }
             else
             {
-                baseContainerDefinition = ": DataRowContainer";
+                baseContainerDefinition = $": global::{baseDataRowClassFull}Container";
             }
 
             var rowInterfaceName = $"I{tableRowClassName}Accessor";
@@ -2245,10 +2212,6 @@ namespace Brudixy.TypeGenerator.Core
                 GenerateContainerGetData(stringBuilder);
 
                 GenerateContainerSetData(stringBuilder);
-
-                GenerateContainerRejectData(stringBuilder);
-
-                GenerateContainerGetOriginalValue(stringBuilder);
 
                 GenerateCopyFrom(stringBuilder, tableClassName, tableRowClassName);
                 
@@ -2290,7 +2253,7 @@ namespace Brudixy.TypeGenerator.Core
             stringBuilder.AppendLine();
 
             stringBuilder.Append(
-                @$"{Indend3}protected override {containerCloneBaseClass} CloneCore() {{  var clone = ({containerClass})base.CloneCore();  clone.storage = s.Clone(); clone.o = o?.Clone();  return clone; }}");
+                @$"{Indend3}protected override {containerCloneBaseClass} CloneCore() {{  var clone = ({containerClass})base.CloneCore();  clone.storage = s.Clone(); return clone; }}");
             
             stringBuilder.AppendLine();
             
@@ -2393,10 +2356,7 @@ namespace Brudixy.TypeGenerator.Core
 
                     if (column.IsReadOnly == false)
                     {
-                        stringBuilder
-                            .Append(
-                                $" set => SetValue(ref value, ref s.@{columnName}, ref GetOrig().@{columnName}, \"{columnName}\");");
-                    }
+                        stringBuilder.Append($" set {{"); stringBuilder.AppendLine($" SetValue(ref value, \"{columnName}\", (n, v) => s.@{columnName} = v); }}");}
 
                     stringBuilder.Append($"}}");
 

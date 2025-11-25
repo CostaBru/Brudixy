@@ -54,16 +54,16 @@ public partial class DataRowContainer
         return cancelEdit ?? false;
     }
 
-    protected override void SetValue<T>(ref T value, ref T field, ref T prefField, string name)
+    protected override void SetValue<T>(ref T value, string name, Action<string, T> updateFieldContainer)
     {
         if (m_currentEditRow != null)
         {
-            m_currentEditRow.SetValue(ref value, ref field, ref prefField, name);
+            m_currentEditRow.SetValue(ref value, name, updateFieldContainer);
             
             return;
         }
         
-        base.SetValue(ref value, ref field, ref prefField, name);
+        base.SetValue(ref value, name, updateFieldContainer);
     }
 
     protected override void SetData(CoreDataColumnContainer reference, object value)
@@ -102,16 +102,16 @@ public partial class DataRowContainer
         }
     }
 
-    protected override void SetCore(string column, CoreDataColumnContainer colObj, object newValue, bool setData)
+    protected override void SetCore(string column, CoreDataColumnContainer colObj, object newValue)
     {
         if (m_currentEditRow != null)
         {
-            m_currentEditRow.SetCore(column, colObj, newValue, setData);
+            m_currentEditRow.SetCore(column, colObj, newValue);
             
             return;
         }
         
-        base.SetCore(column, colObj, newValue, setData);
+        base.SetCore(column, colObj, newValue);
     }
 
     public override object GetOriginalValue(string columnOrXProp)
