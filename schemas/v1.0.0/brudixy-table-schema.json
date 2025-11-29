@@ -1,0 +1,687 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://brudixy.org/schemas/brudixy-table-schema.json",
+  "title": "Brudixy Table Schema",
+  "description": "JSON Schema for Brudixy TypeGenerator YAML files. Defines the structure for table definitions including columns, relations, indexes, grouped properties, and code generation options.",
+  "type": "object",
+  "required": ["Table", "Columns"],
+  "examples": [
+    {
+      "Table": "Users",
+      "Columns": {
+        "Id": "Int32",
+        "Name": "String | 256",
+        "Email": "String | 512"
+      }
+    },
+    {
+      "Table": "Products",
+      "CodeGenerationOptions": {
+        "Namespace": "MyApp.Data.Tables",
+        "Class": "ProductTable",
+        "RowClass": "ProductRow",
+        "Sealed": true,
+        "ExtraUsing": [
+          "using System.Collections.Generic;",
+          "using MyApp.Models;"
+        ]
+      },
+      "PrimaryKey": ["Id"],
+      "Columns": {
+        "Id": "Int32",
+        "Name": "String | 256 | Index",
+        "Description": "String?",
+        "Price": "Decimal",
+        "CategoryId": "Int32",
+        "CreatedDate": "DateTime!",
+        "ModifiedDate": "DateTime?",
+        "Tags": "String[]",
+        "PriceRange": "Decimal<>",
+        "IsActive": "Boolean",
+        "Metadata": "(ProductMetadata)"
+      },
+      "ColumnOptions": {
+        "Id": {
+          "IsUnique": true,
+          "AllowNull": false,
+          "Auto": true
+        },
+        "Name": {
+          "HasIndex": true,
+          "MaxLength": 256
+        },
+        "Price": {
+          "DefaultValue": "0.00"
+        },
+        "CreatedDate": {
+          "DefaultValue": "GETDATE()"
+        }
+      },
+      "Relations": {
+        "FK_Product_Category": {
+          "ParentTable": "Categories",
+          "ParentKey": ["Id"],
+          "ChildKey": ["CategoryId"]
+        }
+      },
+      "GroupedProperties": {
+        "AuditInfo": "CreatedDate|ModifiedDate"
+      },
+      "GroupedPropertyOptions": {
+        "AuditInfo": {
+          "Type": "Tuple",
+          "IsReadOnly": true
+        }
+      },
+      "Indexes": {
+        "IX_Name_Category": {
+          "Columns": ["Name", "CategoryId"],
+          "Unique": false
+        },
+        "IX_CreatedDate": {
+          "Columns": ["CreatedDate"],
+          "Unique": false
+        }
+      },
+      "XProperties": {
+        "DisplayOrder": {
+          "Type": "Int32",
+          "Value": 1
+        },
+        "TableDescription": {
+          "Type": "String",
+          "Value": "Product catalog table"
+        }
+      },
+      "EnforceConstraints": true
+    }
+  ],
+  "properties": {
+    "Table": {
+      "type": "string",
+      "description": "The name of the table"
+    },
+    "Columns": {
+      "type": "object",
+      "description": "Column definitions mapping column names to their types. Each key is a column name, and each value is a column type specification.",
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "$ref": "#/definitions/columnType"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CodeGenerationOptions": {
+      "$ref": "#/definitions/codeGenerationOptions"
+    },
+    "ColumnOptions": {
+      "$ref": "#/definitions/columnOptions"
+    },
+    "Relations": {
+      "$ref": "#/definitions/relations"
+    },
+    "PrimaryKey": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of column names that form the primary key. Each element must be a column name defined in the Columns section. An empty array indicates no primary key is defined (optional primary key). Primary keys uniquely identify each row in the table.",
+      "examples": [
+        ["Id"],
+        ["UserId", "TenantId"],
+        []
+      ]
+    },
+    "GroupedProperties": {
+      "$ref": "#/definitions/groupedProperties"
+    },
+    "GroupedPropertyOptions": {
+      "$ref": "#/definitions/groupedPropertyOptions"
+    },
+    "RowSubTypes": {
+      "type": "object",
+      "description": "Row subtype definitions. Each key is a subtype name, and each value is an expression that determines when a row belongs to this subtype. Row subtypes allow creating specialized row classes based on conditions.",
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "type": "string",
+          "description": "Expression that evaluates to true when a row belongs to this subtype. The expression can reference column values and use comparison operators."
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "ActiveUser": "Status = 'Active'",
+          "AdminUser": "Role = 'Admin'",
+          "PremiumCustomer": "SubscriptionLevel >= 2"
+        }
+      ]
+    },
+    "RowSubTypeOptions": {
+      "type": "object",
+      "description": "Options for row subtypes. Each key is a subtype name (matching a key in RowSubTypes), and each value specifies additional options including extended properties for that subtype.",
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "type": "object",
+          "properties": {
+            "XProperties": {
+              "$ref": "#/definitions/xPropertiesMap",
+              "description": "Extended properties for this row subtype. Allows attaching custom metadata to rows of this subtype."
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "ActiveUser": {
+            "XProperties": {
+              "LastLoginDate": {
+                "Type": "DateTime",
+                "Value": "2024-01-01"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "XProperties": {
+      "$ref": "#/definitions/xPropertiesMap",
+      "description": "Extended properties for the table. Allows attaching custom metadata to the table."
+    },
+    "Indexes": {
+      "type": "object",
+      "description": "Index definitions for the table. Each key is an index name, and each value defines the index structure including columns and uniqueness constraint. Indexes improve query performance on specified columns.",
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "type": "object",
+          "required": ["Columns"],
+          "properties": {
+            "Columns": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "description": "Array of column names to include in the index. Must contain at least one column name."
+            },
+            "Unique": {
+              "type": "boolean",
+              "description": "Whether the index enforces uniqueness. When true, all combinations of values in the indexed columns must be unique.",
+              "default": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "IX_Email": {
+            "Columns": ["Email"],
+            "Unique": true
+          },
+          "IX_UserTenant": {
+            "Columns": ["UserId", "TenantId"],
+            "Unique": false
+          }
+        }
+      ]
+    },
+    "EnforceConstraints": {
+      "type": "boolean",
+      "description": "Whether to enforce constraints on the table. When true, the table will validate foreign key relationships, unique constraints, and other data integrity rules. When false, constraint validation is disabled for performance or flexibility.",
+      "default": true
+    }
+  },
+  "definitions": {
+    "columnType": {
+      "type": "string",
+      "pattern": "^(\\([A-Za-z_][A-Za-z0-9_.]*\\)|[A-Za-z_][A-Za-z0-9_.]*)[?!]?(\\[\\]|<>)?( \\| [A-Za-z0-9_ ]+)*$",
+      "description": "Column type specification with optional modifiers. Format: <BaseType>[?|!][[]|<>] [| <Options>]. Base types can be built-in types (Int32, String, DateTime, etc.) or user-defined types. User-defined structs are wrapped in parentheses: (MyStruct). Modifiers: ? = nullable, ! = explicitly non-null, [] = array, <> = range. Options are pipe-separated and can include: MaxLength (number), Index, Unique, Complex, Class, Auto, Service, Nullable, 'Not null'.",
+      "examples": [
+        "Int32",
+        "String?",
+        "String!",
+        "DateTime",
+        "String | 256",
+        "String | 256 | Index",
+        "String | 256 | Index | Unique",
+        "Int32[]",
+        "Int32<>",
+        "DateTime!",
+        "(Point2D)",
+        "(MyStruct)?",
+        "MyClass | Complex",
+        "MyClass | Class",
+        "String | Nullable",
+        "String | Not null",
+        "Int32 | Auto",
+        "String | Service",
+        "Byte[]",
+        "Guid",
+        "Boolean",
+        "Decimal",
+        "Double",
+        "Single",
+        "Int64",
+        "UInt32",
+        "UInt64",
+        "Int16",
+        "UInt16",
+        "SByte",
+        "DateTimeOffset",
+        "TimeSpan",
+        "Char",
+        "Object"
+      ]
+    },
+    "xProperty": {
+      "type": "object",
+      "description": "Extended property definition. Extended properties allow attaching custom metadata to tables, columns, or row subtypes.",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "description": "C# type name for the property (e.g., 'String', 'Int32', 'Boolean')."
+        },
+        "DataType": {
+          "type": "string",
+          "description": "Alternative data type specification. Use either Type or DataType, not both."
+        },
+        "Value": {
+          "description": "Default value for the property. Can be any JSON type (string, number, boolean, object, array, null)."
+        },
+        "CodePropertyName": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "Name of the generated property in code. Must be a valid C# identifier."
+        },
+        "EnumType": {
+          "type": "string",
+          "description": "C# enum type name if the property is an enum."
+        }
+      },
+      "anyOf": [
+        { "required": ["Type"] },
+        { "required": ["DataType"] }
+      ],
+      "additionalProperties": false
+    },
+    "xPropertiesMap": {
+      "type": "object",
+      "description": "Map of extended properties. Each key is a property name, and each value is an extended property definition.",
+      "examples": [
+        {
+          "DisplayOrder": {
+            "Type": "Int32",
+            "Value": 1
+          },
+          "Description": {
+            "Type": "String",
+            "Value": "User information table"
+          }
+        },
+        {
+          "IsVisible": {
+            "Type": "Boolean",
+            "Value": true
+          },
+          "Category": {
+            "DataType": "String",
+            "Value": "Core"
+          },
+          "Priority": {
+            "Type": "Int32",
+            "CodePropertyName": "TablePriority",
+            "Value": 10
+          }
+        },
+        {
+          "Status": {
+            "Type": "Int32",
+            "EnumType": "TableStatus",
+            "Value": 1
+          }
+        }
+      ],
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "$ref": "#/definitions/xProperty"
+        }
+      },
+      "additionalProperties": false
+    },
+    "relation": {
+      "type": "object",
+      "description": "Defines a foreign key relationship between a parent table and a child table. Relations establish referential integrity constraints.",
+      "required": ["ParentKey", "ChildKey"],
+      "properties": {
+        "ParentTable": {
+          "type": "string",
+          "description": "Name of the parent table in the relationship. If not specified, the current table is assumed to be the parent."
+        },
+        "ChildTable": {
+          "type": "string",
+          "description": "Name of the child table in the relationship. If not specified, the current table is assumed to be the child."
+        },
+        "ParentKey": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Array of column names from the parent table that form the parent side of the relationship. Must contain at least one column name."
+        },
+        "ChildKey": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "Array of column names from the child table that form the child side of the relationship. Must contain at least one column name and match the number of columns in ParentKey."
+        }
+      },
+      "additionalProperties": false
+    },
+    "relations": {
+      "type": "object",
+      "description": "Map of relation definitions. Each key is a relation name, and each value defines a foreign key relationship between tables. Relations establish parent-child relationships and referential integrity constraints.",
+      "examples": [
+        {
+          "FK_Order_Customer": {
+            "ParentTable": "Customers",
+            "ParentKey": ["Id"],
+            "ChildKey": ["CustomerId"]
+          }
+        },
+        {
+          "FK_OrderItem_Order": {
+            "ParentKey": ["OrderId"],
+            "ChildKey": ["OrderId"]
+          },
+          "FK_OrderItem_Product": {
+            "ParentTable": "Products",
+            "ParentKey": ["Id"],
+            "ChildKey": ["ProductId"]
+          }
+        },
+        {
+          "FK_Employee_Department": {
+            "ParentTable": "Departments",
+            "ParentKey": ["DeptId", "CompanyId"],
+            "ChildKey": ["DepartmentId", "CompanyId"]
+          }
+        }
+      ],
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "$ref": "#/definitions/relation"
+        }
+      },
+      "additionalProperties": false
+    },
+    "codeGenerationOptions": {
+      "type": "object",
+      "description": "Options for code generation including namespace, class names, and modifiers",
+      "examples": [
+        {
+          "Namespace": "MyApp.Data.Tables",
+          "Class": "UserTable",
+          "RowClass": "UserRow",
+          "Sealed": true
+        },
+        {
+          "Namespace": "MyCompany.Core.Data",
+          "Class": "BaseTable",
+          "RowClass": "BaseRow",
+          "Abstract": true,
+          "Sealed": false,
+          "ExtraUsing": [
+            "using System.Collections.Generic;",
+            "using MyCompany.Core.Interfaces;"
+          ]
+        },
+        {
+          "Namespace": "MyApp.Data.Tables",
+          "Class": "ProductTable",
+          "RowClass": "ProductRow",
+          "BaseTableFileName": "\\BaseTable.st.brudixy.yaml",
+          "Sealed": false,
+          "AppendRowMethodName": "AddProduct"
+        }
+      ],
+      "properties": {
+        "Namespace": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$",
+          "description": "The C# namespace for the generated table class. Must be a valid C# namespace (e.g., 'MyApp.Data.Tables')."
+        },
+        "Class": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "The name of the generated table class. Must be a valid C# identifier."
+        },
+        "RowClass": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "The name of the generated row class. Must be a valid C# identifier."
+        },
+        "Abstract": {
+          "type": "boolean",
+          "description": "Whether the generated class should be abstract. Cannot be true if Sealed is true."
+        },
+        "Sealed": {
+          "type": "boolean",
+          "description": "Whether the generated class should be sealed. Cannot be true if Abstract is true.",
+          "default": true
+        },
+        "BaseTableFileName": {
+          "type": "string",
+          "description": "Path to the base table YAML file for inheritance. Used when the table inherits from another table definition."
+        },
+        "ExtraUsing": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^using [A-Za-z_][A-Za-z0-9_.]*(\\.[A-Za-z_][A-Za-z0-9_]*)*;$"
+          },
+          "description": "Additional using directives for the generated code. Each item must be a valid C# using statement (e.g., 'using System.Collections.Generic;')."
+        },
+        "AppendRowMethodName": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "description": "The name of the method used to append rows. Must be a valid C# identifier."
+        }
+      },
+      "additionalProperties": false
+    },
+    "columnOptions": {
+      "type": "object",
+      "description": "Additional options and constraints for columns. Each key is a column name, and the value is an object containing various column configuration options.",
+      "examples": [
+        {
+          "Id": {
+            "IsUnique": true,
+            "AllowNull": false,
+            "Auto": true
+          },
+          "Email": {
+            "HasIndex": true,
+            "IsUnique": true,
+            "MaxLength": 512
+          }
+        },
+        {
+          "Name": {
+            "Type": "String",
+            "MaxLength": 256,
+            "HasIndex": true,
+            "DefaultValue": "Unnamed"
+          },
+          "Status": {
+            "EnumType": "UserStatus",
+            "DefaultValue": "Active"
+          },
+          "CreatedDate": {
+            "IsReadOnly": true,
+            "DefaultValue": "GETDATE()"
+          }
+        },
+        {
+          "FullName": {
+            "Expression": "FirstName + ' ' + LastName",
+            "IsReadOnly": true,
+            "DisplayName": "Full Name"
+          },
+          "UserId": {
+            "CodeProperty": "UserIdentifier",
+            "XProperties": {
+              "IsSearchable": {
+                "Type": "Boolean",
+                "Value": true
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "XProperties": {
+          "$ref": "#/definitions/xPropertiesMap",
+          "description": "Default extended properties that apply to all columns. These can be overridden by column-specific XProperties."
+        }
+      },
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "type": "object",
+          "description": "Column-specific options. The key is a column name (must be a valid C# identifier), and the value is an object containing configuration options for that column.",
+          "properties": {
+            "Type": {
+              "type": "string",
+              "description": "Override the column type specified in the Columns section. Uses the same type specification format as column types."
+            },
+            "AllowNull": {
+              "type": "boolean",
+              "description": "Whether the column allows null values. Overrides the nullability specified in the column type."
+            },
+            "IsUnique": {
+              "type": "boolean",
+              "description": "Whether the column has a unique constraint. When true, all values in this column must be unique."
+            },
+            "HasIndex": {
+              "type": "boolean",
+              "description": "Whether to create an index on this column for faster lookups."
+            },
+            "IsReadOnly": {
+              "type": "boolean",
+              "description": "Whether the column is read-only. Read-only columns cannot be modified after creation."
+            },
+            "IsService": {
+              "type": "boolean",
+              "description": "Whether the column is a service column used for internal purposes."
+            },
+            "Auto": {
+              "type": "boolean",
+              "description": "Whether the column value is auto-generated (e.g., auto-increment for integers)."
+            },
+            "MaxLength": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum length for string or array columns. Must be a positive integer."
+            },
+            "DataType": {
+              "type": "string",
+              "description": "The data type for user-defined types. Used for complex or custom types."
+            },
+            "Expression": {
+              "type": "string",
+              "description": "Expression for computed columns. The column value will be calculated based on this expression."
+            },
+            "DefaultValue": {
+              "type": "string",
+              "description": "Default value for the column when a new row is created without specifying this column."
+            },
+            "DisplayName": {
+              "type": "string",
+              "description": "Display name for the column in UI contexts. Defaults to the column name if not specified."
+            },
+            "CodeProperty": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+              "description": "Name of the generated property in code. Must be a valid C# identifier. Use this to override the default property name derived from the column name."
+            },
+            "EnumType": {
+              "type": "string",
+              "description": "C# enum type name for enum columns. When specified, the column will use this enum type in generated code."
+            },
+            "XProperties": {
+              "$ref": "#/definitions/xPropertiesMap",
+              "description": "Extended properties for this column. Allows attaching custom metadata to the column."
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "groupedProperties": {
+      "type": "object",
+      "description": "Grouped column properties for tuple or struct generation. Each key is a group name, and each value is a pipe-separated list of column names to group together. Minimum 2 columns required per group.",
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\|[A-Za-z_][A-Za-z0-9_]*)+$",
+          "description": "Pipe-separated list of column names to group together (e.g., 'Column1|Column2' or 'X|Y|Z'). Must contain at least 2 column names separated by pipe characters."
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "Point": "X|Y",
+          "Location": "Latitude|Longitude",
+          "FullName": "FirstName|LastName"
+        }
+      ]
+    },
+    "groupedPropertyOptions": {
+      "type": "object",
+      "description": "Options for grouped properties. Each key is a group name (matching a key in GroupedProperties), and each value specifies how to generate the grouped property (as a Tuple or a new struct).",
+      "patternProperties": {
+        "^[A-Za-z_][A-Za-z0-9_]*$": {
+          "type": "object",
+          "description": "Options for a specific grouped property. The key is a group name (must match a key in GroupedProperties), and the value specifies generation options.",
+          "properties": {
+            "Type": {
+              "type": "string",
+              "enum": ["Tuple", "NewStruct"],
+              "description": "Whether to generate a Tuple or a new struct for this grouped property. 'Tuple' generates a C# tuple, 'NewStruct' generates a new struct type."
+            },
+            "IsReadOnly": {
+              "type": "boolean",
+              "description": "Whether the grouped property is read-only. When true, the generated property cannot be modified after creation."
+            },
+            "StructName": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+              "description": "Name of the struct to generate. Only used when Type is 'NewStruct'. Must be a valid C# identifier."
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "examples": [
+        {
+          "Point": {
+            "Type": "NewStruct",
+            "StructName": "Point2D",
+            "IsReadOnly": true
+          },
+          "Location": {
+            "Type": "Tuple",
+            "IsReadOnly": false
+          }
+        }
+      ]
+    }
+  }
+}
