@@ -24,7 +24,7 @@ namespace Brudixy.TypeGenerator.Core
         {
             return GenerateDatasetFiles(string.Empty, fullName, fileSystemAccessor, schemaReader, callingPath);
         }
-
+        
         private static void LoadBaseTables(string fullName,
             DataTableObj dataTable,
             ISchemaReader schemaReader,
@@ -63,7 +63,9 @@ namespace Brudixy.TypeGenerator.Core
                     
                     hierarchy.Add(baseFileName);
 
-                    var baseTable = schemaReader.GetTable(fileSystemAccessor.GetFileContents(baseFileName));
+                    var yamlContent = fileSystemAccessor.GetFileContents(baseFileName);
+                    
+                    var baseTable = schemaReader.GetTable(yamlContent);
 
                     baseTable.EnsureDefaults();
 
@@ -107,7 +109,11 @@ namespace Brudixy.TypeGenerator.Core
 
             try
             {
-                dataSet = schemaReader.GetDataSet(fileSystemAccessor.GetFileContents(fullName)); 
+                // Load the table without calling EnsureDefaults for validation
+                var yamlContent = fileSystemAccessor.GetFileContents(fullName);
+                
+                // Load and process the table
+                dataSet = schemaReader.GetDataSet(yamlContent); 
                 
                 dataSet.EnsureDefaults();
 
@@ -262,7 +268,9 @@ namespace Brudixy.TypeGenerator.Core
 
                 try
                 {
-                    var nestedTable = schemaReader.GetTable(fileSystemAccessor.GetFileContents(fileName));
+                    var yamlContent = fileSystemAccessor.GetFileContents(fileName);
+                    
+                    var nestedTable = schemaReader.GetTable(yamlContent);
 
                     nestedTable.EnsureDefaults();
                     nestedTable.UpdateRelations(dataTable);

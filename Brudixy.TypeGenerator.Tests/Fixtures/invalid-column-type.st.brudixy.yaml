@@ -1,0 +1,7 @@
+Table: InvalidTypeTable
+CodeGenerationOptions:
+  Namespace: Test.Invalid
+  Class: InvalidTypeTable
+Columns:
+  Id: Int32
+  BadColumn: String?!

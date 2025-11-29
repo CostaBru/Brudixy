@@ -3,6 +3,7 @@ Table: TestBaseTable
 CodeGenerationOptions:
   Namespace: Flexols.Core.Common.Base.Data.BaseTables
   Abstract: true
+  Sealed: false
   ExtraUsing:
     - using System.Runtime.CompilerServices;
     - using NUnit.Framework;
@@ -15,7 +16,7 @@ Columns:
   lmdt: DateTime?
   lmlogin: string | 256
   isdeleted: bool?
-  guid: Guid?
+  guid: Guid
   employee_creator_name: String?
   employee_lm_name: String?
   type: int?

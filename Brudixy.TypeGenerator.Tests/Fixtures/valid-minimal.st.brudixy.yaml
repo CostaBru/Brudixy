@@ -1,0 +1,10 @@
+Table: MinimalTable
+CodeGenerationOptions:
+  Namespace: Test.Minimal
+  Class: MinimalTable
+  RowClass: MinimalTableRow
+Columns:
+  Id: Int32
+  Name: String
+PrimaryKey:
+  - Id

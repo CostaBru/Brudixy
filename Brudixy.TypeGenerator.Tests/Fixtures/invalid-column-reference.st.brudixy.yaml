@@ -1,0 +1,10 @@
+Table: InvalidTable
+CodeGenerationOptions:
+  Namespace: Test.Invalid
+  Class: InvalidTable
+Columns:
+  Id: Int32
+  Name: String
+PrimaryKey:
+  - Id
+  - NonExistentColumn

@@ -49,6 +49,8 @@
       <Compile Include="..\Brudixy.TypeGenerator.Core\YamlSchemaReader.cs" Link="YamlSchemaReader.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\YamlDotNetLoader.cs" Link="YamlDotNetLoader.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.Core.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\Validation\*.cs" Link="Validation\%(Filename)%(Extension)" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\Validation\Rules\*.cs" Link="Validation\Rules\%(Filename)%(Extension)" />
     </ItemGroup>
     
     <ItemGroup>

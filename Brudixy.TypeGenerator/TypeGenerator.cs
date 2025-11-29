@@ -140,9 +140,79 @@ namespace Brudixy.TypeGenerator
                 }
 
                 var fileSystemAccess = new FileSystemAccess(brudixyFiles);
+                
+                // Create validation engine with all rules
+                var validationEngine = Core.Validation.SchemaValidationEngine.CreateDefault();
+                
+                // Check if validation is disabled via MSBuild property
+                var validationDisabled = false;
+                if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.BrudixyDisableValidation", out var disableValue))
+                {
+                    validationDisabled = string.Equals(disableValue, "true", StringComparison.OrdinalIgnoreCase);
+                }
+                
+                // Check if strict validation mode is enabled
+                var strictValidation = false;
+                if (context.AnalyzerConfigOptions.GlobalOptions.TryGetValue("build_property.BrudixyStrictValidation", out var strictValue))
+                {
+                    strictValidation = string.Equals(strictValue, "true", StringComparison.OrdinalIgnoreCase);
+                }
             
                 foreach (var table in singleTables)
                 {
+                    // Validate schema before code generation (unless validation is disabled)
+                    if (!validationDisabled)
+                    {
+                        var yamlContent = fileSystemAccess.GetFileContents(table);
+                        var tableObj = schemaReader.GetTable(yamlContent);
+                        
+                        // Load base tables for validation
+                        var loadedBaseTables = LoadBaseTablesForValidation(tableObj, table, fileSystemAccess, schemaReader, callingPath);
+                        
+                        var validationContext = new Core.Validation.ValidationContext(tableObj, table, fileSystemAccess, loadedBaseTables);
+                        var validationResult = validationEngine.Validate(validationContext);
+                        
+                        // Report validation errors as diagnostics
+                        foreach (var error in validationResult.Errors)
+                        {
+                            var descriptor = new DiagnosticDescriptor(
+                                id: "BRXVAL001",
+                                title: "Schema Validation Error",
+                                messageFormat: "{0}: {1}",
+                                category: "Brudixy.Validation",
+                                defaultSeverity: DiagnosticSeverity.Error,
+                                isEnabledByDefault: true);
+                            
+                            context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, error.FilePath, error.Message));
+                        }
+                        
+                        // Report validation warnings as diagnostics
+                        foreach (var warning in validationResult.Warnings)
+                        {
+                            var severity = strictValidation ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+                            var descriptor = new DiagnosticDescriptor(
+                                id: "BRXVAL002",
+                                title: "Schema Validation Warning",
+                                messageFormat: "{0}: {1}",
+                                category: "Brudixy.Validation",
+                                defaultSeverity: severity,
+                                isEnabledByDefault: true);
+                            
+                            context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, warning.FilePath, warning.Message));
+                        }
+                        
+                        // Block code generation if validation failed
+                        if (!validationResult.IsValid)
+                        {
+                            // Generate an error file to show validation failed
+                            var errorMessage = $"// Schema validation failed for {table}\n" +
+                                             $"// {validationResult.Errors.Count} error(s) found\n" +
+                                             string.Join("\n", validationResult.Errors.Select(e => $"// - {e.PropertyPath}: {e.Message}"));
+                            context.AddSource($"{Path.GetFileNameWithoutExtension(table)}.ValidationErrors.cs", SourceText.From(errorMessage, Encoding.UTF8));
+                            continue; // Skip code generation for this table
+                        }
+                    }
+                    
                     var files = DataCodeGenerator.GenerateTableFiles(table, fileSystemAccess, schemaReader, callingPath);
 
                     foreach (var file in files)
@@ -155,6 +225,54 @@ namespace Brudixy.TypeGenerator
 
                 foreach (var dataSet in dataSets)
                 {
+                    // Validate dataset schema before code generation (unless validation is disabled)
+                    if (!validationDisabled)
+                    {
+                        var tableObj = schemaReader.GetTable(dataSet.yaml);
+                        var validationContext = new Core.Validation.ValidationContext(tableObj, dataSet.name, fileSystemAccess);
+                        var validationResult = validationEngine.Validate(validationContext);
+                        
+                        // Report validation errors as diagnostics
+                        foreach (var error in validationResult.Errors)
+                        {
+                            var descriptor = new DiagnosticDescriptor(
+                                id: "BRXVAL001",
+                                title: "Schema Validation Error",
+                                messageFormat: "{0}: {1}",
+                                category: "Brudixy.Validation",
+                                defaultSeverity: DiagnosticSeverity.Error,
+                                isEnabledByDefault: true);
+                            
+                            context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, error.FilePath, error.Message));
+                        }
+                        
+                        // Report validation warnings as diagnostics
+                        foreach (var warning in validationResult.Warnings)
+                        {
+                            var severity = strictValidation ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+                            var descriptor = new DiagnosticDescriptor(
+                                id: "BRXVAL002",
+                                title: "Schema Validation Warning",
+                                messageFormat: "{0}: {1}",
+                                category: "Brudixy.Validation",
+                                defaultSeverity: severity,
+                                isEnabledByDefault: true);
+                            
+                            context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, warning.FilePath, warning.Message));
+                        }
+                        
+                        // Block code generation if validation failed
+                        if (!validationResult.IsValid)
+                        {
+                            // Generate an error file to show validation failed
+                            var errorMessage = $"// Schema validation failed for {dataSet.name}\n" +
+                                             $"// {validationResult.Errors.Count} error(s) found\n" +
+                                             string.Join("\n", validationResult.Errors.Select(e => $"// - {e.PropertyPath}: {e.Message}"));
+                            context.AddSource($"{Path.GetFileNameWithoutExtension(dataSet.name)}.ValidationErrors.cs", SourceText.From(errorMessage, Encoding.UTF8));
+                            continue; // Skip code generation for this dataset
+                        }
+                    }
+                    
                     var fileName = Path.GetFileName(dataSet.name);
 
                     var indexOf = fileName.IndexOf("ds.brudixy.yaml");
@@ -173,8 +291,92 @@ namespace Brudixy.TypeGenerator
             }
             catch (Exception e)
             {
-                context.AddSource("Error.cs", SourceText.From(lastFileItem + ": " + e, Encoding.UTF8));
+                // Generate a readable error file with source information
+                var errorContent = new StringBuilder();
+                errorContent.AppendLine("// ========================================");
+                errorContent.AppendLine("// Brudixy Type Generator Error");
+                errorContent.AppendLine("// ========================================");
+                errorContent.AppendLine($"// Source File: {lastFileItem}");
+                errorContent.AppendLine($"// Error: {e.Message}");
+                errorContent.AppendLine("//");
+                errorContent.AppendLine("// Stack Trace:");
+                foreach (var line in e.StackTrace?.Split('\n') ?? Array.Empty<string>())
+                {
+                    errorContent.AppendLine($"// {line.Trim()}");
+                }
+                errorContent.AppendLine("// ========================================");
+                
+                context.AddSource("Error.cs", SourceText.From(errorContent.ToString(), Encoding.UTF8));
+                
+                // Also report as diagnostic
+                var descriptor = new DiagnosticDescriptor(
+                    id: "BRXTY003",
+                    title: "Type Generator Error",
+                    messageFormat: "Error generating code for {0}: {1}",
+                    category: "Brudixy.TypeGenerator",
+                    defaultSeverity: DiagnosticSeverity.Error,
+                    isEnabledByDefault: true);
+                
+                context.ReportDiagnostic(Diagnostic.Create(descriptor, Location.None, lastFileItem, e.Message));
             }
+        }
+
+        private static Dictionary<string, DataTableObj> LoadBaseTablesForValidation(
+            DataTableObj dataTable,
+            string fullName,
+            IFileSystemAccessor fileSystemAccessor,
+            ISchemaReader schemaReader,
+            string callingPath)
+        {
+            var loadedBaseTables = new Dictionary<string, DataTableObj>();
+            var baseTableFileName = dataTable.CodeGenerationOptions.BaseTableFileName;
+
+            if (string.IsNullOrEmpty(baseTableFileName))
+            {
+                return loadedBaseTables;
+            }
+
+            var proceeded = new HashSet<string>();
+
+            while (!string.IsNullOrEmpty(baseTableFileName))
+            {
+                try
+                {
+                    if (proceeded.Contains(baseTableFileName))
+                    {
+                        break; // Circular reference detected
+                    }
+
+                    proceeded.Add(baseTableFileName);
+
+                    var baseFileName = baseTableFileName;
+
+                    if (baseFileName.StartsWith("\\"))
+                    {
+                        baseFileName = Path.Combine(Path.GetDirectoryName(fullName), baseTableFileName.TrimStart('\\'));
+                    }
+                    else if (baseFileName.StartsWith("."))
+                    {
+                        baseFileName = Path.GetFullPath(baseTableFileName);
+                    }
+
+                    var baseYamlContent = fileSystemAccessor.GetFileContents(baseFileName);
+                    var baseTable = schemaReader.GetTable(baseYamlContent);
+                    baseTable.EnsureDefaults();
+
+                    loadedBaseTables[baseFileName] = baseTable;
+
+                    baseTableFileName = baseTable.CodeGenerationOptions.BaseTableFileName;
+                }
+                catch (Exception)
+                {
+                    // If we can't load a base table, just stop trying
+                    // The validation will report the error
+                    break;
+                }
+            }
+
+            return loadedBaseTables;
         }
 
         private static List<(yamlType type, string src, string path)> ReadSchemaFiles(GeneratorExecutionContext context)

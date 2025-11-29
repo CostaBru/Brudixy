@@ -19,6 +19,18 @@ public class YamlSchemaReader : ISchemaReader
 
     public DataTableObj GetTable(string content)
     {
-        return m_deserializer.Deserialize<DataTableObj>(content);
+        var table = m_deserializer.Deserialize<DataTableObj>(content);
+        table.EnsureDefaults();
+        return table;
+    }
+
+    /// <summary>
+    /// Gets a table from YAML content without calling EnsureDefaults, for validation purposes.
+    /// </summary>
+    public DataTableObj GetTableForValidation(string content, string filePath)
+    {
+        var table = m_deserializer.Deserialize<DataTableObj>(content);
+        // Don't call EnsureDefaults() - return raw deserialized data for validation
+        return table;
     }
 }
