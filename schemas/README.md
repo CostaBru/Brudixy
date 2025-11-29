@@ -15,9 +15,9 @@ Brudixy is a TypeGenerator that creates strongly-typed C# table and row classes 
 
 The schema is designed to work with the following file patterns:
 
-- `*.st.brudixy.yaml` - Single table definitions
-- `*.dt.brudixy.yaml` - Data table definitions
-- `*.ds.brudixy.yaml` - Dataset definitions
+- `*.st.brudixy.yaml` - Single table definitions (requires Columns)
+- `*.dt.brudixy.yaml` - Data table definitions (requires Columns)
+- `*.ds.brudixy.yaml` - Dataset definitions (Columns optional - used for defining relations between existing tables)
 
 ## Using the Schema
 
@@ -143,7 +143,7 @@ The JSON Schema provides:
 
 ## Example YAML Files
 
-### Minimal Example
+### Minimal Table Example
 
 ```yaml
 Table: Users
@@ -151,6 +151,25 @@ Columns:
   Id: Int32
   Name: String | 256
   Email: String | 512
+```
+
+### Minimal Dataset Example (No Columns)
+
+```yaml
+Table: UserOrders
+Relations:
+  FK_UserOrders_Users:
+    ParentTable: Users
+    ParentKey:
+      - Id
+    ChildKey:
+      - UserId
+  FK_UserOrders_Orders:
+    ParentTable: Orders
+    ParentKey:
+      - Id
+    ChildKey:
+      - OrderId
 ```
 
 ### Complete Example

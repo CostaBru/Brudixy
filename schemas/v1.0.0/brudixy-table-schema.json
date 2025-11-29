@@ -4,7 +4,7 @@
   "title": "Brudixy Table Schema",
   "description": "JSON Schema for Brudixy TypeGenerator YAML files. Defines the structure for table definitions including columns, relations, indexes, grouped properties, and code generation options.",
   "type": "object",
-  "required": ["Table", "Columns"],
+  "required": ["Table"],
   "examples": [
     {
       "Table": "Users",
