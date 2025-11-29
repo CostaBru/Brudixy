@@ -324,18 +324,31 @@
     - Create README.md in schemas directory
     - _Requirements: 10.2, 10.3_
 
-- [ ] 14. Prepare JSON Schema Store submission
-  - [ ] 14.1 Create catalog entry for JSON Schema Store
+- [x] 14. Prepare JSON Schema Store submission
+
+
+
+
+  - [x] 14.1 Create catalog entry for JSON Schema Store
+
+
     - Create catalog.json entry with name, description, fileMatch, and url
     - Document file patterns: *.st.brudixy.yaml, *.dt.brudixy.yaml, *.ds.brudixy.yaml
     - Document submission process in CONTRIBUTING.md
     - _Requirements: 8.3_
 
-  - [ ] 14.2 Create pull request template for schema store
+  - [x] 14.2 Create pull request template for schema store
+
+
     - Document what to include in PR description
     - Include testing checklist
     - Include example YAML files for testing
     - _Requirements: 8.3_
 
-- [ ] 15. Final checkpoint - Ensure all tests pass
+- [x] 15. Final checkpoint - Ensure all tests pass
+
+
+
+
+
   - Ensure all tests pass, ask the user if questions arise.
