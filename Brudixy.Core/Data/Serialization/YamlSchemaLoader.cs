@@ -226,21 +226,20 @@ public class YamlSchemaLoader
         {
             var columnName = columnKv.Key;
             var columnInfo = columnKv.Value;
-            
+
             // Map column type
             var (storageType, typeModifier, userType) = MapColumnType(columnInfo);
-            
-            // Add column to table
-            table.AddColumn(
-                columnName,
-                storageType,
-                typeModifier,
-                userType,
+
+            table.AddColumn(columnName: columnName,
+                valueType: storageType,
+                valueTypeModifier: typeModifier,
                 auto: columnInfo.Auto,
                 unique: columnInfo.IsUnique,
                 columnMaxLength: columnInfo.MaxLength,
-                defaultValue: ParseDefaultValue(columnInfo.DefaultValue, storageType)
-            );
+                defaultValue: ParseDefaultValue(columnInfo.DefaultValue, storageType),
+                builtin: true,
+                serviceColumn: columnInfo.IsService ?? false,
+                allowNull: columnInfo.AllowNull ?? true);
         }
     }
     

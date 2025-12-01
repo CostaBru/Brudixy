@@ -87,7 +87,7 @@ namespace Brudixy
             }
         }
 
-        public readonly bool AllowNull = true;
+        public bool AllowNull => ColumnObj.AllowNull;
         
         internal CoreDataColumnObj ColumnObj;
         private IDataItem m_dataStorageLink;

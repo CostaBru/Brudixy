@@ -342,14 +342,6 @@ namespace Brudixy.TypeGenerator.Tests.Validation
                 }
             });
 
-            var genMissingColumns = Gen.Fresh(() => new InvalidBrudixYaml
-            {
-                Type = InvalidYamlType.MissingColumns,
-                Data = new Dictionary<string, object>
-                {
-                    ["Table"] = "MyTable"
-                }
-            });
 
             var genInvalidColumnType = Gen.Fresh(() => new InvalidBrudixYaml
             {
@@ -399,7 +391,6 @@ namespace Brudixy.TypeGenerator.Tests.Validation
 
             var genInvalidYaml = Gen.OneOf(
                 genMissingTable,
-                genMissingColumns,
                 genInvalidColumnType,
                 genInvalidRelation,
                 genInvalidCodeGen

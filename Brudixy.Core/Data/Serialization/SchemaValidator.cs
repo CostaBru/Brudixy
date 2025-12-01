@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using NJsonSchema;
 using YamlDotNet.Core;
+using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -50,19 +52,18 @@ public class SchemaValidator
     {
         try
         {
-            // First, parse YAML to ensure it's valid YAML
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(PascalCaseNamingConvention.Instance)
-                .Build();
+            // Parse YAML using the node API to preserve types
+            using var reader = new StringReader(yamlContent);
+            var yaml = new YamlStream();
+            yaml.Load(reader);
             
-            var yamlObject = deserializer.Deserialize(new StringReader(yamlContent));
+            if (yaml.Documents.Count == 0)
+            {
+                return new ValidationResult { IsValid = true };
+            }
             
-            // Convert YAML to JSON for schema validation
-            var serializer = new SerializerBuilder()
-                .JsonCompatible()
-                .Build();
-            
-            var jsonContent = serializer.Serialize(yamlObject);
+            // Convert YAML node to JSON, preserving types
+            var jsonContent = ConvertYamlNodeToJson(yaml.Documents[0].RootNode);
             
             // Validate against JSON schema
             var errors = _schema.Validate(jsonContent);
@@ -122,6 +123,58 @@ public class SchemaValidator
     }
     
     /// <summary>
+    /// Converts a YAML node to JSON string, preserving types
+    /// </summary>
+    private string ConvertYamlNodeToJson(YamlNode node)
+    {
+        if (node is YamlScalarNode scalar)
+        {
+            var value = scalar.Value;
+
+            if (scalar.Style == ScalarStyle.DoubleQuoted)
+            {
+                return $"\"{scalar.Value}\"";
+            }
+            
+            // Check if it's null
+            if (string.IsNullOrEmpty(value) || value == "null" || value == "~")
+                return "null";
+            
+            // Check if it's a boolean
+            if (value == "true" || value == "false")
+                return value;
+            
+            // Check if it's a number (int, double, etc.)
+            if (int.TryParse(value, out _) || 
+                long.TryParse(value, out _) ||
+                double.TryParse(value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out _))
+                return value;
+            
+            // It's a string - escape and quote it
+            return $"\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
+        }
+        
+        if (node is YamlMappingNode mapping)
+        {
+            var pairs = mapping.Children.Select(kvp => 
+            {
+                var key = ((YamlScalarNode)kvp.Key).Value;
+                var value = ConvertYamlNodeToJson(kvp.Value);
+                return $"\"{key}\":{value}";
+            });
+            return "{" + string.Join(",", pairs) + "}";
+        }
+        
+        if (node is YamlSequenceNode sequence)
+        {
+            var items = sequence.Children.Select(child => ConvertYamlNodeToJson(child));
+            return "[" + string.Join(",", items) + "]";
+        }
+        
+        return "null";
+    }
+    
+    /// <summary>
     /// Validates a YAML file against the JSON schema
     /// </summary>
     /// <param name="yamlFilePath">Path to the YAML file to validate</param>
@@ -136,5 +189,40 @@ public class SchemaValidator
         
         var yamlContent = File.ReadAllText(yamlFilePath);
         return Validate(yamlContent);
+    }
+    
+    /// <summary>
+    /// Converts a YAML object to JSON string, preserving types (booleans, numbers, etc.)
+    /// </summary>
+    private string ConvertToJson(object obj)
+    {
+        if (obj == null)
+            return "null";
+            
+        if (obj is bool b)
+            return b ? "true" : "false";
+            
+        // Handle all numeric types (including uint, ushort, ulong, byte, sbyte, short)
+        if (obj is int || obj is long || obj is double || obj is decimal || obj is float ||
+            obj is uint || obj is ulong || obj is ushort || obj is byte || obj is sbyte || obj is short)
+            return obj.ToString();
+            
+        if (obj is string s)
+            return $"\"{s.Replace("\"", "\\\"")}\"";
+            
+        if (obj is Dictionary<object, object> dict)
+        {
+            var pairs = dict.Select(kvp => $"\"{kvp.Key}\":{ConvertToJson(kvp.Value)}");
+            return "{" + string.Join(",", pairs) + "}";
+        }
+        
+        if (obj is List<object> list)
+        {
+            var items = list.Select(item => ConvertToJson(item));
+            return "[" + string.Join(",", items) + "]";
+        }
+        
+        // Fallback for other types
+        return $"\"{obj}\"";
     }
 }
