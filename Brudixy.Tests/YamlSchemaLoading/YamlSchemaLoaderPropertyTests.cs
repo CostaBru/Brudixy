@@ -28,7 +28,7 @@ public class YamlSchemaLoaderPropertyTests
     [FsCheck.NUnit.Property(MaxTest = 100)]
     public Property Property_SchemaLoadingPreservesAllColumns()
     {
-        // For any valid YAML schema with column definitions, loading the schema into a CoreDataTable
+        // For any valid YAML schema with column definitions, loading the schema into a DataTable
         // should result in the table having exactly the columns defined in the YAML with matching names
         
         var validSchemaGen = GenerateValidSchemaWithColumns();
@@ -37,7 +37,7 @@ public class YamlSchemaLoaderPropertyTests
         {
             // Arrange
             var (yamlContent, expectedColumns) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -56,7 +56,7 @@ public class YamlSchemaLoaderPropertyTests
     [FsCheck.NUnit.Property(MaxTest = 100)]
     public Property Property_StringBasedLoadingEquivalentToFileBasedLoading()
     {
-        // For any valid YAML content, loading from a string should produce the same CoreDataTable
+        // For any valid YAML content, loading from a string should produce the same DataTable
         // structure as loading from a file containing that content
         
         var validSchemaGen = GenerateValidSchemaWithColumns();
@@ -65,8 +65,8 @@ public class YamlSchemaLoaderPropertyTests
         {
             // Arrange
             var (yamlContent, expectedColumns) = schemaData;
-            var tableFromString = new CoreDataTable();
-            var tableFromFile = new CoreDataTable();
+            var tableFromString = new DataTable();
+            var tableFromFile = new DataTable();
             var tempFile = Path.GetTempFileName();
             
             try
@@ -107,7 +107,7 @@ Columns:
   Email: String
   Age: Int32
 ";
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act
         _loader.LoadIntoTable(table, yaml);
@@ -132,7 +132,7 @@ Columns:
   Id: Int32
   Name: String
 ";
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act
         _loader.LoadIntoTable(table, yaml);
@@ -158,7 +158,7 @@ Indexes:
       - Email
     Unique: false
 ";
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act
         _loader.LoadIntoTable(table, yaml);
@@ -180,7 +180,7 @@ XProperties:
     Type: String
     Value: User table for authentication
 ";
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act
         _loader.LoadIntoTable(table, yaml);
@@ -199,7 +199,7 @@ XProperties:
 Columns:
   Id: Int32
 ";  // Missing required Table field
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act & Assert
         Assert.Throws<SchemaValidationException>(() => _loader.LoadIntoTable(table, invalidYaml));
@@ -210,7 +210,7 @@ Columns:
     {
         // Arrange
         var nonExistentFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".yaml");
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act & Assert
         Assert.Throws<FileNotFoundException>(() => _loader.LoadIntoTableFromFile(table, nonExistentFile));
@@ -227,7 +227,7 @@ Columns:
   CustomerId: Int32
   Total: Decimal
 ";
-        var dataset = new CoreDataTable("Dataset");
+        var dataset = new DataTable("Dataset");
         
         // Act
         var childTable = _loader.LoadAsChildTable(dataset, yaml);
@@ -252,7 +252,7 @@ Columns:
 ";
         var tempFile = Path.GetTempFileName();
         File.WriteAllText(tempFile, yaml);
-        var dataset = new CoreDataTable("Dataset");
+        var dataset = new DataTable("Dataset");
         
         try
         {
@@ -302,7 +302,7 @@ Relations:
       - CustomerId
 ";
         
-        var dataset = new CoreDataTable("Dataset");
+        var dataset = new DataTable("Dataset");
         
         // Act
         _loader.LoadMultipleTables(dataset, new[] { customersYaml, ordersYaml });
@@ -336,7 +336,7 @@ Relations:
       - CustomerId
 ";
         
-        var dataset = new CoreDataTable("Dataset");
+        var dataset = new DataTable("Dataset");
         
         // Act & Assert
         Assert.Throws<RelationException>(() => _loader.LoadMultipleTables(dataset, new[] { ordersYaml }));
@@ -354,7 +354,7 @@ ColumnOptions:
   IndexedCol:
     HasIndex: true
 ";
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act
         _loader.LoadIntoTable(table, yaml);
@@ -402,7 +402,7 @@ ColumnOptions:
     public void LoadIntoTable_WithNullYaml_ThrowsArgumentException()
     {
         // Arrange
-        var table = new CoreDataTable();
+        var table = new DataTable();
         
         // Act & Assert
         Assert.Throws<ArgumentException>(() => _loader.LoadIntoTable(table, null));
@@ -433,7 +433,7 @@ ColumnOptions:
     [FsCheck.NUnit.Property(MaxTest = 100)]
     public Property Property_ColumnPropertiesAreCorrectlyTransferred()
     {
-        // For any valid YAML schema with column definitions, each column in the loaded CoreDataTable
+        // For any valid YAML schema with column definitions, each column in the loaded DataTable
         // should have the same type, nullability, and constraints as specified in the YAML
         
         var schemaGen = GenerateSchemaWithColumnProperties();
@@ -442,7 +442,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, expectedColumns) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -473,7 +473,7 @@ ColumnOptions:
     [FsCheck.NUnit.Property(MaxTest = 100)]
     public Property Property_PrimaryKeyConfigurationIsPreserved()
     {
-        // For any valid YAML schema with a primary key definition, the loaded CoreDataTable
+        // For any valid YAML schema with a primary key definition, the loaded DataTable
         // should have its primary key set to exactly the columns specified in the YAML
         
         var schemaGen = GenerateSchemaWithPrimaryKey();
@@ -482,7 +482,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, expectedPkColumns) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -500,7 +500,7 @@ ColumnOptions:
     [FsCheck.NUnit.Property(MaxTest = 100)]
     public Property Property_IndexesAreCreatedFromSchema()
     {
-        // For any valid YAML schema with index definitions, the loaded CoreDataTable
+        // For any valid YAML schema with index definitions, the loaded DataTable
         // should have all specified indexes created with the correct columns
         
         var schemaGen = GenerateSchemaWithIndexes();
@@ -509,7 +509,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, expectedIndexColumns) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -531,7 +531,7 @@ ColumnOptions:
     public Property Property_ExtendedPropertiesAreAttached()
     {
         // For any valid YAML schema with XProperties, all XProperties should be accessible
-        // on the loaded CoreDataTable with their correct types and values
+        // on the loaded DataTable with their correct types and values
         
         var schemaGen = GenerateSchemaWithXProperties();
         
@@ -539,7 +539,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, expectedXProps) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -573,7 +573,7 @@ ColumnOptions:
         {
             // Arrange
             var (parentYaml, childYaml, relationName, parentTable, childTable) = schemaData;
-            var dataset = new CoreDataTable("Dataset");
+            var dataset = new DataTable("Dataset");
             
             // Act
             _loader.LoadMultipleTables(dataset, new[] { parentYaml, childYaml });
@@ -604,7 +604,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, columnName, maxLength) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             _loader.LoadIntoTable(table, yamlContent);
             
             // Act: Try to insert a value exceeding MaxLength
@@ -641,7 +641,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, columnName) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             _loader.LoadIntoTable(table, yamlContent);
             
             // Act: Try to insert duplicate values
@@ -681,7 +681,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, columnName, defaultValue) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             _loader.LoadIntoTable(table, yamlContent);
             
             // Act: Create a new row without setting the column
@@ -708,7 +708,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, columnName) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             _loader.LoadIntoTable(table, yamlContent);
 
             var allowNull = table.GetColumn(columnName).AllowNull;
@@ -723,7 +723,7 @@ ColumnOptions:
     public Property Property_ColumnIndexesAreCreated()
     {
         // For any column loaded with HasIndex=true, an index should exist on that column
-        // in the CoreDataTable
+        // in the DataTable
         
         var schemaGen = GenerateSchemaWithColumnIndex();
         
@@ -731,7 +731,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, columnName) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -747,7 +747,7 @@ ColumnOptions:
     public Property Property_GroupedPropertiesAreStored()
     {
         // For any valid YAML schema with GroupedProperties and GroupedPropertyOptions,
-        // the loaded CoreDataTable should store all grouped property definitions and options
+        // the loaded DataTable should store all grouped property definitions and options
         
         var schemaGen = GenerateSchemaWithGroupedProperties();
         
@@ -755,7 +755,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, groupName, columns) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -785,7 +785,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, groupName, columns) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             _loader.LoadIntoTable(table, yamlContent);
             
             // Act: Create a row and set values
@@ -813,7 +813,7 @@ ColumnOptions:
     [FsCheck.NUnit.Property(MaxTest = 100)]
     public Property Property_CodeGenerationOptionsAreStored()
     {
-        // For any valid YAML schema with CodeGenerationOptions, the loaded CoreDataTable
+        // For any valid YAML schema with CodeGenerationOptions, the loaded DataTable
         // should store these options as extended properties
         
         var schemaGen = GenerateSchemaWithCodeGenerationOptions();
@@ -822,7 +822,7 @@ ColumnOptions:
         {
             // Arrange
             var (yamlContent, expectedNamespace) = schemaData;
-            var table = new CoreDataTable();
+            var table = new DataTable();
             
             // Act
             _loader.LoadIntoTable(table, yamlContent);
@@ -1138,3 +1138,4 @@ CodeGenerationOptions:
         };
     }
 }
+

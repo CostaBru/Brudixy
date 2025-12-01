@@ -5,11 +5,11 @@ using System.Reflection;
 namespace Brudixy.Serialization;
 
 /// <summary>
-/// Helper class for accessing embedded resources in Brudixy.Core
+/// Helper class for accessing embedded resources in Brudixy
 /// </summary>
-internal static class ResourceHelper
+public static class ResourceHelper
 {
-    private const string SchemaResourceName = "Brudixy.Core.Resources.brudixy-table-schema.json";
+    private const string SchemaResourceName = "Brudixy.Resources.brudixy-table-schema.json";
     
     /// <summary>
     /// Gets the embedded brudixy-table-schema.json as a string

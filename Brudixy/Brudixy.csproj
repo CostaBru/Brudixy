@@ -41,6 +41,31 @@
 
     <ItemGroup>
       <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
+      <PackageReference Include="YamlDotNet" Version="16.2.0" />
+      <PackageReference Include="NJsonSchema" Version="11.1.0" />
+    </ItemGroup>
+
+    <!-- File links from Brudixy.TypeGenerator.Core for YAML parsing infrastructure -->
+    <ItemGroup>
+      <Compile Include="..\Brudixy.TypeGenerator.Core\ISchemaReader.cs" Link="Serialization\ISchemaReader.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\YamlSchemaReader.cs" Link="Serialization\YamlSchemaReader.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DataTableObj.cs" Link="Serialization\DataTableObj.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfo.cs" Link="Serialization\ColumnInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfoOverride.cs" Link="Serialization\ColumnInfoOverride.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DataRelationObj.cs" Link="Serialization\DataRelationObj.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\GroupColumInfo.cs" Link="Serialization\GroupColumInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\RowSubTypeInfo.cs" Link="Serialization\RowSubTypeInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\XProperty.cs" Link="Serialization\XProperty.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\Index.cs" Link="Serialization\Index.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\IndexedDict.cs" Link="Serialization\IndexedDict.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\DictExt.cs" Link="Serialization\DictExt.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\TableProp.cs" Link="Serialization\TableProp.cs" />
+      <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs" Link="Serialization\BuiltinSupportStorageTypes.cs" />
+    </ItemGroup>
+
+    <!-- Embed brudixy-table-schema.json as resource -->
+    <ItemGroup>
+      <EmbeddedResource Include="..\schemas\brudixy-table-schema.json" Link="Resources\brudixy-table-schema.json" LogicalName="Brudixy.Resources.brudixy-table-schema.json" />
     </ItemGroup>
 
     <ItemGroup>

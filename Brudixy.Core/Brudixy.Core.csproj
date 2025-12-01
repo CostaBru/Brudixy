@@ -98,27 +98,4 @@
     <None Remove="Brudixy.csproj.DotSettings" />
   </ItemGroup>
 
-  <!-- File links from Brudixy.TypeGenerator.Core for YAML parsing infrastructure -->
-  <ItemGroup>
-    <Compile Include="..\Brudixy.TypeGenerator.Core\ISchemaReader.cs" Link="Data\Serialization\ISchemaReader.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\YamlSchemaReader.cs" Link="Data\Serialization\YamlSchemaReader.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\DataTableObj.cs" Link="Data\Serialization\DataTableObj.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfo.cs" Link="Data\Serialization\ColumnInfo.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfoOverride.cs" Link="Data\Serialization\ColumnInfoOverride.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\DataRelationObj.cs" Link="Data\Serialization\DataRelationObj.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\GroupColumInfo.cs" Link="Data\Serialization\GroupColumInfo.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\RowSubTypeInfo.cs" Link="Data\Serialization\RowSubTypeInfo.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\XProperty.cs" Link="Data\Serialization\XProperty.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\Index.cs" Link="Data\Serialization\Index.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\IndexedDict.cs" Link="Data\Serialization\IndexedDict.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\DictExt.cs" Link="Data\Serialization\DictExt.cs" />
-    <Compile Include="..\Brudixy.TypeGenerator.Core\TableProp.cs" Link="Data\Serialization\TableProp.cs" />
-    <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs" Link="Data\Serialization\BuiltinSupportStorageTypes.cs" />
-  </ItemGroup>
-
-  <!-- Embed brudixy-table-schema.json as resource -->
-  <ItemGroup>
-    <EmbeddedResource Include="..\schemas\brudixy-table-schema.json" Link="Resources\brudixy-table-schema.json" />
-  </ItemGroup>
-
 </Project>

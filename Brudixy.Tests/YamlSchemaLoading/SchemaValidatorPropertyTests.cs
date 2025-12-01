@@ -302,3 +302,4 @@ Columns:
         Assert.IsTrue(result.Errors.Any(e => e.Kind.Contains("Yaml") || e.Kind.Contains("Parsing")));
     }
 }
+

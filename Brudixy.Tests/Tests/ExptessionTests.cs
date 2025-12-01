@@ -278,7 +278,16 @@ namespace Brudixy.Tests
             Assert.Throws<MissingMetadataException>(() => ls.EndLoad());
         }
 
-        private DataTable GetTestTable() => m_table.Copy();
+        private DataTable GetTestTable()
+        {
+            var d1 = m_table.GetColumn("Int32");
+
+            var testTable = m_table.Copy();
+
+            var d2 = testTable.GetColumn("Int32");
+
+            return testTable;
+        }
 
         [Test]
         public void TestSelectExpression2()
