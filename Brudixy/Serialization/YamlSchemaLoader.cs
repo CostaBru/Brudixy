@@ -5,6 +5,7 @@ using System.Linq;
 using Brudixy.Interfaces;
 using Brudixy.TypeGenerator;
 using Brudixy.TypeGenerator.Core;
+using Konsarpoo.Collections;
 
 namespace Brudixy.Serialization;
 
@@ -41,7 +42,7 @@ public class YamlSchemaLoader
     /// <param name="table">The table to load the schema into</param>
     /// <param name="yamlContent">The YAML content to load</param>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
-    public void LoadIntoTable(CoreDataTable table, string yamlContent)
+    public void LoadIntoTable(DataTable table, string yamlContent)
     {
         if (table == null)
             throw new ArgumentNullException(nameof(table));
@@ -69,7 +70,7 @@ public class YamlSchemaLoader
     /// <param name="yamlFilePath">Path to the YAML file</param>
     /// <exception cref="FileNotFoundException">Thrown when the file doesn't exist</exception>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
-    public void LoadIntoTableFromFile(CoreDataTable table, string yamlFilePath)
+    public void LoadIntoTableFromFile(DataTable table, string yamlFilePath)
     {
         if (!File.Exists(yamlFilePath))
         {
@@ -87,7 +88,7 @@ public class YamlSchemaLoader
     /// <param name="yamlContent">The YAML content to load</param>
     /// <returns>The newly created child table</returns>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
-    public CoreDataTable LoadAsChildTable(CoreDataTable dataset, string yamlContent)
+    public CoreDataTable LoadAsChildTable(DataTable dataset, string yamlContent)
     {
         if (dataset == null)
             throw new ArgumentNullException(nameof(dataset));
@@ -124,7 +125,7 @@ public class YamlSchemaLoader
     /// <returns>The newly created child table</returns>
     /// <exception cref="FileNotFoundException">Thrown when the file doesn't exist</exception>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
-    public CoreDataTable LoadAsChildTableFromFile(CoreDataTable dataset, string yamlFilePath)
+    public CoreDataTable LoadAsChildTableFromFile(DataTable dataset, string yamlFilePath)
     {
         if (!File.Exists(yamlFilePath))
         {
@@ -141,7 +142,7 @@ public class YamlSchemaLoader
     /// <param name="dataset">The dataset (CoreDataTable acting as dataset) to load tables into</param>
     /// <param name="yamlContents">Collection of YAML contents to load</param>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
-    public void LoadMultipleTables(CoreDataTable dataset, IEnumerable<string> yamlContents)
+    public void LoadMultipleTables(DataTable dataset, IEnumerable<string> yamlContents)
     {
         if (dataset == null)
             throw new ArgumentNullException(nameof(dataset));
@@ -168,7 +169,7 @@ public class YamlSchemaLoader
         var tables = new Dictionary<string, CoreDataTable>(StringComparer.OrdinalIgnoreCase);
         foreach (var schema in schemas)
         {
-            CoreDataTable table;
+            DataTable table;
             if (dataset.HasTable(schema.Table))
             {
                 table = dataset.GetTable(schema.Table);
@@ -190,7 +191,7 @@ public class YamlSchemaLoader
     /// <summary>
     /// Applies a DataTableObj schema to a CoreDataTable
     /// </summary>
-    private void ApplyTableSchema(CoreDataTable table, DataTableObj schema)
+    private void ApplyTableSchema(DataTable table, DataTableObj schema)
     {
         // Apply table name
         if (!string.IsNullOrEmpty(schema.Table))
@@ -220,7 +221,7 @@ public class YamlSchemaLoader
     /// <summary>
     /// Creates columns from DataTableObj
     /// </summary>
-    private void ApplyColumns(CoreDataTable table, DataTableObj schema)
+    private void ApplyColumns(DataTable table, DataTableObj schema)
     {
         foreach (var columnKv in schema.ColumnObjects)
         {
@@ -228,11 +229,19 @@ public class YamlSchemaLoader
             var columnInfo = columnKv.Value;
 
             // Map column type
-            var (storageType, typeModifier, userType) = MapColumnType(columnInfo);
+            var (storageType, typeModifier, _) = MapColumnType(columnInfo);
+
+            var restoreUserType = string.IsNullOrEmpty(columnInfo.DataType)
+                ? null
+                : Serializer.RestoreUserType(table.TableName, table.Namespace, columnName, columnInfo.DataType);
 
             table.AddColumn(columnName: columnName,
                 valueType: storageType,
                 valueTypeModifier: typeModifier,
+                dataType: restoreUserType,
+                dataExpression: columnInfo.Expression,
+                displayName:columnInfo.DisplayName,
+                readOnly:columnInfo.IsReadOnly ?? false,
                 auto: columnInfo.Auto,
                 unique: columnInfo.IsUnique,
                 columnMaxLength: columnInfo.MaxLength,

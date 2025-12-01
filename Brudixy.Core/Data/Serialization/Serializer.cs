@@ -72,7 +72,9 @@ namespace Brudixy
                 }
                 else if (storageType == TableStorageType.UserType || storageTypeModifier == TableStorageTypeModifier.Complex)
                 {
-                    var dataType = RestoreUserType(table, tableNamespace, serializer, xPropElement, xPropName);
+                    var typeNameValue = serializer.GetAttributeValue(xPropElement, "DataType");
+                    
+                    var dataType = RestoreUserType(table, tableNamespace, xPropName, typeNameValue);
 
                     if (dataType != null)
                     {
@@ -90,13 +92,12 @@ namespace Brudixy
             return xPropTableValue;
         }
         
-        public static Type RestoreUserType<T, V>(string tableName,
+        public static Type RestoreUserType(string tableName,
             string tableNamespace,
-            SerializerAdapter<T, V> serializer,
-            T colElement,
-            string columnName)
+            string columnName,
+            string typeNameValue)
         {
-            var typeName = serializer.GetAttributeValue(colElement, "DataType");
+            var typeName = typeNameValue;
 
             var dataType = Type.GetType(typeName) ?? CoreDataTable.UserTypeRegistry.GetOrDefault(typeName);
 

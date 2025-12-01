@@ -492,7 +492,9 @@ namespace Brudixy
 
             if (columnType == TableStorageType.UserType || columnTypeModifier == TableStorageTypeModifier.Complex)
             {
-                dataType = Serializer.RestoreUserType(table.TableName, table.Namespace, serializer, colElement, columnName);
+                var typeNameValue = serializer.GetAttributeValue(colElement, "DataType");
+                
+                dataType = Serializer.RestoreUserType(table.TableName, table.Namespace, columnName, typeNameValue);
 
                 if (columnTypeModifier == TableStorageTypeModifier.Complex && string.IsNullOrEmpty(defaultValue) == false && dataType != null)
                 {

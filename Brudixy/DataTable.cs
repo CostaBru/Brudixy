@@ -646,6 +646,8 @@ namespace Brudixy
             ExpressionValuesCache = new DataExpressionCache(this);
             
             DataRowType = typeof(DataRow);
+            
+            DataTableType = typeof(DataTable);
         }
         
         public DataTable(DataTable ds) : base(ds)
@@ -653,6 +655,8 @@ namespace Brudixy
             ExpressionValuesCache = new DataExpressionCache(this);
 
             DataRowType = typeof(DataRow);
+            
+            DataTableType = typeof(DataTable);
         }
 
         protected override CoreDataColumnInfo CreateDataColumnInfo() => new DataColumnInfo();
@@ -2008,7 +2012,6 @@ namespace Brudixy
         {
             return (DataTable)base.GetTable(tableName);
         }
-        
         protected override void MergeTableMetadata(CoreDataTable currentTable, CoreDataTable sourceTable)
         {
             var lockEvents = ((DataTable)currentTable).LockEvents();

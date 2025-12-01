@@ -15,8 +15,8 @@ public class ResourceAccessTests
     public void EmbeddedSchemaResource_CanBeAccessed()
     {
         // Arrange
-        var assembly = typeof(CoreDataTable).Assembly;
-        const string resourceName = "Brudixy.Core.Resources.brudixy-table-schema.json";
+        var assembly = typeof(DataTable).Assembly;
+        const string resourceName = "Brudixy.Resources.brudixy-table-schema.json";
         
         // Act
         using var stream = assembly.GetManifestResourceStream(resourceName);
