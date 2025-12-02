@@ -42,6 +42,7 @@ public class YamlSchemaLoader
     /// <param name="table">The table to load the schema into</param>
     /// <param name="yamlContent">The YAML content to load</param>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
+    /// <exception cref="YamlParsingException">Thrown when YAML is malformed</exception>
     public void LoadIntoTable(DataTable table, string yamlContent)
     {
         if (table == null)
@@ -53,11 +54,26 @@ public class YamlSchemaLoader
         var validationResult = _validator.Validate(yamlContent);
         if (!validationResult.IsValid)
         {
+            // Check if this is a YAML parsing error
+            if (validationResult.Errors.Any(e => e.Kind == "YamlParsingError"))
+            {
+                var yamlError = validationResult.Errors.First(e => e.Kind == "YamlParsingError");
+                throw new YamlParsingException(yamlError.Message, yamlContent);
+            }
+            
             throw new SchemaValidationException(validationResult.Errors, yamlContent);
         }
         
         // Parse the YAML into DataTableObj
-        var schema = _reader.GetTable(yamlContent);
+        DataTableObj schema;
+        try
+        {
+            schema = _reader.GetTable(yamlContent);
+        }
+        catch (Exception ex)
+        {
+            throw new YamlParsingException($"Failed to parse YAML content: {ex.Message}", yamlContent, ex);
+        }
         
         // Apply the schema to the table
         ApplyTableSchema(table, schema);
@@ -88,6 +104,7 @@ public class YamlSchemaLoader
     /// <param name="yamlContent">The YAML content to load</param>
     /// <returns>The newly created child table</returns>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
+    /// <exception cref="YamlParsingException">Thrown when YAML is malformed</exception>
     public CoreDataTable LoadAsChildTable(DataTable dataset, string yamlContent)
     {
         if (dataset == null)
@@ -99,11 +116,26 @@ public class YamlSchemaLoader
         var validationResult = _validator.Validate(yamlContent);
         if (!validationResult.IsValid)
         {
+            // Check if this is a YAML parsing error
+            if (validationResult.Errors.Any(e => e.Kind == "YamlParsingError"))
+            {
+                var yamlError = validationResult.Errors.First(e => e.Kind == "YamlParsingError");
+                throw new YamlParsingException(yamlError.Message, yamlContent);
+            }
+            
             throw new SchemaValidationException(validationResult.Errors, yamlContent);
         }
         
         // Parse the YAML into DataTableObj
-        var schema = _reader.GetTable(yamlContent);
+        DataTableObj schema;
+        try
+        {
+            schema = _reader.GetTable(yamlContent);
+        }
+        catch (Exception ex)
+        {
+            throw new YamlParsingException($"Failed to parse YAML content: {ex.Message}", yamlContent, ex);
+        }
         
         // Create a new child table
         var childTable = dataset.NewTable(schema.Table);
@@ -142,6 +174,7 @@ public class YamlSchemaLoader
     /// <param name="dataset">The dataset (CoreDataTable acting as dataset) to load tables into</param>
     /// <param name="yamlContents">Collection of YAML contents to load</param>
     /// <exception cref="SchemaValidationException">Thrown when validation fails</exception>
+    /// <exception cref="YamlParsingException">Thrown when YAML is malformed</exception>
     public void LoadMultipleTables(DataTable dataset, IEnumerable<string> yamlContents)
     {
         if (dataset == null)
@@ -158,10 +191,26 @@ public class YamlSchemaLoader
             var validationResult = _validator.Validate(yamlContent);
             if (!validationResult.IsValid)
             {
+                // Check if this is a YAML parsing error
+                if (validationResult.Errors.Any(e => e.Kind == "YamlParsingError"))
+                {
+                    var yamlError = validationResult.Errors.First(e => e.Kind == "YamlParsingError");
+                    throw new YamlParsingException(yamlError.Message, yamlContent);
+                }
+                
                 throw new SchemaValidationException(validationResult.Errors, yamlContent);
             }
             
-            var schema = _reader.GetTable(yamlContent);
+            DataTableObj schema;
+            try
+            {
+                schema = _reader.GetTable(yamlContent);
+            }
+            catch (Exception ex)
+            {
+                throw new YamlParsingException($"Failed to parse YAML content: {ex.Message}", yamlContent, ex);
+            }
+            
             schemas.Add(schema);
         }
         
@@ -229,7 +278,7 @@ public class YamlSchemaLoader
             var columnInfo = columnKv.Value;
 
             // Map column type
-            var (storageType, typeModifier, _) = MapColumnType(columnInfo);
+            var (storageType, typeModifier, _) = MapColumnType(columnInfo, columnName);
 
             var restoreUserType = string.IsNullOrEmpty(columnInfo.DataType)
                 ? null
@@ -255,7 +304,8 @@ public class YamlSchemaLoader
     /// <summary>
     /// Maps a ColumnInfo type to CoreDataTable storage types
     /// </summary>
-    private (TableStorageType storageType, TableStorageTypeModifier modifier, Type userType) MapColumnType(ColumnInfo columnInfo)
+    /// <exception cref="ColumnTypeException">Thrown when column type cannot be mapped</exception>
+    private (TableStorageType storageType, TableStorageTypeModifier modifier, Type userType) MapColumnType(ColumnInfo columnInfo, string columnName)
     {
         var typeModifier = TableStorageTypeModifier.Simple;
         
@@ -267,7 +317,10 @@ public class YamlSchemaLoader
                 "Array" => TableStorageTypeModifier.Array,
                 "Range" => TableStorageTypeModifier.Range,
                 "Complex" => TableStorageTypeModifier.Complex,
-                _ => TableStorageTypeModifier.Simple
+                _ => throw new ColumnTypeException(
+                    columnName, 
+                    columnInfo.TypeModifier, 
+                    $"Invalid type modifier '{columnInfo.TypeModifier}' for column '{columnName}'. Valid modifiers are: Array, Range, Complex")
             };
         }
         
@@ -280,19 +333,39 @@ public class YamlSchemaLoader
         }
         
         // Map built-in types
-        var storageType = columnInfo.Type switch
+        TableStorageType storageType;
+        switch (columnInfo.Type)
         {
-            "Int32" => TableStorageType.Int32,
-            "Int64" => TableStorageType.Int64,
-            "String" => TableStorageType.String,
-            "DateTime" => TableStorageType.DateTime,
-            "Boolean" => TableStorageType.Boolean,
-            "Guid" => TableStorageType.Guid,
-            "Decimal" => TableStorageType.Decimal,
-            "Double" => TableStorageType.Double,
-            "Byte" => TableStorageType.Byte,
-            _ => TableStorageType.String // Default to string for unknown types
-        };
+            case "Int32":
+                storageType = TableStorageType.Int32;
+                break;
+            case "Int64":
+                storageType = TableStorageType.Int64;
+                break;
+            case "String":
+                storageType = TableStorageType.String;
+                break;
+            case "DateTime":
+                storageType = TableStorageType.DateTime;
+                break;
+            case "Boolean":
+                storageType = TableStorageType.Boolean;
+                break;
+            case "Guid":
+                storageType = TableStorageType.Guid;
+                break;
+            case "Decimal":
+                storageType = TableStorageType.Decimal;
+                break;
+            case "Double":
+                storageType = TableStorageType.Double;
+                break;
+            case "Byte":
+                storageType = TableStorageType.Byte;
+                break;
+            default:
+                throw new ColumnTypeException(columnName, columnInfo.Type);
+        }
         
         return (storageType, typeModifier, null);
     }
@@ -498,36 +571,60 @@ public class YamlSchemaLoader
                 // Check if both tables exist
                 if (!dataset.HasTable(relation.ParentTable))
                 {
-                    throw new RelationException(
-                        $"Cannot create relation '{relationName}': parent table '{relation.ParentTable}' does not exist");
+                    var availableTables = dataset.Tables.Select(t => t.Name).ToList();
+                    throw new RelationException("Parent table does not exist: " + relation.ParentTable,
+                        relationName,
+                        new[] { $"parent table '{relation.ParentTable}'" },
+                        availableTables);
                 }
                 
                 if (!dataset.HasTable(relation.ChildTable))
                 {
-                    throw new RelationException(
-                        $"Cannot create relation '{relationName}': child table '{relation.ChildTable}' does not exist");
+                    var availableTables = dataset.Tables.Select(t => t.Name).ToList();
+                    throw new RelationException("Child table does not exist: " + relation.ChildTable,
+                        relationName,
+                        new[] { $"child table '{relation.ChildTable}'" },
+                        availableTables);
                 }
                 
                 var parentTable = dataset.GetTable(relation.ParentTable);
                 var childTable = dataset.GetTable(relation.ChildTable);
                 
                 // Verify columns exist
+                var missingParentColumns = new List<string>();
                 foreach (var col in relation.ParentKey)
                 {
                     if (parentTable.TryGetColumn(col) == null)
                     {
-                        throw new RelationException(
-                            $"Cannot create relation '{relationName}': column '{col}' does not exist in parent table '{relation.ParentTable}'");
+                        missingParentColumns.Add(col);
                     }
                 }
                 
+                if (missingParentColumns.Count > 0)
+                {
+                    var availableColumns = parentTable.GetColumns().Select(c => c.ColumnName).ToList();
+                    throw new RelationException("Parent columns do not exist",
+                        relationName,
+                        missingParentColumns.Select(c => $"parent column '{c}'").ToArray(),
+                        availableColumns);
+                }
+                
+                var missingChildColumns = new List<string>();
                 foreach (var col in relation.ChildKey)
                 {
                     if (childTable.TryGetColumn(col) == null)
                     {
-                        throw new RelationException(
-                            $"Cannot create relation '{relationName}': column '{col}' does not exist in child table '{relation.ChildTable}'");
+                        missingChildColumns.Add(col);
                     }
+                }
+                
+                if (missingChildColumns.Count > 0)
+                {
+                    var availableColumns = childTable.GetColumns().Select(c => c.ColumnName).ToList();
+                    throw new RelationException("Child columns do not exist",
+                        relationName,
+                        missingChildColumns.Select(c => $"child column '{c}'").ToArray(),
+                        availableColumns);
                 }
                 
                 // Build the key list with column objects

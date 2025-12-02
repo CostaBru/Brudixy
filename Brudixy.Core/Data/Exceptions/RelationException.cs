@@ -7,6 +7,10 @@ namespace Brudixy;
 /// </summary>
 public class RelationException : Exception
 {
+    public string RelationName { get; }
+    public string[] Errors { get; }
+    public List<string> AvailableTables { get; }
+
     /// <summary>
     /// Initializes a new instance of RelationException
     /// </summary>
@@ -22,5 +26,12 @@ public class RelationException : Exception
     /// <param name="innerException">The inner exception</param>
     public RelationException(string message, Exception innerException) : base(message, innerException)
     {
+    }
+
+    public RelationException(string message, string relationName, string[] errors, List<string> availableTables) : base(message)
+    {
+        RelationName = relationName;
+        Errors = errors;
+        AvailableTables = availableTables;
     }
 }
