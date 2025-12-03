@@ -314,13 +314,14 @@ public class YamlSchemaLoader
         {
             typeModifier = columnInfo.TypeModifier switch
             {
+                "Simple" => TableStorageTypeModifier.Simple,
                 "Array" => TableStorageTypeModifier.Array,
                 "Range" => TableStorageTypeModifier.Range,
                 "Complex" => TableStorageTypeModifier.Complex,
                 _ => throw new ColumnTypeException(
                     columnName, 
                     columnInfo.TypeModifier, 
-                    $"Invalid type modifier '{columnInfo.TypeModifier}' for column '{columnName}'. Valid modifiers are: Array, Range, Complex")
+                    $"Invalid type modifier '{columnInfo.TypeModifier}' for column '{columnName}'. Valid modifiers are: Simple, Array, Range, Complex")
             };
         }
         

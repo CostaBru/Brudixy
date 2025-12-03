@@ -245,6 +245,36 @@ See `Brudixy.Tests/Benchmarks/` for detailed performance benchmarks.
 
 ## Advanced Features
 
+### YAML Schema Loading (Runtime)
+Load table schemas from YAML files or strings at runtime without code generation. Perfect for plugin systems, configuration-driven applications, and dynamic schema scenarios.
+
+```csharp
+// Load schema at runtime
+var table = new DataTable("Users");
+table.LoadSchemaFromYamlFile("schemas/users.yaml");
+
+// Or from string
+var schema = @"
+Table: Products
+Columns:
+  ProductId: { Type: Int32, AllowNull: false }
+  Name: { Type: String, MaxLength: 100 }
+PrimaryKey: [ProductId]
+";
+table.LoadSchemaFromYaml(schema);
+```
+
+**Features:**
+- Schema validation against JSON schema
+- Support for all column types, constraints, and indexes
+- Multi-table loading with relations
+- Comprehensive error handling
+
+**Documentation:**
+- [YAML Schema Loading Guide](docs/YAML_SCHEMA_LOADING.md)
+- [Examples](docs/YAML_SCHEMA_LOADING_EXAMPLES.md)
+- [Error Handling](docs/YAML_SCHEMA_ERROR_HANDLING.md)
+
 ### Custom Storage Types
 Define custom column storage strategies for optimized memory usage and performance.
 
