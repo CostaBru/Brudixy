@@ -187,4 +187,26 @@ GroupedPropertyOptions:
         
         Assert.That(result.IsValid, Is.True);
     }
+    
+    [Test]
+    public void Validate_WrongFields()
+    {
+        var yaml = @"
+Table: TestTable
+Columns1:
+  X: Int321
+  Y: Int32
+  Name: String
+GroupedProperties1:
+  Point: X|Y
+GroupedPropertyOptions2:
+  Point:
+    Type: Tuple
+    IsReadOnly: true
+";
+        
+        var result = _validator.Validate(yaml);
+        
+        Assert.That(result.IsValid, Is.False);
+    }
 }

@@ -310,9 +310,13 @@ namespace Brudixy.TypeGenerator.Core
                 columnObject.AllowNull = nullable ?? true;
             }
 
-            if (BuiltinSupportStorageTypes.AliasMapTypes.TryGetValue(typePart, out var enumVal) || BuiltinSupportStorageTypes.KnownTypesToGenClassName.ContainsKey(typePart))
+            string mappedType = null;
+            string enumVal = null;
+            if (BuiltinSupportStorageTypes.UserFriendlyAliasMapTypes.TryGetValue(typePart, out mappedType) ||
+                BuiltinSupportStorageTypes.AliasMapTypes.TryGetValue(typePart, out enumVal) || 
+                BuiltinSupportStorageTypes.KnownTypesToGenClassName.ContainsKey(typePart))
             {
-                columnObject.Type = enumVal ?? typePart;
+                columnObject.Type = mappedType ?? enumVal ?? typePart;
 
                 if (nullable.HasValue)
                 {

@@ -303,6 +303,28 @@ PrimaryKey:
 
       Assert.AreEqual(2, strings.Length);
     }
+    
+    [Test]
+    public void TestUserFriendlyTypes()
+    {
+      var yaml = @"
+---
+Table: TestTable
+Columns:
+  id: Integer
+  check: Flag
+  value: Money
+";
+
+      var name = @"c:\test\Core\Abs\Test.st.brudixy.yaml";
+
+      var data = _.Map((name, yaml));
+
+      var strings = DataCodeGenerator
+        .GenerateDatasetFiles("ds", name, new FileSystemAccessMock(data), new YamlSchemaReader(),"c:\\test\\Core").ToArray();
+
+      Assert.AreEqual(2, strings.Length);
+    }
 
     private class FileSystemAccessMock : Brudixy.TypeGenerator.Core.IFileSystemAccessor
     {

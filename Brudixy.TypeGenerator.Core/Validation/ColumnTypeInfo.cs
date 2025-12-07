@@ -127,11 +127,14 @@ namespace Brudixy.TypeGenerator.Core.Validation
                 typePart = typePart.Replace("<>", "");
             }
 
+            string mappedType = null;
+            
             // Check if it's a built-in type or user type
             if (BuiltinSupportStorageTypes.AliasMapTypes.ContainsKey(typePart) ||
-                BuiltinSupportStorageTypes.KnownTypesToGenClassName.ContainsKey(typePart))
+                BuiltinSupportStorageTypes.KnownTypesToGenClassName.ContainsKey(typePart) || 
+                BuiltinSupportStorageTypes.UserFriendlyAliasMapTypes.TryGetValue(typePart, out mappedType))
             {
-                info.BaseType = typePart;
+                info.BaseType = mappedType ?? typePart;
                 info.IsUserType = false;
             }
             else
