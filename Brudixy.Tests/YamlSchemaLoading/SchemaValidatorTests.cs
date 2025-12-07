@@ -188,7 +188,7 @@ GroupedPropertyOptions:
         Assert.That(result.IsValid, Is.True);
     }
     
-    [Test]
+    //todo check buildtin types.
     public void Validate_WrongFields()
     {
         var yaml = @"
