@@ -2422,17 +2422,28 @@ namespace Brudixy
             return new CoreRowContainerSerializer<T, V>(this, serializer);
         }
 
-        public XElement ToXml()
+        public XElement ToXml(SerializationMode mode = SerializationMode.Full)
         {
             var serializer = CreateRowContainerSerializer(new XmlSerializer());
 
             var root = new XElement("DataRowContainer", new XAttribute("TableName", TableName), new XAttribute("IsReadOnly", IsReadOnly));
 
-            root.Add(serializer.SerializeSchema());
+            if (mode == SerializationMode.Full || mode == SerializationMode.SchemaOnly)
+            {
+                root.Add(serializer.SerializeSchema());
+            }
 
-            serializer.WriteDataTo(root);
+            if (mode == SerializationMode.Full || mode == SerializationMode.DataOnly)
+            {
+                serializer.WriteDataTo(root);
+            }
 
             return root;
+        }
+
+        XElement IXmlSerializable.ToXml()
+        {
+            return ToXml(SerializationMode.Full);
         }
 
         public void FromXml(XElement element)
@@ -2442,7 +2453,7 @@ namespace Brudixy
             serializer.Deserialize(element);
         }
 
-        public JElement ToJson()
+        public JElement ToJson(SerializationMode mode = SerializationMode.Full)
         {
             var root = new JElement("DataRowContainer");
 
@@ -2451,13 +2462,24 @@ namespace Brudixy
                 
             var serializer = CreateRowContainerSerializer(new JsonSerializer());
 
-            var simpleSchema = serializer.SerializeSchema();
+            if (mode == SerializationMode.Full || mode == SerializationMode.SchemaOnly)
+            {
+                var simpleSchema = serializer.SerializeSchema();
 
-            root.AddElement(new JElement("Metadata", simpleSchema));
+                root.AddElement(new JElement("Metadata", simpleSchema));
+            }
 
-            serializer.WriteDataTo(root);
+            if (mode == SerializationMode.Full || mode == SerializationMode.DataOnly)
+            {
+                serializer.WriteDataTo(root);
+            }
 
             return root;
+        }
+
+        JElement IJsonSerializable.ToJson()
+        {
+            return ToJson(SerializationMode.Full);
         }
 
         public void FromJson(JElement element)

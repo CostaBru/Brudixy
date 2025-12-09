@@ -34,9 +34,9 @@ namespace Brudixy.Interfaces
         [NotNull]
         new ICoreDataRowContainer Clone();
 
-        XElement ToXml();
+        XElement ToXml(SerializationMode mode = SerializationMode.Full);
 
-        JElement ToJson();
+        JElement ToJson(SerializationMode mode = SerializationMode.Full);
 
         void SetColumnXProperty<T>([NotNull] string column, [NotNull] string property, [CanBeNull] T value);
 
