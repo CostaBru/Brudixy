@@ -8,6 +8,11 @@ namespace Brudixy
 {
     partial class DataTable : IExpressionDataSource
     {
+        IEnumerable<string> IExpressionDataSource.GetColumns()
+        {
+            return GetColumns().Select(c => c.ColumnName);
+        }
+        
         internal class DataExpressionCache : IDisposable
         {
             private struct ExprRowColTKey

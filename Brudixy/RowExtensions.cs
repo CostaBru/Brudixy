@@ -139,6 +139,11 @@ public static class RowExtensions
             return m_rows.First().Value.GetColumn(column).ColumnHandle;
         }
 
+        public IEnumerable<string> GetColumns()
+        {
+            return m_rows.First().Value.GetColumns().Select(r => r.ColumnName);
+        }
+
         public IDataRowReadOnlyAccessor GetRowByHandle(int rowHandle)
         {
             return m_rows[rowHandle];

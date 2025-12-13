@@ -22,20 +22,20 @@ namespace Brudixy.Expressions
         }
 
         internal override object Eval(int? row = null,
-            IReadOnlyDictionary<string, object> testValues = null)
+            IReadOnlyDictionary<string, object> testValues = null, bool test = false)
         {
-            return EvalCore(row, testValues: testValues);
+            return EvalCore(row, testValues: testValues, test);
         }
 
         public int Kind => kind;
 
-        private object EvalCore(int? row = null, IReadOnlyDictionary<string, object> testValues = null)
+        private object EvalCore(int? row = null, IReadOnlyDictionary<string, object> testValues = null, bool test = false)
         {
             object vRight;
             // 
             object vLeft;
 
-            vLeft = left.Eval(row, testValues);
+            vLeft = left.Eval(row, testValues, test);
 
             string substring;
 
@@ -46,7 +46,7 @@ namespace Brudixy.Expressions
 
             if (pattern == null)
             {
-                vRight = right.Eval(row, testValues);
+                vRight = right.Eval(row, testValues, test);
 
                 if (!(vRight is string))
                 {

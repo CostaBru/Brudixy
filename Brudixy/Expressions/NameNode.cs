@@ -55,7 +55,7 @@ namespace Brudixy.Expressions
 
 
         internal override object Eval(int? row,
-            IReadOnlyDictionary<string, object> testValues = null)
+            IReadOnlyDictionary<string, object> testValues = null, bool test = false)
         {
             if (!found)
             {
@@ -67,9 +67,10 @@ namespace Brudixy.Expressions
                 throw ExprException.UnboundName($"'{name}' name node cannot be evaluated for null row given.");
             }
 
-            if (testValues != null && testValues.TryGetValue(column, out var testValue))
+            //test values may be incomplete so we fallback to regular case if value is not found
+            if (testValues != null && testValues.TryGetValue(column, out var value))
             {
-                return testValue;
+                return value;
             }
             
             return table.GetRowColumnValueByHandle(row.Value, column);

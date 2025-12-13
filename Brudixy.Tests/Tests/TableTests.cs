@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using BenchmarkDotNet.Disassemblers;
+using Brudixy.Expressions;
 using Brudixy.Interfaces;
 using Konsarpoo.Collections;
 using NUnit.Framework;
@@ -11,6 +13,19 @@ namespace Brudixy.Tests
     [TestFixture]
     public class TableTests
     {
+        [Test]
+        public void TestExpressionBinValidationFailRightNode()
+        {
+            var table = new DataTable();
+
+            table.AddColumn("ID", TableStorageType.Int32);
+            table.AddColumn("Code", TableStorageType.String);
+
+            var dataExpression = new DataExpression(table, "ID = 5 AND Code");
+
+            Assert.Throws<Brudixy.Exceptions.EvaluateException>(() => dataExpression.Validate());
+        }
+        
         [Test]
         public void TestResetAnnotations()
         {

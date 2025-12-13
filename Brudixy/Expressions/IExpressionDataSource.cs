@@ -5,6 +5,7 @@ namespace Brudixy.Expressions;
 public interface IExpressionDataSource
 {
     int GetColumnHandle(string column);
+    IEnumerable<string> GetColumns();
     IDataRowReadOnlyAccessor GetRowByHandle(int rowHandle);
     IEnumerable<int> GetRowHandles();
     int ColumnCount { get;  }

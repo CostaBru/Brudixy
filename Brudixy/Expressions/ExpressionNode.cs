@@ -17,7 +17,9 @@ namespace Brudixy.Expressions
 
         internal abstract void Mount(IExpressionDataSource table, Data<string> columns);
 
-        internal abstract object Eval(int? rowHandle = null, IReadOnlyDictionary<string, object> testValues = null);
+        internal abstract object Eval(int? rowHandle = null,
+            IReadOnlyDictionary<string, object> testValues = null,
+            bool test = false);
 
         internal abstract object Eval(Data<int> recordNos);
 

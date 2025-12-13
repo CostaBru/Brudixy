@@ -90,6 +90,35 @@ namespace Brudixy.Expressions
             m_dependency = list;
         }
 
+        public void Validate()
+        {
+            if(m_exprNode is BinaryNode bn)
+            {
+                ValidateBinaryExpression(m_dataSource, bn);
+            }
+        }
+
+        private static void ValidateBinaryExpression(IExpressionDataSource table, BinaryNode bn)
+        {
+            var dictionary = new Dictionary<string, object>();
+
+            foreach (var column in table.GetColumns())
+            {
+                var tableStorageType = table.GetColumnType(column);
+
+                if (tableStorageType == TableStorageType.UserType)
+                {
+                    dictionary[column] = null;
+                }
+                else
+                {
+                    dictionary[column] = CoreDataTable.GetDefaultNotNull(tableStorageType ?? TableStorageType.String, TableStorageTypeModifier.Simple);
+                }
+            }
+
+            bn.Eval(0, dictionary, true);
+        }
+
         internal bool DependsOn(string column)
         {
             if (m_exprNode != null)

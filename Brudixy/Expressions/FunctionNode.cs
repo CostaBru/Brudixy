@@ -57,7 +57,8 @@ namespace Brudixy.Expressions
         }
 
         internal override object Eval(int? row = null,
-            IReadOnlyDictionary<string, object> testValues = null)
+            IReadOnlyDictionary<string, object> testValues = null,
+            bool test = false)
         {
             return m_function.Eval(table, Arguments,  row, testValues: testValues);
         }

@@ -19,6 +19,11 @@ public class DataRowExpressionSource : IExpressionDataSource
         return m_dataRow.GetColumn(column).ColumnHandle;
     }
 
+    public IEnumerable<string> GetColumns()
+    {
+        return m_dataRow.GetColumns().Select(r => r.ColumnName);
+    }
+
     public IDataRowReadOnlyAccessor GetRowByHandle(int rowHandle)
     {
         return m_dataRow;

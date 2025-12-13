@@ -44,6 +44,7 @@ public class DefaultFunctionRegistry : IFunctionRegistry
         { "cBool",  (p) => new cBoolFunction() },
         { "cDate",  (p) => new cDateFunction(p) },
         { "cDbl",  (p) => new cDblFunction(p) },
+        { "cMoney",  (p) => new cMoneyFunction(p) },
         { "cStr",  (p) => new cStrFunction(p) },
         { "Max",  (p) => new MaxFunction() },
         { "Min",  (p) => new MinFunction() },
@@ -55,6 +56,8 @@ public class DefaultFunctionRegistry : IFunctionRegistry
         { "RowXProp",  (p) => new RowXPropFunction() },
         { "CharIndex",  (p) => new CharIndexFunction() },
     };
+
+    public IEnumerable<string> GetFunctions() => m_funcFactory.Keys;
 
     public Func<IFormatProvider, Function> GetFunctionFactory([NotNull] string name)
     {

@@ -22,9 +22,9 @@ namespace Brudixy.Expressions
             right.Mount(table, columns);
         }
 
-        internal override object Eval(int? row = null, IReadOnlyDictionary<string, object> testValues = null)
+        internal override object Eval(int? row = null, IReadOnlyDictionary<string, object> testValues = null, bool test = false)
         {
-            return EvalUnaryOp(op, right.Eval(row, testValues));
+            return EvalUnaryOp(op, right.Eval(row, testValues, test));
         }
 
         internal override object Eval(Data<int> recordNos)

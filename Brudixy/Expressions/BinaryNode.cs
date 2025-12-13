@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Brudixy.Exceptions;
-using Brudixy.Interfaces;
 using Brudixy.Interfaces.Tools;
 using Konsarpoo.Collections;
 
@@ -29,9 +28,10 @@ namespace Brudixy.Expressions
         }
 
         internal override object Eval(int? row = null,
-            IReadOnlyDictionary<string, object> testValues = null)
+            IReadOnlyDictionary<string, object> testValues = null, 
+            bool test = false)
         {
-            return EvalBinaryOp(op, left, right, row, testValues: testValues);
+            return EvalBinaryOp(op, left, right, row, testValues: testValues, test: test);
         }
 
         internal override object Eval(Data<int> recordNos)
@@ -133,11 +133,11 @@ namespace Brudixy.Expressions
             throw new EvaluateException($"Binary operator {Operators.ToString(op)} type mismatch left: '{left}' ({leftType}), right '{right}' ({rightType}).");
         }
 
-        private object Eval(ExpressionNode expr, int? row, Data<int> recordNos, IReadOnlyDictionary<string, object> testValues = null)
+        private object Eval(ExpressionNode expr, int? row, Data<int> recordNos, IReadOnlyDictionary<string, object> testValues = null, bool test = false)
         {
             if (recordNos == null)
             {
-                return expr.Eval(row, testValues);
+                return expr.Eval(row, testValues, test);
             }
 
             return expr.Eval(recordNos);
@@ -252,7 +252,13 @@ namespace Brudixy.Expressions
             return result;
         }
 
-        private object EvalBinaryOp(int op, ExpressionNode left, ExpressionNode right, int? row = null, Data<int> recordNos = null, IDataRowReadOnlyAccessor rowAccessor = null, IReadOnlyDictionary<string, object> testValues = null)
+        private object EvalBinaryOp(int op,
+            ExpressionNode left, 
+            ExpressionNode right,
+            int? row = null,
+            Data<int> recordNos = null,
+            IReadOnlyDictionary<string, object> testValues = null, 
+            bool test = false)
         {
             object vLeft;
             object vRight;
@@ -271,13 +277,13 @@ namespace Brudixy.Expressions
             {
                 if (table != null)
                 {
-                    vLeft = Eval(left, row, recordNos, testValues);
-                    vRight = Eval(right, row, recordNos, testValues);
+                    vLeft = Eval(left, row, recordNos, testValues, test);
+                    vRight = Eval(right, row, recordNos, testValues, test);
                 }
                 else
                 {
-                    vLeft = Eval(left, null, null, testValues);
-                    vRight = Eval(right, null, null, testValues);
+                    vLeft = Eval(left, null, null, testValues, test);
+                    vRight = Eval(right, null, null, testValues, test);
                 }
                 
                 //    special case of handling NULLS, currently only OR operator can work with NULLS
@@ -380,11 +386,11 @@ namespace Brudixy.Expressions
                         return (0 != BinaryCompare(vLeft, vRight, resultType,  resultTypeModifier, op));
 
                     case Operators.Is:
-                        vLeft = Eval(left, row, recordNos);
+                        vLeft = Eval(left, row, recordNos, testValues, test);
                         return vLeft == null;
 
                     case Operators.IsNot:
-                        vLeft = Eval(left, row, recordNos);
+                        vLeft = Eval(left, row, recordNos, testValues, test);
                         return vLeft != null;
 
                     case Operators.And:
@@ -393,14 +399,18 @@ namespace Brudixy.Expressions
                          both right and left operands, because we can shortcut :
                              If one of the operands is false the result is false */
                         
-                        vLeft = Eval(left, row, recordNos);
+                        vLeft = Eval(left, row, recordNos, testValues, test);
                         
                         if (vLeft is bool lb)
                         {
                             if (lb == false)
                             {
                                 value = false;
-                                break;
+
+                                if (test == false)
+                                {
+                                    break;
+                                }
                             }
                         }
                         else
@@ -410,13 +420,13 @@ namespace Brudixy.Expressions
                                 return null;
                             }
                             
-                            vRight = Eval(right, row, recordNos);
+                            vRight = Eval(right, row, recordNos, testValues, test);
                             typeMismatch = true;
                             
                             break;
                         }
                        
-                        vRight = Eval(right, row, recordNos);
+                        vRight = Eval(right, row, recordNos, testValues, test);
 
                         if (vRight is bool rb)
                         {
@@ -440,7 +450,7 @@ namespace Brudixy.Expressions
                         both right and left operands, because we can shortcut :
                             If one of the operands is true the result is true  */
 
-                        vLeft = Eval(left, row, recordNos);
+                        vLeft = Eval(left, row, recordNos, testValues, test);
 
                         if (vLeft != null)
                         {
@@ -454,13 +464,13 @@ namespace Brudixy.Expressions
                             }
                             else
                             {
-                                vRight = Eval(right, row, recordNos);
+                                vRight = Eval(right, row, recordNos, testValues, test);
                                 typeMismatch = true;
                                 break;
                             }
                         }
 
-                        vRight = Eval(right, row, recordNos);
+                        vRight = Eval(right, row, recordNos, testValues, test);
 
                         if (vRight is bool rb)
                         {
@@ -499,7 +509,7 @@ namespace Brudixy.Expressions
                             throw new InvalidExpressionException("Function IN used without ().");
                         }
 
-                        vLeft = Eval(left, row, recordNos);
+                        vLeft = Eval(left, row, recordNos, testValues, test);
 
                         if (vLeft == null)
                         {
@@ -514,7 +524,7 @@ namespace Brudixy.Expressions
 
                         for (int i = 0; i < into.ArgumentCount; i++)
                         {
-                            vRight = into.Arguments[i].Eval();
+                            vRight = into.Arguments[i].Eval(test: test);
 
                             if (vRight == null)
                             {
