@@ -27,6 +27,20 @@ namespace Brudixy.Tests
         }
         
         [Test]
+        public void TestExpressionBinValidationNotFailRightNode()
+        {
+            var table = new DataTable();
+
+            table.AddColumn("ID", TableStorageType.Int32);
+            table.AddColumn("V1", TableStorageType.Decimal);
+            table.AddColumn("V2", TableStorageType.Decimal);
+
+            var dataExpression = new DataExpression(table, "ID = 5 AND (V1 / V2) > 0.8");
+
+            dataExpression.Validate();
+        }
+        
+        [Test]
         public void TestResetAnnotations()
         {
             var table = new DataTable();

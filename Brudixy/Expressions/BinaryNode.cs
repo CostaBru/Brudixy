@@ -328,19 +328,19 @@ namespace Brudixy.Expressions
                 switch (op)
                 {
                     case Operators.Plus:
-                        value = OpPlus(resultType, vLeft, vRight, ref typeMismatch);
+                        value = OpPlus(resultType, vLeft, vRight, ref typeMismatch, test);
                         break; // Operators.Plus
 
                     case Operators.Minus:
-                        value = OpMinus(resultType, vLeft, vRight, ref typeMismatch);
+                        value = OpMinus(resultType, vLeft, vRight, ref typeMismatch, test);
                         break; // Operators.Minus 
 
                     case Operators.Multiply:
-                        value = OnMultiply(resultType, vLeft, vRight, ref typeMismatch);
+                        value = OnMultiply(resultType, vLeft, vRight, ref typeMismatch, test);
                         break; // Operators.Multiply
 
                     case Operators.Divide:
-                        value = OpDivide(resultType, vLeft, vRight, ref typeMismatch);
+                        value = OpDivide(resultType, vLeft, vRight, ref typeMismatch, test);
                         break; // Operators.Divide 
 
                     case Operators.EqualTo:
@@ -495,7 +495,7 @@ namespace Brudixy.Expressions
                     }
 
                     case Operators.Modulo:
-                        value = OpModulo(resultType, value, vLeft, vRight, resultTypeModifier, ref typeMismatch);
+                        value = OpModulo(resultType, value, vLeft, vRight, resultTypeModifier, ref typeMismatch, test);
                         break;
 
                     case Operators.In:
@@ -562,12 +562,23 @@ namespace Brudixy.Expressions
         }
 
         private object OpModulo(TableStorageType resultType, object value, object vLeft, object vRight,
-            TableStorageTypeModifier resultTypeModifier, ref bool typeMismatch)
+            TableStorageTypeModifier resultTypeModifier, ref bool typeMismatch, bool test)
         {
             if (IsInteger(resultType))
             {
-                value = ConvertBoxed<ulong>(vLeft, nameof(OpModulo)) %
-                        ConvertBoxed<ulong>(vRight, nameof(OpModulo));
+                // Convert operands
+                var left = ConvertBoxed<ulong>(vLeft, nameof(OpModulo));
+                var right = ConvertBoxed<ulong>(vRight, nameof(OpModulo));
+
+                if (test && right == 0UL)
+                {
+                    // In test mode, avoid divide-by-zero errors and return zero/default
+                    value = 0UL;
+                }
+                else
+                {
+                    value = left % right;
+                }
                 
                 if (resultType != TableStorageType.UInt64)
                 {
@@ -582,7 +593,8 @@ namespace Brudixy.Expressions
             return value;
         }
 
-        private object OpDivide(TableStorageType resultType, object vLeft, object vRight, ref bool typeMismatch)
+        private object OpDivide(TableStorageType resultType, object vLeft, object vRight, ref bool typeMismatch,
+            bool test)
         {
             var name = nameof(OpDivide);
             
@@ -590,70 +602,103 @@ namespace Brudixy.Expressions
             {
                 case TableStorageType.Byte:
                 {
-                    return ConvertBoxed<byte>(vLeft, name) / ConvertBoxed<byte>(vRight, name);
+                    var l = ConvertBoxed<byte>(vLeft, name);
+                    var r = ConvertBoxed<byte>(vRight, name);
+                    if (test && r == 0) return (byte)0;
+                    return (byte)(l / r);
                 }
                 case TableStorageType.SByte:
                 {
-                    return ConvertBoxed<sbyte>(vLeft, name) / ConvertBoxed<sbyte>(vRight, name);
+                    var l = ConvertBoxed<sbyte>(vLeft, name);
+                    var r = ConvertBoxed<sbyte>(vRight, name);
+                    if (test && r == 0) return (sbyte)0;
+                    return (sbyte)(l / r);
                 }
                 case TableStorageType.Int16:
                 {
-                    return ConvertBoxed<short>(vLeft, name) / ConvertBoxed<short>(vRight, name);
+                    var l = ConvertBoxed<short>(vLeft, name);
+                    var r = ConvertBoxed<short>(vRight, name);
+                    if (test && r == 0) return (short)0;
+                    return (short)(l / r);
                 }
                 case TableStorageType.UInt16:
                 {
-                    return ConvertBoxed<ushort>(vLeft, name) / ConvertBoxed<ushort>(vRight, name);
+                    var l = ConvertBoxed<ushort>(vLeft, name);
+                    var r = ConvertBoxed<ushort>(vRight, name);
+                    if (test && r == 0) return (ushort)0;
+                    return (ushort)(l / r);
                 }
                 case TableStorageType.Int32:
                 {
+                    var l = ConvertBoxed<int>(vLeft, name);
+                    var r = ConvertBoxed<int>(vRight, name);
+                    if (test && r == 0) return 0;
                     checked
                     {
-                        return ConvertBoxed<int>(vLeft, name) / ConvertBoxed<int>(vRight, name);
+                        return l / r;
                     }
                 }
                         
                 case TableStorageType.UInt32:
                 {
+                    var l = ConvertBoxed<uint>(vLeft, name);
+                    var r = ConvertBoxed<uint>(vRight, name);
+                    if (test && r == 0U) return 0U;
                     checked
                     {
-                        return ConvertBoxed<uint>(vLeft, name) / ConvertBoxed<uint>(vRight, name);
+                        return l / r;
                     }
                 }
                 case TableStorageType.UInt64:
                 {
+                    var l = ConvertBoxed<ulong>(vLeft, name);
+                    var r = ConvertBoxed<ulong>(vRight, name);
+                    if (test && r == 0UL) return 0UL;
                     checked
                     {
-                        return ConvertBoxed<ulong>(vLeft, name) / ConvertBoxed<ulong>(vRight, name);
+                        return l / r;
                     }
                 }
                 case TableStorageType.Int64:
                 {
+                    var l = ConvertBoxed<long>(vLeft, name);
+                    var r = ConvertBoxed<long>(vRight, name);
+                    if (test && r == 0L) return 0L;
                     checked
                     {
-                        return ConvertBoxed<long>(vLeft, name) / ConvertBoxed<long>(vRight, name);
+                        return l / r;
                     }
                 }
                           
                 case TableStorageType.Decimal:
                 {
+                    var l = ConvertBoxed<decimal>(vLeft, name);
+                    var r = ConvertBoxed<decimal>(vRight, name);
+                    if (test && r == 0M) return 0M;
                     checked
                     {
-                        return ConvertBoxed<decimal>(vLeft, name) / ConvertBoxed<decimal>(vRight, name);
+                        return l / r;
                     }
                 }
                          
                 case TableStorageType.Single:
                 {
+                    var l = ConvertBoxed<float>(vLeft, name);
+                    var r = ConvertBoxed<float>(vRight, name);
+                    if (test && r == 0f) return 0f;
                     checked
                     {
-                        return ConvertBoxed<float>(vLeft, name) / ConvertBoxed<float>(vRight, name);
+                        return l / r;
                     }
                 }
                 case TableStorageType.Double:
                 {
+                    var l = ConvertBoxed<double>(vLeft, name);
+                    var r = ConvertBoxed<double>(vRight, name);
+                    if (test && r == 0d) return 0d;
                     checked
                     {
-                        return ConvertBoxed<double>(vLeft, name) / ConvertBoxed<double>(vRight, name);
+                        return l / r;
                     }
                 }
                 default:
@@ -666,7 +711,8 @@ namespace Brudixy.Expressions
             return null;
         }
 
-        private object OnMultiply(TableStorageType resultType, object vLeft, object vRight, ref bool typeMismatch)
+        private object OnMultiply(TableStorageType resultType, object vLeft, object vRight, ref bool typeMismatch,
+            bool test)
         {
             var name = nameof(OnMultiply);
             
@@ -674,73 +720,129 @@ namespace Brudixy.Expressions
             {
                 case TableStorageType.Byte:
                 {
-                    return ConvertBoxed<byte>(vLeft, name) * ConvertBoxed<byte>(vRight, name);
+                    var l = ConvertBoxed<byte>(vLeft, name);
+                    var r = ConvertBoxed<byte>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return (byte)(l * r); }
+                    }
+                    return (byte)(l * r);
                 }
                         
                 case TableStorageType.SByte:
                 {
-                    return ConvertBoxed<sbyte>(vLeft, name) * ConvertBoxed<sbyte>(vRight, name);
+                    var l = ConvertBoxed<sbyte>(vLeft, name);
+                    var r = ConvertBoxed<sbyte>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return (sbyte)(l * r); }
+                    }
+                    return (sbyte)(l * r);
                 }
                 case TableStorageType.Int16:
                 {
-                    return ConvertBoxed<short>(vLeft, name) * ConvertBoxed<short>(vRight, name);
+                    var l = ConvertBoxed<short>(vLeft, name);
+                    var r = ConvertBoxed<short>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return (short)(l * r); }
+                    }
+                    return (short)(l * r);
                 }
                          
                 case TableStorageType.UInt16:
                 {
-                    return ConvertBoxed<ushort>(vLeft, name) * ConvertBoxed<ushort>(vRight, name);
+                    var l = ConvertBoxed<ushort>(vLeft, name);
+                    var r = ConvertBoxed<ushort>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return (ushort)(l * r); }
+                    }
+                    return (ushort)(l * r);
                 }
                 case TableStorageType.Int32:
                 {
+                    var l = ConvertBoxed<int>(vLeft, name);
+                    var r = ConvertBoxed<int>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return l * r; }
+                    }
                     checked
                     {
-                        return ConvertBoxed<int>(vLeft, name) * ConvertBoxed<int>(vRight, name);
+                        return l * r;
                     }
                 }
                          
                 case TableStorageType.UInt32:
                 {
+                    var l = ConvertBoxed<uint>(vLeft, name);
+                    var r = ConvertBoxed<uint>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return l * r; }
+                    }
                     checked
                     {
-                        return ConvertBoxed<uint>(vLeft, name) * ConvertBoxed<uint>(vRight, name);
+                        return l * r;
                     }
                 }
                 case TableStorageType.Int64:
                 {
+                    var l = ConvertBoxed<long>(vLeft, name);
+                    var r = ConvertBoxed<long>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return l * r; }
+                    }
                     checked
                     {
-                        return ConvertBoxed<long>(vLeft, name) * ConvertBoxed<long>(vRight, name);
+                        return l * r;
                     }
                 }
                          
                 case TableStorageType.UInt64:
                 {
+                    var l = ConvertBoxed<ulong>(vLeft, name);
+                    var r = ConvertBoxed<ulong>(vRight, name);
+                    if (test)
+                    {
+                        unchecked { return l * r; }
+                    }
                     checked
                     {
-                        return ConvertBoxed<ulong>(vLeft, name) * ConvertBoxed<ulong>(vRight, name);
+                        return l * r;
                     }
                 }
                 case TableStorageType.Decimal:
                 {
+                    var l = ConvertBoxed<decimal>(vLeft, name);
+                    var r = ConvertBoxed<decimal>(vRight, name);
+                    // Decimal overflow throws; keep checked but we can't unchecked decimal.
+                    // Still, ensure arithmetic completes; no special test handling besides performing the operation.
                     checked
                     {
-                        return ConvertBoxed<decimal>(vLeft, name) * ConvertBoxed<decimal>(vRight, name);
+                        return l * r;
                     }
                 }
                         
                 case TableStorageType.Single:
                 {
+                    var l = ConvertBoxed<float>(vLeft, name);
+                    var r = ConvertBoxed<float>(vRight, name);
                     checked
                     {
-                        return ConvertBoxed<float>(vLeft, name) * ConvertBoxed<float>(vRight, name);
+                        return l * r;
                     }
                 }
                            
                 case TableStorageType.Double:
                 {
+                    var l = ConvertBoxed<double>(vLeft, name);
+                    var r = ConvertBoxed<double>(vRight, name);
                     checked
                     {
-                        return ConvertBoxed<double>(vLeft, name) * ConvertBoxed<double>(vRight, name);
+                        return l * r;
                     }
                 }
                          
@@ -754,7 +856,8 @@ namespace Brudixy.Expressions
             return null;
         }
 
-        private object OpMinus(TableStorageType resultType, object vLeft, object vRight, ref bool typeMismatch)
+        private object OpMinus(TableStorageType resultType, object vLeft, object vRight, ref bool typeMismatch,
+            bool test)
         {
             var name = nameof(OpMinus);
             
@@ -766,7 +869,18 @@ namespace Brudixy.Expressions
                 }
                 case TableStorageType.SByte:
                 {
-                    return ConvertBoxed<sbyte>(vLeft, name) - ConvertBoxed<sbyte>(vRight, name);
+                    var vb = ConvertBoxed<sbyte>(vLeft, name);
+                    var vr = ConvertBoxed<sbyte>(vRight, name);
+                    
+                    if (test)
+                    {
+                        unchecked
+                        {
+                            return vb - vr;
+                        }
+                    }
+
+                    return vb - vr;
                 }
                 case TableStorageType.Int16:
                 {
@@ -774,7 +888,18 @@ namespace Brudixy.Expressions
                 }
                 case TableStorageType.UInt16:
                 {
-                    return ConvertBoxed<ushort>(vLeft, name) - ConvertBoxed<ushort>(vRight, name);
+                    var vb = ConvertBoxed<ushort>(vLeft, name);
+                    var vr = ConvertBoxed<ushort>(vRight, name);
+                    
+                    if (test)
+                    {
+                        unchecked
+                        {
+                            return vb - vr;
+                        }
+                    }
+
+                    return vb - vr;
                 }
                 case TableStorageType.Int32:
                 {
@@ -787,7 +912,18 @@ namespace Brudixy.Expressions
                 {
                     checked
                     {
-                        return ConvertBoxed<uint>(vLeft, name) - ConvertBoxed<uint>(vRight, name);
+                        var vb = ConvertBoxed<uint>(vLeft, name);
+                        var vr = ConvertBoxed<uint>(vRight, name);
+                        
+                        if (test)
+                        {
+                            unchecked
+                            {
+                                return vb - vr;
+                            }
+                        }
+
+                        return vb - vr;
                     }
                 }
                 case TableStorageType.Int64:
@@ -799,9 +935,19 @@ namespace Brudixy.Expressions
                 }
                 case TableStorageType.UInt64:
                 {
+                    var vb = ConvertBoxed<ulong>(vLeft, name);
+                    var vr = ConvertBoxed<ulong>(vRight, name);
+                    
+                    if (test)
+                    {
+                        unchecked
+                        {
+                            return vb - vr;
+                        }
+                    }
                     checked
                     {
-                        return ConvertBoxed<ulong>(vLeft, name) - ConvertBoxed<ulong>(vRight, name);
+                        return vb - vr;
                     }
                 }
                 case TableStorageType.Decimal:
@@ -848,7 +994,11 @@ namespace Brudixy.Expressions
             return null;
         }
 
-        private object OpPlus(TableStorageType resultType,  object vLeft, object vRight, ref bool typeMismatch)
+        private object OpPlus(TableStorageType resultType,
+            object vLeft,
+            object vRight, 
+            ref bool typeMismatch,
+            bool test)
         {
             switch (resultType)
             {
