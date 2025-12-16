@@ -41,6 +41,41 @@ namespace Brudixy.Tests
         }
         
         [Test]
+        public void TestSumFilter()
+        {
+            var table = new DataTable();
+
+            table.AddColumn("ID", TableStorageType.Int32);
+            table.AddColumn("V1", TableStorageType.Decimal);
+            table.AddColumn("V2", TableStorageType.Decimal);
+            
+            table.AddRow(new Dictionary<string, object?>()
+            {
+                ["ID"] = 1,
+                ["V1"] = 20m,
+                ["V2"] = 2m
+            });
+
+            table.AddRow(new Dictionary<string, object?>()
+            {
+                ["ID"] = 2,
+                ["V1"] = 20m,
+                ["V2"] = 2m
+            });
+            
+            table.AddRow(new Dictionary<string, object?>()
+            {
+                ["ID"] = 3,
+                ["V1"] = 0,
+                ["V2"] = 40
+            });
+
+            var dataRows = table.Select<DataRow>("SUM(V1) = V2").ToArray();
+            
+            Assert.AreEqual(1, dataRows.Length);
+        }
+        
+        [Test]
         public void TestResetAnnotations()
         {
             var table = new DataTable();

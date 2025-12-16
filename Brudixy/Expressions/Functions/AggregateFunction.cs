@@ -1,9 +1,12 @@
-﻿using Konsarpoo.Collections;
+﻿using Brudixy.Exceptions;
+using Konsarpoo.Collections;
 
 namespace Brudixy.Expressions.Functions;
 
 public abstract class AggregateFunction : Function
 {
+    private Type m_nameNodeType = typeof(NameNode);
+    
     internal AggregateFunction(string name, Type result, bool isValidateArguments, bool IsVariantArgumentList, int argumentCount, Type a1, Type a2, Type a3) : base(name, result, isValidateArguments, IsVariantArgumentList, argumentCount, a1, a2, a3)
     {
     }
@@ -19,6 +22,29 @@ public abstract class AggregateFunction : Function
        this.m_relation = relation;
        this.m_localFunc = local;
        this.m_columnName = column;
+    }
+    
+    public override void BindArguments(IExpressionDataSource expressionDataSource, Data<ExpressionNode> arguments, Data<string> columns)
+    {
+        if (arguments.Count != 1)
+        {
+            throw ExprException.FunctionArgumentCount(this.name, 1, arguments.Count);
+        }
+        
+        if (expressionDataSource is DataTable dt)
+        {
+            this.m_localFunc = true;
+            this.m_childTable = dt;
+        }
+
+        var expressionNode = arguments[0];
+                
+        if (expressionNode is NameNode nn)
+        {
+            this.m_columnName = nn.name;
+        }
+
+        expressionNode.Mount(expressionDataSource, columns);
     }
 
     protected override object EvalFunction(IExpressionDataSource expressionDataSource,

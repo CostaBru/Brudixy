@@ -25,6 +25,7 @@ namespace Brudixy.Expressions
             if (!string.IsNullOrEmpty(filterExpression))
             {
                 rowFilter = new DataExpression(this.table, filterExpression);
+                rowFilter.Mount(table);
                 expression = rowFilter.ExpressionNode;
             }
         }
@@ -208,8 +209,6 @@ namespace Brudixy.Expressions
                     nCandidates += 1;
                 }
             }
-            
-            dependency.Dispose();
         }
 
         public IEnumerable<T> SelectRows<T>() where T: IDataRowReadOnlyAccessor

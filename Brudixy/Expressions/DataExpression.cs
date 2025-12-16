@@ -203,9 +203,9 @@ namespace Brudixy.Expressions
             }
         }
 
-        internal Data<string> GetDependency()
+        public IReadOnlyList<string> GetDependency()
         {
-            return m_dependency.ToData();
+            return m_dependency;
         }
 
         internal bool IsTableAggregate()

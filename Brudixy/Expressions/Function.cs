@@ -35,7 +35,6 @@ namespace Brudixy.Expressions
             parameters[2] = a3;
         }
         
-        
         public virtual object Eval(IExpressionDataSource expressionDataSource,
             Data<ExpressionNode> arguments,
             int? row = null, 
