@@ -89,7 +89,7 @@ namespace Brudixy
             var data = new Data<object>();
             data.Ensure(colMap.Count);
             
-            var containerDataProps = new ContainerDataProps(-1, data, RowState.Detached);
+            var containerDataProps = new ContainerDataProps(-1, data, RowState.New);
 
             this.Init(containerMetadataProps, containerDataProps);
         }

@@ -367,6 +367,10 @@ namespace Brudixy
                                     values[dataColumn.ColumnHandle] = CoreDataTable.ConvertStringToObject(storageType, dataColumn.TypeModifier, elementValue, dataColumn.DataType);
                                 }
                             }
+                            else
+                            {
+                                values[dataColumn.ColumnHandle] = null;
+                            }
 
                             columns.Add(dataColumn);
                             columnValue.Add(colValue);

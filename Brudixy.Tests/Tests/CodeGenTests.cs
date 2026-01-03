@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Brudixy.Converter;
 using Brudixy.Delegates;
+using Brudixy.Interfaces;
 using Brudixy.TypeGenerator;
 using Brudixy.TypeGenerator.Core;
 using Flexols.Core.Common.Base.Data.BaseTables;
@@ -977,6 +978,10 @@ namespace Brudixy.Tests
         {
             var container = new t_nmtRowContainer();
 
+            RowState containerRowRecordState = container.RowRecordState;
+            
+            Assert.AreEqual(RowState.New, containerRowRecordState);
+            
             container.id = 1;
             container.name = "test";
 

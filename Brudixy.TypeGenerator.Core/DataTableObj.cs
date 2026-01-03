@@ -333,6 +333,10 @@ namespace Brudixy.TypeGenerator.Core
                 else
                 {
                     columnObject.AllowNull = nullable;
+                    if (nullable ?? false)
+                    {
+                        columnObject.DataTypeIsStruct = false;
+                    }
                 }
 
                 columnObject.Type = "UserType";

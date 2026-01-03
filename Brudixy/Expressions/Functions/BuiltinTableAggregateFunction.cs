@@ -19,6 +19,8 @@ public class BuiltinTableAggregateFunction : AggregateFunction
 
         var dataColumn = tbl.GetColumn(m_columnName);
 
+        //todo aggregate on expression columns
+        
         var dataItem = dataColumn.DataStorageLink;
 
         var aggregateValue = dataItem.GetAggregateValue(handles, Type, dataColumn);
