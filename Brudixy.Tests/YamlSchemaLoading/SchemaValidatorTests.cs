@@ -11,31 +11,29 @@ public class SchemaValidatorTests
     
     /// <summary>
     /// Gets the path to a YAML fixture file in a cross-platform way.
+    /// Uses the source directory location which is always available.
     /// </summary>
     private static string GetFixturePath(string fileName)
     {
-        // Try output directory first (where files are copied during build via Link)
-        var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
-        if (File.Exists(outputPath))
-            return outputPath;
+        // Use the test assembly location to find the source directory
+        var testDirectory = TestContext.CurrentContext.TestDirectory;
         
-        // Try with Fixtures subdirectory (in case Link didn't flatten)
-        var fixturesPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", fileName);
-        if (File.Exists(fixturesPath))
-            return fixturesPath;
-            
-        // Try full path with YamlSchemaLoading (in case directory structure preserved)
-        var fullPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "YamlSchemaLoading", "Fixtures", fileName);
+        // Navigate up to the project root, then to the Fixtures folder
+        var fixturesDir = Path.Combine(testDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures");
+        var fullPath = Path.Combine(fixturesDir, fileName);
+        
         if (File.Exists(fullPath))
-            return fullPath;
+            return Path.GetFullPath(fullPath);
+        
+        // Fallback: try different level of directory navigation
+        fixturesDir = Path.Combine(testDirectory, "..", "..", "..", "..", "Brudixy.Tests", "YamlSchemaLoading", "Fixtures");
+        fullPath = Path.Combine(fixturesDir, fileName);
+        
+        if (File.Exists(fullPath))
+            return Path.GetFullPath(fullPath);
             
-        // Fall back to source directory (for IDE test runs)
-        var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures", fileName);
-        if (File.Exists(sourcePath))
-            return Path.GetFullPath(sourcePath);
-            
-        // If still not found, return the expected output path (will fail with clear error)
-        return outputPath;
+        // Last resort: throw with clear error
+        throw new FileNotFoundException($"Could not find YAML fixture file: {fileName}. Searched in: {testDirectory}/../../../YamlSchemaLoading/Fixtures/ and {testDirectory}/../../../../Brudixy.Tests/YamlSchemaLoading/Fixtures/");
     }
     
     [SetUp]

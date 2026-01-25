@@ -93,9 +93,5 @@
     <Folder Include="TypedDs\Test\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Copy YAML test fixtures to output directory - using forward slashes for cross-platform compatibility -->
-    <Content Include="YamlSchemaLoading/Fixtures/*.yaml" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 
 </Project>
