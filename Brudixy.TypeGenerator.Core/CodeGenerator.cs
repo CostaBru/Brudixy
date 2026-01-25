@@ -155,7 +155,7 @@ namespace Brudixy.TypeGenerator.Core
 
         private static string GetDefaultNameSpace(string fullName, string callingPath)
         {
-            if(string.IsNullOrEmpty(callingPath))
+            if(string.IsNullOrEmpty(callingPath) || string.IsNullOrEmpty(fullName))
             {
                 return string.Empty;
             }
@@ -169,8 +169,36 @@ namespace Brudixy.TypeGenerator.Core
             
             var callingPathLength = directoryInfo.Parent?.FullName.Length ?? 0;
 
+            // Bounds check to prevent ArgumentOutOfRangeException
+            if (callingPathLength >= fullName.Length)
+            {
+                // If the calling path is longer than or equal to the full name,
+                // we can't extract a meaningful namespace from the path difference.
+                // This can happen with relative paths or when paths don't share a common root.
+                return string.Empty;
+            }
+
             // Handle both Windows (\) and Unix (/) path separators for cross-platform compatibility
             var defaultNameSpace = fullName.Remove(0, callingPathLength).TrimStart('\\', '/').Replace('\\', '.').Replace('/', '.');
+            
+            // Remove file extension from the namespace
+            var extensionIndex = defaultNameSpace.LastIndexOf('.');
+            if (extensionIndex > 0)
+            {
+                // Check if it looks like a file extension (e.g., .yaml, .cs, not a namespace dot)
+                var possibleExtension = defaultNameSpace.Substring(extensionIndex);
+                if (possibleExtension.Contains(".yaml") || possibleExtension.Contains(".brudixy") || 
+                    possibleExtension.Contains(".cs") || possibleExtension.Contains(".xml"))
+                {
+                    // Find the last directory separator before the extension
+                    var lastSeparator = defaultNameSpace.LastIndexOf('.', extensionIndex - 1);
+                    if (lastSeparator > 0)
+                    {
+                        defaultNameSpace = defaultNameSpace.Substring(0, lastSeparator);
+                    }
+                }
+            }
+            
             return defaultNameSpace;
         }
 
