@@ -169,7 +169,8 @@ namespace Brudixy.TypeGenerator.Core
             
             var callingPathLength = directoryInfo.Parent?.FullName.Length ?? 0;
 
-            var defaultNameSpace = fullName.Remove(0, callingPathLength).TrimStart('\\').Replace('\\', '.');
+            // Handle both Windows (\) and Unix (/) path separators for cross-platform compatibility
+            var defaultNameSpace = fullName.Remove(0, callingPathLength).TrimStart('\\', '/').Replace('\\', '.').Replace('/', '.');
             return defaultNameSpace;
         }
 
