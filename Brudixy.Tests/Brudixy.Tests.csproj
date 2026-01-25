@@ -95,34 +95,7 @@
 
   <ItemGroup>
     <!-- Copy YAML test fixtures to output directory - using forward slashes for cross-platform compatibility -->
-    <Content Include="YamlSchemaLoading/Fixtures/SimpleTable.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/SimpleTable.yaml</Link>
-    </Content>
-    <Content Include="YamlSchemaLoading/Fixtures/InvalidTable_InvalidType.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/InvalidTable_InvalidType.yaml</Link>
-    </Content>
-    <Content Include="YamlSchemaLoading/Fixtures/InvalidTable_MissingTableName.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/InvalidTable_MissingTableName.yaml</Link>
-    </Content>
-    <Content Include="YamlSchemaLoading/Fixtures/MalformedYaml.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/MalformedYaml.yaml</Link>
-    </Content>
-    <Content Include="YamlSchemaLoading/Fixtures/ChildTable.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/ChildTable.yaml</Link>
-    </Content>
-    <Content Include="YamlSchemaLoading/Fixtures/ParentTable.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/ParentTable.yaml</Link>
-    </Content>
-    <Content Include="YamlSchemaLoading/Fixtures/TableWithAllFeatures.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>YamlSchemaLoading/Fixtures/TableWithAllFeatures.yaml</Link>
-    </Content>
+    <Content Include="YamlSchemaLoading/Fixtures/*.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
