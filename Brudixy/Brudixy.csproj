@@ -61,6 +61,7 @@
       <Compile Include="..\Brudixy.TypeGenerator.Core\DictExt.cs" Link="Serialization\DictExt.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\TableProp.cs" Link="Serialization\TableProp.cs" />
       <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs" Link="Serialization\BuiltinSupportStorageTypes.cs" />
+
     </ItemGroup>
 
     <!-- Embed brudixy-table-schema.json as resource -->

@@ -39,6 +39,9 @@
       <Compile Include="..\Brudixy.TypeGenerator.Core\DataTableObj.cs" Link="DataTableObj.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\DictExt.cs" Link="DictExt.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\GroupColumInfo.cs" Link="GroupColumInfo.cs" />
+      <Compile Include="..\Brudixy.TypeGenerator.Core\HintNameHelper.cs">
+        <Link>HintNameHelper.cs</Link>
+      </Compile>
       <Compile Include="..\Brudixy.TypeGenerator.Core\IFileSystemAccessor.cs" Link="IFileSystemAccessor.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\Index.cs" Link="Index.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\IndexedDict.cs" Link="IndexedDict.cs" />

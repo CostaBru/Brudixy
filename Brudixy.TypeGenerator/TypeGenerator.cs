@@ -47,8 +47,8 @@ namespace Brudixy.TypeGenerator
         public void Execute(GeneratorExecutionContext context)
         {
             var callingPath = context.GetCallingPath();
-            
-            context.AddSource("Test.log", $"//{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")} at " + callingPath);
+
+            context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Test.log", "Test"), $"//{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")} at " + callingPath);
 
             string lastFileItem = string.Empty;
 
@@ -69,7 +69,7 @@ namespace Brudixy.TypeGenerator
                     return;
                 }
 
-                context.AddSource("Files.log", string.Join(Environment.NewLine, yamlSources.Select(s => "//" + s.path)));
+                context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Files.log", "Files"), string.Join(Environment.NewLine, yamlSources.Select(s => "//" + s.path)));
 
                 foreach (var source in yamlSources)
                 {
@@ -208,7 +208,7 @@ namespace Brudixy.TypeGenerator
                             var errorMessage = $"// Schema validation failed for {table}\n" +
                                              $"// {validationResult.Errors.Count} error(s) found\n" +
                                              string.Join("\n", validationResult.Errors.Select(e => $"// - {e.PropertyPath}: {e.Message}"));
-                            context.AddSource($"{Path.GetFileNameWithoutExtension(table)}.ValidationErrors.cs", SourceText.From(errorMessage, Encoding.UTF8));
+                            context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize($"{Path.GetFileNameWithoutExtension(table)}.ValidationErrors.cs", "ValidationErrors"), SourceText.From(errorMessage, Encoding.UTF8));
                             continue; // Skip code generation for this table
                         }
                     }
@@ -218,8 +218,7 @@ namespace Brudixy.TypeGenerator
                     foreach (var file in files)
                     {
                         lastFileItem = file.Item3;
-                        
-                        context.AddSource(file.Item1, SourceText.From(file.Item2, Encoding.UTF8));
+                        context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize(file.Item1, Path.GetFileNameWithoutExtension(lastFileItem)), SourceText.From(file.Item2, Encoding.UTF8));
                     }
                 }
 
@@ -268,7 +267,7 @@ namespace Brudixy.TypeGenerator
                             var errorMessage = $"// Schema validation failed for {dataSet.name}\n" +
                                              $"// {validationResult.Errors.Count} error(s) found\n" +
                                              string.Join("\n", validationResult.Errors.Select(e => $"// - {e.PropertyPath}: {e.Message}"));
-                            context.AddSource($"{Path.GetFileNameWithoutExtension(dataSet.name)}.ValidationErrors.cs", SourceText.From(errorMessage, Encoding.UTF8));
+                            context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize($"{Path.GetFileNameWithoutExtension(dataSet.name)}.ValidationErrors.cs", "ValidationErrors"), SourceText.From(errorMessage, Encoding.UTF8));
                             continue; // Skip code generation for this dataset
                         }
                     }
@@ -284,8 +283,7 @@ namespace Brudixy.TypeGenerator
                     foreach (var file in files)
                     {
                         lastFileItem = file.Item3;
-                        
-                        context.AddSource(hintName: file.Item1, source: file.Item2);
+                        context.AddSource(hintName: Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize(file.Item1, Path.GetFileNameWithoutExtension(lastFileItem)), source: file.Item2);
                     }
                 }
             }
@@ -306,7 +304,7 @@ namespace Brudixy.TypeGenerator
                 }
                 errorContent.AppendLine("// ========================================");
                 
-                context.AddSource("Error.cs", SourceText.From(errorContent.ToString(), Encoding.UTF8));
+                context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Error.cs", "Error"), SourceText.From(errorContent.ToString(), Encoding.UTF8));
                 
                 // Also report as diagnostic
                 var descriptor = new DiagnosticDescriptor(
