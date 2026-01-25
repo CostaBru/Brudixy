@@ -14,10 +14,20 @@ public class DataTableSchemaExtensionsTests
     /// </summary>
     private static string GetFixturePath(string fileName)
     {
-        // Try output directory first (where files are copied during build)
+        // Try output directory first (where files are copied during build via Link)
         var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
         if (File.Exists(outputPath))
             return outputPath;
+        
+        // Try with Fixtures subdirectory (in case Link didn't flatten)
+        var fixturesPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", fileName);
+        if (File.Exists(fixturesPath))
+            return fixturesPath;
+            
+        // Try full path with YamlSchemaLoading (in case directory structure preserved)
+        var fullPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "YamlSchemaLoading", "Fixtures", fileName);
+        if (File.Exists(fullPath))
+            return fullPath;
             
         // Fall back to source directory (for IDE test runs)
         var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures", fileName);

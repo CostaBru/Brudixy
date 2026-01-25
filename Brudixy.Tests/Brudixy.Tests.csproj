@@ -95,9 +95,7 @@
 
   <ItemGroup>
     <!-- Copy YAML test fixtures to output directory -->
-    <None Include="YamlSchemaLoading\Fixtures\*.yaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="YamlSchemaLoading\Fixtures\*.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
