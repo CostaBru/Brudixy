@@ -11,6 +11,25 @@ public class YamlSchemaLoaderTests
 {
     private YamlSchemaLoader _loader;
     
+    /// <summary>
+    /// Gets the path to a YAML fixture file in a cross-platform way.
+    /// </summary>
+    private static string GetFixturePath(string fileName)
+    {
+        // Try output directory first (where files are copied during build)
+        var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
+        if (File.Exists(outputPath))
+            return outputPath;
+            
+        // Fall back to source directory (for IDE test runs)
+        var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures", fileName);
+        if (File.Exists(sourcePath))
+            return Path.GetFullPath(sourcePath);
+            
+        // If still not found, return the expected output path (will fail with clear error)
+        return outputPath;
+    }
+    
     [SetUp]
     public void SetUp()
     {
@@ -110,7 +129,7 @@ XProperties:
     public void LoadIntoTableFromFile_WithValidFile_LoadsSchema()
     {
         var table = new DataTable("TestTable");
-        var filePath = Path.Combine("..", "..", "..", "YamlSchemaLoading", "Fixtures", "SimpleTable.yaml");
+        var filePath = GetFixturePath("SimpleTable.yaml");
         
         _loader.LoadIntoTableFromFile(table, filePath);
         

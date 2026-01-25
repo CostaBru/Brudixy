@@ -30,7 +30,10 @@ namespace Brudixy.Tests
 
             var key = Encoding.UTF8.GetBytes("TestKey");
             
-            persistenceTable.OpenOrCreate("c:\\temp", key, CompressionLevel.Fastest);
+            // Use cross-platform temp directory instead of hardcoded Windows path
+            var tempPath = Path.Combine(Path.GetTempPath(), "TestData");
+            Directory.CreateDirectory(tempPath);
+            persistenceTable.OpenOrCreate(tempPath, key, CompressionLevel.Fastest);
 
             if (persistenceTable.ColumnCount == 0)
             {

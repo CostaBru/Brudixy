@@ -9,6 +9,25 @@ public class SchemaValidatorTests
 {
     private SchemaValidator _validator;
     
+    /// <summary>
+    /// Gets the path to a YAML fixture file in a cross-platform way.
+    /// </summary>
+    private static string GetFixturePath(string fileName)
+    {
+        // Try output directory first (where files are copied during build)
+        var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
+        if (File.Exists(outputPath))
+            return outputPath;
+            
+        // Fall back to source directory (for IDE test runs)
+        var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures", fileName);
+        if (File.Exists(sourcePath))
+            return Path.GetFullPath(sourcePath);
+            
+        // If still not found, return the expected output path (will fail with clear error)
+        return outputPath;
+    }
+    
     [SetUp]
     public void SetUp()
     {
@@ -109,7 +128,7 @@ Columns:
     [Test]
     public void ValidateFromFile_WithValidFile_ReturnsSuccess()
     {
-        var filePath = Path.Combine("..", "..", "..", "YamlSchemaLoading", "Fixtures", "SimpleTable.yaml");
+        var filePath = GetFixturePath("SimpleTable.yaml");
         
         var result = _validator.ValidateFromFile(filePath);
         
@@ -119,7 +138,7 @@ Columns:
     [Test]
     public void ValidateFromFile_WithInvalidFile_ReturnsSuccess()
     {
-        var filePath = Path.Combine("..", "..", "..", "YamlSchemaLoading", "Fixtures", "InvalidTable_InvalidType.yaml");
+        var filePath = GetFixturePath("InvalidTable_InvalidType.yaml");
         
         var result = _validator.ValidateFromFile(filePath);
         

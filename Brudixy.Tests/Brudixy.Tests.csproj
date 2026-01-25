@@ -93,4 +93,11 @@
     <Folder Include="TypedDs\Test\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- Copy YAML test fixtures to output directory -->
+    <None Include="YamlSchemaLoading\Fixtures\*.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

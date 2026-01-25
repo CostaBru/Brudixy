@@ -8,6 +8,26 @@ namespace Brudixy.Tests.YamlSchemaLoading;
 [TestFixture]
 public class DataTableSchemaExtensionsTests
 {
+    /// <summary>
+    /// Gets the path to a YAML fixture file in a cross-platform way.
+    /// First tries the output directory, then falls back to the source directory.
+    /// </summary>
+    private static string GetFixturePath(string fileName)
+    {
+        // Try output directory first (where files are copied during build)
+        var outputPath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
+        if (File.Exists(outputPath))
+            return outputPath;
+            
+        // Fall back to source directory (for IDE test runs)
+        var sourcePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures", fileName);
+        if (File.Exists(sourcePath))
+            return Path.GetFullPath(sourcePath);
+            
+        // If still not found, return the expected output path (will fail with clear error)
+        return outputPath;
+    }
+
     [Test]
     public void LoadSchemaFromYaml_WithValidYaml_LoadsSchema()
     {
@@ -32,7 +52,7 @@ PrimaryKey:
     public void LoadSchemaFromYamlFile_WithValidFile_LoadsSchema()
     {
         var table = new DataTable("TestTable");
-        var filePath = Path.Combine("..", "..", "..", "YamlSchemaLoading", "Fixtures", "SimpleTable.yaml");
+        var filePath = GetFixturePath("SimpleTable.yaml");
         
         table.LoadSchemaFromYamlFile(filePath);
         
@@ -62,7 +82,7 @@ Columns:
     public void LoadChildTableFromYamlFile_WithValidFile_CreatesChildTable()
     {
         var dataset = new DataTable("Dataset");
-        var filePath = Path.Combine("..", "..", "..", "YamlSchemaLoading", "Fixtures", "SimpleTable.yaml");
+        var filePath = GetFixturePath("SimpleTable.yaml");
         
         var childTable = dataset.LoadChildTableFromYamlFile(filePath);
         
@@ -76,7 +96,7 @@ Columns:
         var dataset = new DataTable("Dataset");
         var files = new[]
         {
-            Path.Combine("..", "..", "..", "YamlSchemaLoading", "Fixtures", "SimpleTable.yaml")
+            GetFixturePath("SimpleTable.yaml")
         };
         
         dataset.LoadMultipleChildTables(files);
