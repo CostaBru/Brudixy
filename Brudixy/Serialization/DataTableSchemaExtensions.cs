@@ -133,4 +133,19 @@ public static class DataTableSchemaExtensions
         
         loader.LoadMultipleTables(dataset, yamlContents);
     }
+
+    /// <summary>
+    /// Generates a YAML schema from the current DataTable
+    /// </summary>
+    /// <param name="table">The table to generate the schema from</param>
+    /// <returns>A YAML string representing the table schema</returns>
+    /// <exception cref="ArgumentNullException">Thrown when table is null</exception>
+    public static string ToYaml(this DataTable table)
+    {
+        if (table == null)
+            throw new ArgumentNullException(nameof(table));
+            
+        var writer = new YamlSchemaWriter();
+        return writer.WriteSchema(table);
+    }
 }

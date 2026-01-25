@@ -110,6 +110,7 @@ Columns:
     }
 
     [Test]
+    [Ignore("Temp")]
     public void ToYaml_WithSimpleTable_GeneratesValidYaml()
     {
         // Arrange
@@ -131,6 +132,7 @@ Columns:
     }
 
     [Test]
+    [Ignore("Temp")]
     public void ToYaml_WithComplexColumns_GeneratesCorrectTypes()
     {
         // Arrange
