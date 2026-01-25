@@ -108,4 +108,71 @@ Columns:
         
         Assert.Throws<FileNotFoundException>(() => table.LoadSchemaFromYamlFile("nonexistent.yaml"));
     }
+
+    [Test]
+    public void ToYaml_WithSimpleTable_GeneratesValidYaml()
+    {
+        // Arrange
+        var table = new DataTable("SimpleTable");
+        table.AddColumn("Id", TableStorageType.Int32, auto: false, unique: false);
+        table.AddColumn("Name", TableStorageType.String);
+        table.SetPrimaryKeyColumn("Id");
+
+        // Act
+        var yaml = table.ToYaml();
+
+        // Assert
+        Assert.That(yaml, Does.Contain("Table: SimpleTable"));
+        Assert.That(yaml, Does.Contain("Columns:"));
+        Assert.That(yaml, Does.Contain("Id: Integer!")); 
+        Assert.That(yaml, Does.Contain("Name: String")); 
+        Assert.That(yaml, Does.Contain("PrimaryKey:"));
+        Assert.That(yaml, Does.Contain("- Id"));
+    }
+
+    [Test]
+    public void ToYaml_WithComplexColumns_GeneratesCorrectTypes()
+    {
+        // Arrange
+        var table = new DataTable("ComplexTable");
+        table.AddColumn("Scores", TableStorageType.Int32, TableStorageTypeModifier.Array);
+        table.AddColumn("NullableInt", TableStorageType.Int32, allowNull: true); 
+        table.AddColumn("NotNullString", TableStorageType.String, allowNull: false);
+
+        // Act
+        var yaml = table.ToYaml();
+
+        // Assert
+        Assert.That(yaml, Does.Contain("Scores: Integer[]"));
+        Assert.That(yaml, Does.Contain("NullableInt: Integer?"));
+        Assert.That(yaml, Does.Contain("NotNullString: String!")); 
+    }
+
+    [Test]
+    public void ToYaml_ExtensionsAndOptions()
+    {
+        // Arrange
+        var table = new DataTable("OptionsTable");
+        table.AddColumn("UniqueCol", TableStorageType.String, unique: true);
+        table.AddColumn("AutoCol", TableStorageType.Int32, auto: true);
+        table.AddColumn("ServiceCol", TableStorageType.Boolean, serviceColumn: true);
+        table.AddColumn("DefaultCol", TableStorageType.String, defaultValue: "TestDefault");
+        
+        // Act
+        var yaml = table.ToYaml();
+
+        // Assert
+        Assert.That(yaml, Does.Contain("ColumnObjects:"));
+        Assert.That(yaml, Does.Contain("UniqueCol:"));
+        Assert.That(yaml, Does.Contain("IsUnique: true"));
+        
+        Assert.That(yaml, Does.Contain("AutoCol:"));
+        Assert.That(yaml, Does.Contain("Auto: true"));
+        
+        Assert.That(yaml, Does.Contain("ServiceCol:"));
+        Assert.That(yaml, Does.Contain("IsService: true"));
+        
+        Assert.That(yaml, Does.Contain("DefaultCol:"));
+        Assert.That(yaml, Does.Contain("DefaultValue: TestDefault"));
+    }
 }

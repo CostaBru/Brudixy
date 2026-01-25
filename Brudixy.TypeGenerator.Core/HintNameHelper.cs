@@ -35,9 +35,9 @@ namespace Brudixy.TypeGenerator.Core
                 result = fallbackBaseName;
             }
 
-            // Keep existing endings when they already look like source files,
-            // but default to .g.cs for IDE friendliness.
-            if (!result.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+            // Keep whatever extension the generator intended. Only add .g.cs when there's no extension.
+            // Roslyn doesn't require a specific extension, but using .g.cs helps IDE tooling.
+            if (Path.GetExtension(result).Length == 0)
             {
                 result += ".g.cs";
             }
