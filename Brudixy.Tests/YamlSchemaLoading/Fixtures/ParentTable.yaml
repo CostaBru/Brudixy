@@ -1,0 +1,10 @@
+TableName: ParentTable
+Columns:
+  - Name: ParentId
+    Type: Int32
+    AllowNull: false
+  - Name: ParentName
+    Type: String
+    AllowNull: false
+PrimaryKey:
+  - ParentId

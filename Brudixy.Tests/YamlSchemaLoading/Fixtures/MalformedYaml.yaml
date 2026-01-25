@@ -1,0 +1,8 @@
+TableName: MalformedTable
+Columns:
+  - Name: Id
+    Type: Int32
+    AllowNull: false
+  - Name: Name
+    Type: String
+    AllowNull: [this is not valid yaml syntax

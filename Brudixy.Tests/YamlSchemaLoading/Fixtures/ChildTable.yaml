@@ -1,0 +1,20 @@
+TableName: ChildTable
+Columns:
+  - Name: ChildId
+    Type: Int32
+    AllowNull: false
+  - Name: ParentId
+    Type: Int32
+    AllowNull: false
+  - Name: ChildName
+    Type: String
+    AllowNull: false
+PrimaryKey:
+  - ChildId
+Relations:
+  - Name: FK_Child_Parent
+    ParentTable: ParentTable
+    ParentColumns:
+      - ParentId
+    ChildColumns:
+      - ParentId

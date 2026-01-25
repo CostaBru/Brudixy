@@ -1,0 +1,4 @@
+Columns:
+  - Name: Id
+    Type: Int32
+    AllowNull: false

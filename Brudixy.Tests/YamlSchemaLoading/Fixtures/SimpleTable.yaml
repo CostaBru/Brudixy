@@ -1,0 +1,6 @@
+Table: SimpleTable
+Columns:
+  Id: Int32
+  Name: String
+PrimaryKey:
+  - Id

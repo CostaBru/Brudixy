@@ -1,0 +1,60 @@
+TableName: CompleteTable
+Columns:
+  - Name: Id
+    Type: Int32
+    AllowNull: false
+  - Name: Name
+    Type: String
+    AllowNull: false
+  - Name: Email
+    Type: String
+    AllowNull: false
+  - Name: Age
+    Type: Int32
+    AllowNull: true
+  - Name: CreatedDate
+    Type: DateTime
+    AllowNull: false
+  - Name: IsActive
+    Type: Boolean
+    AllowNull: false
+PrimaryKey:
+  - Id
+Indexes:
+  - Name: IX_Email
+    Columns:
+      - Email
+    IsUnique: true
+  - Name: IX_Name_Age
+    Columns:
+      - Name
+      - Age
+    IsUnique: false
+ColumnOptions:
+  Name:
+    MaxLength: 100
+    AllowNull: false
+  Email:
+    MaxLength: 255
+    IsUnique: true
+    AllowNull: false
+  Age:
+    DefaultValue: 0
+  IsActive:
+    DefaultValue: true
+    AllowNull: false
+XProperties:
+  - Name: Description
+    Type: String
+    Value: "A complete table with all features"
+  - Name: Version
+    Type: Int32
+    Value: 1
+GroupedProperties:
+  - Name: PersonInfo
+    Columns:
+      - Name
+      - Age
+GroupedPropertyOptions:
+  PersonInfo:
+    GenerateProperty: true

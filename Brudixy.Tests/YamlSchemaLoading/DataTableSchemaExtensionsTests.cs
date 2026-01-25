@@ -17,27 +17,31 @@ public class DataTableSchemaExtensionsTests
         // Use the test assembly location to find the source directory
         var testDirectory = TestContext.CurrentContext.TestDirectory;
         
-        // From bin/Release/net8.0, go up 3 levels to Brudixy.Tests project root
-        // Then navigate to YamlSchemaLoading/Fixtures
-        var projectRoot = Path.GetFullPath(Path.Combine(testDirectory, "..", "..", ".."));
-        var fixturesDir = Path.Combine(projectRoot, "YamlSchemaLoading", "Fixtures");
-        var fullPath = Path.Combine(fixturesDir, fileName);
+        // Try multiple possible locations
+        var possiblePaths = new[]
+        {
+            // From bin/Release/net8.0, go up 3 levels to Brudixy.Tests project root
+            Path.Combine(testDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures", fileName),
+            // From bin/Debug/net8.0 (2 levels up)
+            Path.Combine(testDirectory, "..", "..", "YamlSchemaLoading", "Fixtures", fileName),
+            // Direct from test directory (in case running from project root)
+            Path.Combine(testDirectory, "YamlSchemaLoading", "Fixtures", fileName),
+            // From current directory
+            Path.Combine(Environment.CurrentDirectory, "YamlSchemaLoading", "Fixtures", fileName),
+            // Try navigating from a potential workspace root
+            Path.Combine(testDirectory, "..", "..", "..", "..", "Brudixy.Tests", "YamlSchemaLoading", "Fixtures", fileName),
+        };
         
-        if (File.Exists(fullPath))
-            return fullPath;
-        
-        // Fallback: try from bin/Debug/net8.0 (2 levels up)
-        projectRoot = Path.GetFullPath(Path.Combine(testDirectory, "..", ".."));
-        fixturesDir = Path.Combine(projectRoot, "YamlSchemaLoading", "Fixtures");
-        fullPath = Path.Combine(fixturesDir, fileName);
-        
-        if (File.Exists(fullPath))
-            return fullPath;
+        foreach (var path in possiblePaths)
+        {
+            var fullPath = Path.GetFullPath(path);
+            if (File.Exists(fullPath))
+                return fullPath;
+        }
             
-        // Last resort: throw with clear error showing actual paths tried
-        var path1 = Path.GetFullPath(Path.Combine(testDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures"));
-        var path2 = Path.GetFullPath(Path.Combine(testDirectory, "..", "..", "YamlSchemaLoading", "Fixtures"));
-        throw new FileNotFoundException($"Could not find YAML fixture file: {fileName}. Test directory: {testDirectory}. Searched in: {path1} and {path2}");
+        // Last resort: throw with clear error showing all paths tried
+        var searchedPaths = string.Join("\n  ", possiblePaths.Select(Path.GetFullPath));
+        throw new FileNotFoundException($"Could not find YAML fixture file: {fileName}.\nTest directory: {testDirectory}\nCurrent directory: {Environment.CurrentDirectory}\nSearched in:\n  {searchedPaths}");
     }
 
     [Test]
