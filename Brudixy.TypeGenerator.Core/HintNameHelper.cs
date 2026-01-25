@@ -61,10 +61,28 @@ namespace Brudixy.TypeGenerator.Core
                 return result;
             }
 
-            // If there's no extension at all, add .g.cs for IDE tooling.
-            if (Path.GetExtension(result).Length == 0)
+            // Handle .RowInterfaces suffix that wasn't caught above (when input didn't have .g.cs)
+            if (result.EndsWith(".RowInterfaces", StringComparison.OrdinalIgnoreCase))
             {
                 result += ".g.cs";
+                return result;
+            }
+
+            // If there's no extension at all, or only a non-.cs extension, add .g.cs for IDE tooling.
+            var ext = Path.GetExtension(result);
+            if (ext.Length == 0 || (!ext.Equals(".cs", StringComparison.OrdinalIgnoreCase) && !ext.Equals(".g.cs", StringComparison.OrdinalIgnoreCase)))
+            {
+                // Don't add .g.cs if the result already has an unexpected extension unless it's a known pattern
+                // For safety, only add .g.cs if there's no extension at all
+                if (ext.Length == 0)
+                {
+                    result += ".g.cs";
+                }
+                else
+                {
+                    // Has an extension but not .cs or .g.cs - treat it as part of the base name
+                    result += ".g.cs";
+                }
             }
 
             return result;
