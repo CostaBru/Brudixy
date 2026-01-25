@@ -17,23 +17,27 @@ public class DataTableSchemaExtensionsTests
         // Use the test assembly location to find the source directory
         var testDirectory = TestContext.CurrentContext.TestDirectory;
         
-        // Navigate up to the project root, then to the Fixtures folder
-        // This works in all scenarios: IDE, dotnet test, CI/CD
-        var fixturesDir = Path.Combine(testDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures");
+        // From bin/Release/net8.0, go up 3 levels to Brudixy.Tests project root
+        // Then navigate to YamlSchemaLoading/Fixtures
+        var projectRoot = Path.GetFullPath(Path.Combine(testDirectory, "..", "..", ".."));
+        var fixturesDir = Path.Combine(projectRoot, "YamlSchemaLoading", "Fixtures");
         var fullPath = Path.Combine(fixturesDir, fileName);
         
         if (File.Exists(fullPath))
-            return Path.GetFullPath(fullPath);
+            return fullPath;
         
-        // Fallback: try different level of directory navigation (for different test runners)
-        fixturesDir = Path.Combine(testDirectory, "..", "..", "..", "..", "Brudixy.Tests", "YamlSchemaLoading", "Fixtures");
+        // Fallback: try from bin/Debug/net8.0 (2 levels up)
+        projectRoot = Path.GetFullPath(Path.Combine(testDirectory, "..", ".."));
+        fixturesDir = Path.Combine(projectRoot, "YamlSchemaLoading", "Fixtures");
         fullPath = Path.Combine(fixturesDir, fileName);
         
         if (File.Exists(fullPath))
-            return Path.GetFullPath(fullPath);
+            return fullPath;
             
-        // Last resort: return a path that will fail with a clear error
-        throw new FileNotFoundException($"Could not find YAML fixture file: {fileName}. Searched in: {testDirectory}/../../../YamlSchemaLoading/Fixtures/ and {testDirectory}/../../../../Brudixy.Tests/YamlSchemaLoading/Fixtures/");
+        // Last resort: throw with clear error showing actual paths tried
+        var path1 = Path.GetFullPath(Path.Combine(testDirectory, "..", "..", "..", "YamlSchemaLoading", "Fixtures"));
+        var path2 = Path.GetFullPath(Path.Combine(testDirectory, "..", "..", "YamlSchemaLoading", "Fixtures"));
+        throw new FileNotFoundException($"Could not find YAML fixture file: {fileName}. Test directory: {testDirectory}. Searched in: {path1} and {path2}");
     }
 
     [Test]
