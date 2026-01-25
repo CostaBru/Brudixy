@@ -1,4 +1,4 @@
-﻿using System.Collections.Frozen;
+﻿﻿using System.Collections.Frozen;
 using System.Diagnostics;
 using Brudixy.Delegates;
 using Brudixy.Interfaces;
@@ -1151,14 +1151,33 @@ namespace Brudixy
 
                 if (m_expressionDependOnColumn != null)
                 {
-                    var keyValuePairs = m_expressionDependOnColumn.ToArray();
-
-                    foreach (var keyValuePair in keyValuePairs)
+                    try
                     {
-                        keyValuePair.Value?.Dispose();
+                        // During finalization, the collection might be in an inconsistent state
+                        // Guard against IndexOutOfRangeException during ToArray()
+                        if (m_expressionDependOnColumn.Count > 0)
+                        {
+                            var keyValuePairs = m_expressionDependOnColumn.ToArray();
+
+                            foreach (var keyValuePair in keyValuePairs)
+                            {
+                                keyValuePair.Value?.Dispose();
+                            }
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        // Collection was modified or disposed during finalization - ignore
                     }
                     
-                    m_expressionDependOnColumn.Dispose();
+                    try
+                    {
+                        m_expressionDependOnColumn.Dispose();
+                    }
+                    catch
+                    {
+                        // Ignore disposal errors during finalization
+                    }
 
                     m_expressionDependOnColumn = null;
                 }
