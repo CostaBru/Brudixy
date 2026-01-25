@@ -429,7 +429,7 @@ namespace Brudixy.TypeGenerator.Core
             
             stringBuilder.AppendLine(@$"{Indend1}///<summary>Public interface for '{XmlConvert.EncodeName(table.Table)}' table row readonly access.</summary>");
             AddCodeGenAttr(stringBuilder, Indend1);
-            stringBuilder.AppendLine(@$"{Indend1}public partial interface I{table.RowClass}ReadOnlyAccessor: global:: {table.BaseInterfaceNamespace}.I{table.BaseRowClass}ReadOnlyAccessor");
+            stringBuilder.AppendLine(@$"{Indend1}public partial interface I{table.RowClass}ReadOnlyAccessor: global::{table.BaseInterfaceNamespace}.I{table.BaseRowClass}ReadOnlyAccessor");
             
             stringBuilder.AppendLine(@$"{Indend1}{{");
             
