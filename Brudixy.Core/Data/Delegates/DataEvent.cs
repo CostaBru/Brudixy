@@ -27,7 +27,7 @@ namespace Brudixy.Delegates
         public DataEvent([NotNull] IDisposableCollection referenceHolder)
         {
             m_referenceHolder = referenceHolder ?? throw new ArgumentNullException(nameof(referenceHolder));
-            m_receivers = new Data<WeakReference>();
+            m_receivers = new Data<Target>();
         }
         
         private class ActionEventLambda<T> : IDataEventReceiver<T>, IDisposable
@@ -159,15 +159,15 @@ namespace Brudixy.Delegates
 
             lock (this)
             {
-                clone.m_receivers = new Data<WeakReference>(m_receivers.Count);
+                clone.m_receivers = new Data<Target>(m_receivers.Count);
 
-                foreach (var weakReference in m_receivers)
+                foreach (var receiver in m_receivers)
                 {
-                    if (weakReference.IsAlive)
+                    if (receiver.Receiver.IsAlive)
                     {
-                        var referenceTarget = weakReference.Target;
+                        var referenceTarget = receiver.Receiver.Target as IDataEventReceiver<T>;
                         
-                        clone.m_receivers.Add(new WeakReference(referenceTarget));
+                        clone.m_receivers.Add(new Target(referenceTarget, receiver.Context));
                         
                         if (referenceTarget is IDisposable disposable)
                         {
@@ -190,11 +190,11 @@ namespace Brudixy.Delegates
     
     public class TargetDataEvent<T> : ITargetDataEvent<T>, IDisposable
     {
-        protected Data<WeakReference> m_receivers;
+        protected Data<Target> m_receivers;
         
         public TargetDataEvent()
         {
-            m_receivers = new Data<WeakReference>();
+            m_receivers = new Data<Target>();
         }
 
         public void CopyTo(TargetDataEvent<T> target)
@@ -213,11 +213,9 @@ namespace Brudixy.Delegates
                 
                 foreach (var receiver in this.m_receivers.ToArray())
                 {
-                    if (receiver.IsAlive)
+                    if (receiver.Receiver.IsAlive)
                     {
-                        var receiverTarget = receiver.Target;
-                        
-                        target.m_receivers.Add(new WeakReference(receiverTarget));
+                        target.m_receivers.Add(receiver);
                     }
                 }
             }
@@ -231,14 +229,14 @@ namespace Brudixy.Delegates
             }
         }
         
-        private sealed class Target
+        protected sealed class Target
         {
-            public IDataEventReceiver<T> Receiver { get; }
+            public WeakReference Receiver { get; }
             public string Context { get; }
 
             public Target(IDataEventReceiver<T> receiver, string context)
             {
-                Receiver = receiver;
+                Receiver = new WeakReference(receiver);
                 Context = context;
             }
         }
@@ -257,7 +255,7 @@ namespace Brudixy.Delegates
                     throw new ObjectDisposedException("DataEvent is disposed.");
                 }
                 
-                m_receivers.Add(new WeakReference(new Target(target, context)));
+                m_receivers.Add(new Target(target, context));
             }
         }
 
@@ -275,7 +273,7 @@ namespace Brudixy.Delegates
                     return;
                 }
              
-                m_receivers.RemoveAll(target, (receiver) => (receiver.Target as Target)?.Receiver);
+                m_receivers.RemoveAll(target, (receiver) => (receiver.Receiver.Target as IDataEventReceiver<T>));
             }
         }
 
@@ -301,14 +299,13 @@ namespace Brudixy.Delegates
                 {
                     for (var index = receivers.Length - 1; index >= 0; index--)
                     {
-                        var receiver = receivers[index];
+                        var target = receivers[index];
 
-                        var target = receiver.Target as Target;
-                        
                         try
                         {
+                            var receiver = target.Receiver.Target as IDataEventReceiver<T>;
 
-                            if (ReferenceEquals(null, target))
+                            if (ReferenceEquals(null, receiver))
                             {
                                 if (deadReferences == null)
                                 {
@@ -320,7 +317,7 @@ namespace Brudixy.Delegates
                                 continue;
                             }
 
-                            if (target.Receiver.OnEvent(args, target.Context))
+                            if (receiver.OnEvent(args, target.Context))
                             {
                                 break;
                             }
