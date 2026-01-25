@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -48,7 +49,9 @@ namespace Brudixy.TypeGenerator
         {
             var callingPath = context.GetCallingPath();
 
-            context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Test.log", "Test"), $"//{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")} at " + callingPath);
+            // NOTE: Don't emit debug/log files via AddSource. They become compilation units when
+            // EmitCompilerGeneratedFiles is enabled and can break builds on some platforms.
+           // context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Test.log", "Test"), $"//{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")} at " + callingPath);
 
             string lastFileItem = string.Empty;
 
@@ -69,7 +72,8 @@ namespace Brudixy.TypeGenerator
                     return;
                 }
 
-                context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Files.log", "Files"), string.Join(Environment.NewLine, yamlSources.Select(s => "//" + s.path)));
+                // NOTE: Don't emit debug/log files via AddSource. See comment above.
+                //context.AddSource(Brudixy.TypeGenerator.Core.HintNameHelper.Sanitize("Files.log", "Files"), string.Join(Environment.NewLine, yamlSources.Select(s => "//" + s.path)));
 
                 foreach (var source in yamlSources)
                 {
