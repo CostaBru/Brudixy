@@ -1,323 +1,335 @@
 # Brudixy
 
-Brudixy is an advanced data structure library for .NET that provides high-performance, strongly-typed data management capabilities with code generation support.
+High-performance in-memory data tables for .NET, with optional **compile-time code generation** from YAML schemas.
 
-## Overview
+Brudixy is aimed at two kinds of consumers:
 
-Brudixy provides a powerful alternative to traditional DataSet/DataTable approaches, offering:
-- **Type-safe data structures** generated at compile-time from YAML schemas
-- **High-performance collections** with advanced indexing capabilities
-- **Change tracking and transactions**
-- **Serialization support** (JSON, XML)
-- **Source generators** for zero-runtime reflection
-- **Flexible storage backends** with customizable column storage strategies
+1) **Runtime users**: you want a fast in-memory table with indexing, querying, relations, expressions, and serialization.
+2) **Schema-driven users**: you want strongly-typed tables/datasets generated from YAML at build time.
 
-## Projects
+---
 
-### Core Libraries
+## Highlights
 
-#### Brudixy.Core
-The core library containing the fundamental data structures and runtime components.
+- Fast in-memory tables with **indexes** (single + multi-column)
+- Fluent query API (`table.Rows.Where(...).Equals(...)`)
+- **Computed columns / filters** via expressions
+- **Relations** with cascade rules
+- Change tracking, transactions, and optional **change logging**
+- JSON/XML serialization
+- Extensible metadata: XProperties + row/cell annotations
 
-**Key Features:**
-- `CoreDataSet` - Base dataset implementation with relation support
-- `CoreDataTable` - High-performance table implementation
-- Change tracking and transaction support
-- JSON and XML serialization
-- Constraint enforcement
-- Event system for data modifications
+---
 
-**Target Framework:** .NET 8.0
+## Packages
 
-**Dependencies:**
-- Akade.IndexedSet
-- Konsarpoo (high-performance collections)
-- System.Text.Json
+Runtime:
 
-#### Brudixy
-Extended dataset functionality building on `Brudixy.Core`.
+- `Brudixy` – main consumer package (brings `Brudixy.Core` + `Brudixy.Interfaces`)
 
-**Key Features:**
-- `DataSet` class extending `CoreDataSet`
-- Additional helper methods and utilities
-- Enhanced data manipulation APIs
+Build-time (source generators):
 
-**Target Framework:** .NET 8.0
+- `Brudixy.TypeGenerator` – YAML-driven generator that produces strongly-typed DataSets/DataTables
 
-**Dependencies:**
-- Brudixy.Core
-- Brudixy.Interfaces
+---
 
-#### Brudixy.Interfaces
-Interface definitions and shared contracts for the Brudixy ecosystem.
+## Install
 
-**Key Features:**
-- Core interfaces (ICoreDataSet, ICoreDataTable, etc.)
-- Delegate definitions for events
-- Tool abstractions
-- Annotation attributes
+### Runtime only
 
-**Target Framework:** .NET 8.0
+Add the `Brudixy` package.
 
-### Code Generation
+### Runtime + code generation
 
-#### Brudixy.Interfaces.Generators
-Source generator infrastructure for generating storage type implementations.
+Add:
 
-**Key Features:**
-- Table storage type generators
-- Type mapping and conversion generators
-- Array creation generators
-- Deep equality comparison generators
-- Built-in storage type support
+- `Brudixy` (runtime)
+- `Brudixy.TypeGenerator` as an analyzer (`PrivateAssets="all"`)
+- YAML schema files as `AdditionalFiles`
 
-**Target Framework:** .NET Standard 2.0 (for Roslyn compatibility)
+---
 
-**Dependencies:**
-- Microsoft.CodeAnalysis.CSharp 3.11.0
-- JetBrains.Annotations
+## Quickstart (runtime)
 
-#### Brudixy.Generators
-Source generators for creating data item implementations.
+### 1) Create a table + add columns
 
-**Key Features:**
-- Generates strongly-typed row classes
-- Index generation
-- Storage implementation generation
+```csharp
+using Brudixy;
 
-**Target Framework:** .NET Standard 2.0
+var table = new DataTable("Users");
 
-**Dependencies:**
-- Brudixy.Interfaces.Generators
-- Microsoft.CodeAnalysis.CSharp 3.11.0
+table.AddColumn("Id", TableStorageType.Int32, unique: true);
+table.AddColumn("Name", TableStorageType.String);
 
-#### Brudixy.TypeGenerator
-Source generator for creating strongly-typed DataSet and DataTable classes from YAML schema definitions.
-
-**Key Features:**
-- YAML schema parsing
-- DataSet class generation
-- DataTable class generation
-- Index generation from schema
-- Relation generation
-
-**Target Framework:** .NET Standard 2.0
-
-**Dependencies:**
-- Brudixy.Generators
-- Brudixy.Interfaces.Generators
-- YamlDotNet 13.2.0
-
-#### Brudixy.TypeGenerator.Core
-Shared core components for the type generator system.
-
-**Key Features:**
-- Schema parsing logic
-- Code generation helpers
-- YAML schema reader
-- Column and table metadata structures
-
-**Target Framework:** .NET 8.0
-
-**Dependencies:**
-- Brudixy.Interfaces.Generators
-- YamlDotNet 13.2.0
-
-### Testing
-
-#### Brudixy.Tests
-Comprehensive test suite with unit tests and performance benchmarks.
-
-**Key Features:**
-- NUnit test cases
-- BenchmarkDotNet performance tests
-- YAML schema examples
-- Integration tests
-
-**Target Framework:** .NET 8.0
-
-**Test Runner:** NUnit 3.13.2
-
-#### Brudixy.TypeGenerator.Tests
-Tests for the type generator functionality.
-
-**Target Framework:** (To be determined)
-
-## Getting Started
-
-### Prerequisites
-
-- .NET 8.0 SDK or later
-- Visual Studio 2022 or JetBrains Rider (recommended)
-
-### Building the Solution
-
-```bash
-# Restore dependencies
-dotnet restore Brudixy.sln
-
-# Build the solution
-dotnet build Brudixy.sln
-
-# Run tests
-dotnet test Brudixy.sln
+table.SetPrimaryKeyColumn("Id");
 ```
 
-### Using Brudixy in Your Project
+### 2) Add a row
 
-1. Reference the core libraries:
+```csharp
+var r = table.NewRow();
+r["Id"] = 1;
+r["Name"] = "Alice";
+
+table.AddRow(r);
+```
+
+### 3) Query
+
+```csharp
+var row = table.GetRow("Id", 1);
+var name = row.Field<string>("Name");
+
+var filtered = table.Rows
+    .Where("Name").AsString().StartsWith("Al")
+    .ToData();
+```
+
+---
+
+## Quickstart (YAML schema → generated types)
+
+1. Put schema files under `Schemas/`.
+2. Include them as `AdditionalFiles`.
+3. Add the generator as an analyzer.
+
+**Example `.csproj`**
+
 ```xml
 <ItemGroup>
   <PackageReference Include="Brudixy" Version="1.0.0" />
-  <PackageReference Include="Brudixy.Core" Version="1.0.0" />
+
+  <!-- build-time only -->
+  <PackageReference Include="Brudixy.TypeGenerator" Version="1.0.0" PrivateAssets="all" />
+
+  <AdditionalFiles Include="Schemas\**\*.brudixy.yaml" />
 </ItemGroup>
 ```
 
-2. Add the type generator for YAML-based schema generation:
-```xml
-<ItemGroup>
-  <ProjectReference Include="Brudixy.TypeGenerator.csproj" 
-                    OutputItemType="Analyzer" 
-                    ReferenceOutputAssembly="true" />
-  
-  <!-- Add your schema files -->
-  <AdditionalFiles Include="Schemas/*.brudixy.yaml" />
-</ItemGroup>
-```
-
-3. Define your schema in YAML format (see examples in `Brudixy.Tests/TypedDs/`)
-
-4. Build your project - strongly-typed classes will be generated automatically!
-
-## Schema Example
+**Single-table schema** (`*.st.brudixy.yaml`)
 
 ```yaml
-# MyTable.st.brudixy.yaml
-Table: MyTable
+---
+Table: Users
+PrimaryKey:
+  - Id
 Columns:
-  - Name: Id
-    Type: int
-    PrimaryKey: true
-  - Name: Name
-    Type: string
-  - Name: CreatedDate
-    Type: DateTime
-Indexes:
-  - Columns: [Name]
+  Id: Int32
+  Name: String
 ```
 
-This generates a strongly-typed `MyTable` class with:
-- Type-safe row access
-- LINQ-like querying with indexes
-- Change tracking
-- Serialization support
+> Generator output becomes available during compilation. You don’t ship the generator at runtime.
 
-## Architecture
+---
 
-```
-┌─────────────────────┐
-│   Your Application  │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐       ┌────────────────────┐
-│   Brudixy (API)     │◄──────┤ Generated Classes  │
-└──────────┬──────────┘       └─────────┬──────────┘
-           │                             │
-┌──────────▼──────────┐       ┌─────────▼───────────┐
-│   Brudixy.Core      │       │ Brudixy.TypeGenerator│
-│   (Runtime)         │       │  (Source Generator)  │
-└──────────┬──────────┘       └──────────────────────┘
-           │
-┌──────────▼──────────┐
-│ Brudixy.Interfaces  │
-└─────────────────────┘
-```
+## Core concepts
 
-## Performance
+### DataTable, DataRow, and DataRowContainer
 
-Brudixy is designed for high performance:
-- Zero-allocation enumerators where possible
-- Efficient indexing using Akade.IndexedSet
-- Minimal boxing/unboxing with generic storage
-- Compile-time code generation eliminates reflection
+- `DataTable` is the main structure.
+- `DataRow` is a row stored in a table.
+- `DataRowContainer` is a detached, serializable/editable row container (useful for JSON/XML round-trips, UI, and patching).
 
-See `Brudixy.Tests/Benchmarks/` for detailed performance benchmarks.
+> **Important:** Brudixy tables are composable.
+>
+> - A `DataTable` can act as a **dataset container** (a collection of child tables). This is why you’ll see APIs like `AddTable(...)`, `GetTable(...)`, and relations referencing table names.
+> - A `DataTable` can also be stored as a **value**:
+>   - inside a **cell** (column value)
+>   - inside **XProperties** (table/row/column XProperties and XProperty annotations)
+>
+> This makes it possible to model nested documents/graphs directly in-memory.
 
-## Advanced Features
+### Indexes
 
-### YAML Schema Loading (Runtime)
-Load table schemas from YAML files or strings at runtime without code generation. Perfect for plugin systems, configuration-driven applications, and dynamic schema scenarios.
+Indexes are the key to performance.
+
+- Single-column: `AddIndex("Email")` / `AddIndex("Email", unique: true)`
+- Multi-column: `AddMultiColumnIndex(new[] { "A", "B" }, unique: false)`
+
+### Arrays and ranges
+
+Columns can store:
+
+- a single value (`Simple`)
+- arrays (`Array`)
+- ranges (`Range`)
+
+In YAML you can specify this via `TypeModifier: Array|Range`.
+
+---
+
+## Expressions (computed columns + filters)
+
+### Computed columns
 
 ```csharp
-// Load schema at runtime
-var table = new DataTable("Users");
-table.LoadSchemaFromYamlFile("schemas/users.yaml");
-
-// Or from string
-var schema = @"
-Table: Products
-Columns:
-  ProductId: { Type: Int32, AllowNull: false }
-  Name: { Type: String, MaxLength: 100 }
-PrimaryKey: [ProductId]
-";
-table.LoadSchemaFromYaml(schema);
+table.AddColumn("FullName", TableStorageType.String, dataExpression: "FirstName + ' ' + LastName");
 ```
 
-**Features:**
-- Schema validation against JSON schema
-- Support for all column types, constraints, and indexes
-- Multi-table loading with relations
-- Comprehensive error handling
+### Filtering
 
-**Documentation:**
-- [YAML Schema Loading Guide](docs/YAML_SCHEMA_LOADING.md)
-- [Examples](docs/YAML_SCHEMA_LOADING_EXAMPLES.md)
-- [Error Handling](docs/YAML_SCHEMA_ERROR_HANDLING.md)
+```csharp
+var rows = table.Select("Id = 5 AND Len(Name) > 2");
+```
 
-### Custom Storage Types
-Define custom column storage strategies for optimized memory usage and performance.
+### Check a filter against a single row
 
-### Change Tracking
-Track modifications at row and column level with transaction support.
+```csharp
+bool ok = table.Rows.First().CheckFilter("Id = 5 AND Name <> ''");
+```
 
-### Relations
-Define foreign key relationships between tables with referential integrity.
+### Register custom functions
 
-### Extensibility
-Use extension properties to attach metadata without schema changes.
+You can extend the expression engine:
 
-## Contributing
+```csharp
+using Brudixy.Expressions;
 
-Contributions are welcome! Please ensure:
-- All tests pass
-- Code follows existing style conventions
-- New features include tests
-- Performance-critical code includes benchmarks
+FunctionRegistry.Registry.RegisterFunction("IsEven", _ => new IsEvenFunction());
+```
 
-## License
+---
 
-(License information to be added)
+## Relations (including cascade rules)
 
-## Dependencies
+Brudixy supports relations between tables (dataset style) and self-relations.
 
-### Runtime Dependencies
-- **Akade.IndexedSet** (1.4.0) - Indexed collections
-- **Konsarpoo** (5.3.0) - High-performance collections
-- **System.Text.Json** (9.0.0-preview.6) - JSON serialization
-- **JetBrains.Annotations** (2024.2.0-eap1) - Code annotations
+```csharp
+var ds = new DataTable("MyDs");
+var parent = ds.AddTable("Parent");
+var child = ds.AddTable("Child");
 
-### Build-time Dependencies
-- **Microsoft.CodeAnalysis.CSharp** (3.11.0) - Roslyn code generation
-- **YamlDotNet** (13.2.0) - YAML parsing
+parent.AddColumn("Id", TableStorageType.Int32, unique: true);
+child.AddColumn("ParentId", TableStorageType.Int32);
 
-## Version History
+ds.AddRelation(
+    relationName: "FK_Child_Parent",
+    parentKey: ("Parent", "Id"),
+    childKey:  ("Child", "ParentId"),
+    relationType: RelationType.OneToMany,
+    constraintUpdate: Rule.Cascade,
+    constraintDelete: Rule.Cascade,
+    acceptRejectRule: AcceptRejectRule.Cascade);
+```
 
-- **1.0.0** - Initial release
-  - Core data structures
-  - YAML-based type generation
-  - Comprehensive test coverage
+Notes:
 
-## Support
+- `constraintUpdate` controls parent key update behavior.
+- `constraintDelete` controls delete cascades.
+- `acceptRejectRule` controls `AcceptChanges()` / `RejectChanges()` propagation.
 
-For issues, questions, or contributions, please use the GitHub issue tracker
+---
+
+## Change tracking, transactions, and logging
+
+### Transactions
+
+```csharp
+var tran = table.StartTransaction();
+
+// ... make changes
+
+tran.Rollback(); // or tran.Commit();
+```
+
+### Change logging (audit stream)
+
+```csharp
+using var _ = table.StartLoggingChanges("Import #42");
+// ... change rows / xprops
+var log = table.GetLoggedChanges();
+```
+
+Transaction connection:
+
+- Each log entry can carry a `TranId`.
+- On rollback, Brudixy removes log entries for rolled-back transactions.
+
+---
+
+## Defaults, nullability, and safe conversion
+
+- `row["Col"]` returns the raw stored value (can be `null`).
+- `row.Field<T>("Col")` returns a typed value and can apply safe conversions.
+- For nullable strings/arrays, `Field<string>` can return `""` and `Field<int[]>` can return an empty array even when stored value is null.
+
+Arrays are treated as immutable values:
+
+- assignment copies the array
+- `FieldArray<T>()` provides a cached reference for fast repeated access
+
+---
+
+## Debugging (visualizers)
+
+Brudixy is debugger-friendly:
+
+- `DataTable` has a helpful `DebuggerDisplay` with counts/index info.
+- `DataRow` / `DataRowContainer` have a debug view (`DataRowDebugView`) that shows:
+  - column values
+  - ages / changed fields
+  - annotations and XProperties
+  - parent/child summaries (when relations exist)
+
+---
+
+## Comparing rows and containers
+
+Recommended pattern when validating serialization or container logic:
+
+```csharp
+var row = table.GetRowByPk(new (1, 1));
+var container = row.ToContainer();
+
+var cmp = DataRowContainer.CompareDataRows(row, container);
+if (cmp.cmp != 0)
+{
+    throw new Exception(cmp.ToString());
+}
+```
+
+---
+
+## YAML schemas (runtime loading)
+
+If you want runtime-loaded schemas (plugins/config-driven), use:
+
+- `LoadSchemaFromYaml(string yaml)`
+- `LoadSchemaFromYamlFile(string path)`
+- `ToYaml()`
+
+Brudixy supports a compact schema form:
+
+```yaml
+Table: SimpleTable
+Columns:
+  Id: Int32
+  Name: String
+PrimaryKey:
+  - Id
+```
+
+For advanced column options (default values, max length, expressions, etc.), use the verbose form.
+
+---
+
+## Dapper support (vendored)
+
+Brudixy includes a built-in copy of Dapper (`SqlMapper`) in the `Brudixy` assembly.
+
+```csharp
+using System.Data;
+using Brudixy;
+
+using var conn = /* IDbConnection */;
+var rows = conn.Query<MyPoco>("select Id, Name from Users where Id = @id", new { id = 1 });
+```
+
+If you also reference the external `Dapper` package, you may get ambiguous extension method resolution.
+
+---
+
+## For contributors / maintainers
+
+- Build and pack instructions live in `PROJECT_SETUP.md` and `NUGET_PUBLISHING.md`.
+- This README is intended for package consumers.
