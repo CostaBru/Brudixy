@@ -59,8 +59,8 @@ jobs:
 
     - name: Pack NuGet packages
       run: |
-        dotnet pack Brudixy/Brudixy.csproj --configuration Release --no-build --output ./packages
-        dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj --configuration Release --no-build --output ./packages
+        dotnet pack Brudixy/Brudixy.csproj --configuration Release --no-build --output ./packages -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg
+        dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj --configuration Release --no-build --output ./packages -p:IncludeSymbols=false
 
     - name: List packages
       run: ls -la ./packages

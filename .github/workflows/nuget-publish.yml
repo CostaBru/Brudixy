@@ -77,18 +77,21 @@ jobs:
           mkdir -p "$out"
 
           # Force symbol packages in CI (some project/SDK combos won't emit .snupkg unless explicitly set)
-          pack_args=(
+          pack_common=(
             --configuration Release
             --no-build
             --output "$out"
             -p:PackageVersion=${{ steps.version.outputs.nuget_version }}
+          )
+
+          pack_symbols=(
             -p:IncludeSymbols=true
             -p:SymbolPackageFormat=snupkg
           )
 
           # Pack only the two published packages
-          dotnet pack Brudixy/Brudixy.csproj "${pack_args[@]}"
-          dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj "${pack_args[@]}"
+          dotnet pack Brudixy/Brudixy.csproj "${pack_common[@]}" "${pack_symbols[@]}"
+          dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj "${pack_common[@]}" -p:IncludeSymbols=false
 
           echo "Produced packages:" 
           ls -la "$out"
@@ -122,8 +125,8 @@ jobs:
           dotnet nuget push "$out"/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
           # Push symbols (optional)
-          if compgen -G "$out"/*.snupkg > /dev/null; then
-            dotnet nuget push "$out"/*.snupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          if compgen -G "$out"/Brudixy.*.snupkg > /dev/null; then
+            dotnet nuget push "$out"/Brudixy.*.snupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
           else
             echo "No .snupkg files found to push (continuing)."
           fi

@@ -20,8 +20,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.TypeGenerator.md</PackageReadmeFile>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <IncludeSymbols>false</IncludeSymbols>
         <DevelopmentDependency>true</DevelopmentDependency>
     </PropertyGroup>
 
