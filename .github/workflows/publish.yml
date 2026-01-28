@@ -59,11 +59,7 @@ jobs:
 
     - name: Pack NuGet packages
       run: |
-        dotnet pack Brudixy.Interfaces/Brudixy.Interfaces.csproj --configuration Release --no-build --output ./packages
-        dotnet pack Brudixy.Core/Brudixy.Core.csproj --configuration Release --no-build --output ./packages
         dotnet pack Brudixy/Brudixy.csproj --configuration Release --no-build --output ./packages
-        dotnet pack Brudixy.Interfaces.Generators/Brudixy.Interfaces.Generators.csproj --configuration Release --no-build --output ./packages
-        dotnet pack Brudixy.Generators/Brudixy.Generators.csproj --configuration Release --no-build --output ./packages
         dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj --configuration Release --no-build --output ./packages
 
     - name: List packages

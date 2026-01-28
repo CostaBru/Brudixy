@@ -42,6 +42,14 @@ Brudixy is designed for fast in-memory processing and schema-driven code generat
 
 ---
 
+## Dependencies:
+
+- Akade.IndexedSet
+- Konsarpoo 
+
+
+---
+
 ## Packages
 
 Runtime:

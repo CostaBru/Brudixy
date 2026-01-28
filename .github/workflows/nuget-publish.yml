@@ -86,11 +86,7 @@ jobs:
             -p:SymbolPackageFormat=snupkg
           )
 
-          # Pack in dependency order (also matches NUGET_PUBLISHING.md)
-          dotnet pack Brudixy.Interfaces/Brudixy.Interfaces.csproj "${pack_args[@]}"
-          dotnet pack Brudixy.Interfaces.Generators/Brudixy.Interfaces.Generators.csproj "${pack_args[@]}"
-          dotnet pack Brudixy.Core/Brudixy.Core.csproj "${pack_args[@]}"
-          dotnet pack Brudixy.Generators/Brudixy.Generators.csproj "${pack_args[@]}"
+          # Pack only the two published packages
           dotnet pack Brudixy/Brudixy.csproj "${pack_args[@]}"
           dotnet pack Brudixy.TypeGenerator/Brudixy.TypeGenerator.csproj "${pack_args[@]}"
 

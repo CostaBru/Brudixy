@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latestmajor</LangVersion>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <!-- NuGet Package Configuration -->

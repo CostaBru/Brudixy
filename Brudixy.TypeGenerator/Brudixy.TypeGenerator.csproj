@@ -2,6 +2,7 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latestmajor</LangVersion>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
     </PropertyGroup>
 
     <!-- NuGet Package Configuration -->
@@ -14,10 +15,10 @@
         <Description>YAML-based source generator for Brudixy. Generates strongly-typed DataSet and DataTable classes from YAML schema definitions with full indexing and relation support.</Description>
         <PackageTags>source-generator;roslyn;yaml;code-generation;brudixy;analyzer;schema</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.TypeGenerator.md</PackageReadmeFile>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -25,7 +26,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\README.md" Pack="true" PackagePath="\" />
+        <None Include="README.TypeGenerator.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- Pack analyzer outputs explicitly (no reference changes). -->
+        <None Include="$(TargetPath)" Pack="true" PackagePath="analyzers/dotnet/cs" Condition="Exists('$(TargetPath)')" />
+        <None Include="..\Brudixy.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Condition="Exists('..\Brudixy.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Generators.dll')" />
+        <None Include="..\Brudixy.Interfaces.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Interfaces.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Condition="Exists('..\Brudixy.Interfaces.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Interfaces.Generators.dll')" />
     </ItemGroup>
 
     <ItemGroup>

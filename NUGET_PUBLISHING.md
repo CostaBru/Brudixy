@@ -36,12 +36,8 @@ dotnet test Brudixy.sln --configuration Release
 # Create output directory
 New-Item -ItemType Directory -Force -Path .\packages
 
-# Pack all projects
-dotnet pack Brudixy.Interfaces\Brudixy.Interfaces.csproj --configuration Release --output .\packages
-dotnet pack Brudixy.Core\Brudixy.Core.csproj --configuration Release --output .\packages
+# Pack the two published packages
 dotnet pack Brudixy\Brudixy.csproj --configuration Release --output .\packages
-dotnet pack Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj --configuration Release --output .\packages
-dotnet pack Brudixy.Generators\Brudixy.Generators.csproj --configuration Release --output .\packages
 dotnet pack Brudixy.TypeGenerator\Brudixy.TypeGenerator.csproj --configuration Release --output .\packages
 ```
 
@@ -108,16 +104,12 @@ Follow [Semantic Versioning](https://semver.org/):
 
 ## Package Dependencies
 
-The packages have the following dependency order (publish in this order):
+The published packages are:
 
-1. **Brudixy.Interfaces** (no dependencies on other Brudixy packages)
-2. **Brudixy.Interfaces.Generators** (no dependencies on other Brudixy packages)
-3. **Brudixy.Core** (depends on Brudixy.Interfaces)
-4. **Brudixy.Generators** (depends on Brudixy.Interfaces.Generators)
-5. **Brudixy** (depends on Brudixy.Core, Brudixy.Interfaces)
-6. **Brudixy.TypeGenerator** (depends on multiple packages)
+1. **Brudixy** (runtime package; includes Core + Interfaces)
+2. **Brudixy.TypeGenerator** (build-time source generator)
 
-The automated workflow handles this order automatically.
+The automated workflow handles publishing these two packages.
 
 ## Verifying Published Packages
 
