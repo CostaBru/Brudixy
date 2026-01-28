@@ -21,6 +21,27 @@ Brudixy is aimed at two kinds of consumers:
 
 ---
 
+## Comparison with System.Data DataSet/DataTable
+
+Brudixy is designed for fast in-memory processing and schema-driven code generation. It is not a drop-in replacement for ADO.NET tables, but it covers many of the same data-shaping scenarios.
+
+### Advantages / where Brudixy shines
+
+- **Dataset-like composition at the table level**: a `DataTable` can own child tables via `AddTable(...)` / `GetTable(...)` and manage relations by name.
+- **Code generation from YAML**: compile-time, strongly-typed tables/datasets without the legacy designer workflow.
+- **Index-first design**: built-in single and multi-column indexes optimized for fast lookups.
+- **Expressions + computed columns**: expression engine for filters and derived values.
+- **Rich metadata**: table/row/column XProperties and row/cell annotations for UI, validation, and auditing.
+- **Lightweight, in-memory focus**: optimized for high-performance runtime operations rather than database plumbing.
+
+### Disadvantages / missing features vs System.Data
+
+- **Not a drop-in ADO.NET replacement**: APIs like `DataAdapter`, `DataView`, `BindingSource`, and typed DataSet designers are not part of Brudixy.
+- **Fewer ecosystem integrations**: System.Data has decades of tooling support across ORMs, designers, and data-binding stacks.
+- **Different mental model**: Brudixy exposes a composable `DataTable` (table-as-dataset), which may require adaptation if you rely on DataSet-specific patterns.
+
+---
+
 ## Packages
 
 Runtime:
