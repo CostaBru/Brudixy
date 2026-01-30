@@ -21,8 +21,8 @@
         <Description>Extended DataSet functionality for Brudixy - Advanced data structure library for .NET with enhanced data manipulation APIs.</Description>
         <PackageTags>dataset;datatable;collections;performance;data-management</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
