@@ -64,8 +64,12 @@
     </ItemGroup>
     
     <ItemGroup>
-        <ProjectReference Include="..\Brudixy.Generators\Brudixy.Generators.csproj" />
-        <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" />
+        <!--
+          Internal projects are built to produce analyzer DLLs that we pack explicitly.
+          Mark them private so NuGet doesn't emit Brudixy.Generators / Brudixy.Interfaces.Generators dependencies.
+        -->
+        <ProjectReference Include="..\Brudixy.Generators\Brudixy.Generators.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" PrivateAssets="all" />
         <PackageReference Include="YamlDotNet" Version="13.2.0" GeneratePathProperty="true" PrivateAssets="all" />
     </ItemGroup>
 

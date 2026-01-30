@@ -35,8 +35,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" />
-      <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" />
+      <!--
+        These are internal repo projects. We want their compiled DLLs included in the Brudixy package, 
+        but we do NOT want NuGet to emit them as external dependencies (Brudixy.Core / Brudixy.Interfaces).
+      -->
+      <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" PrivateAssets="all" />
+      <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
