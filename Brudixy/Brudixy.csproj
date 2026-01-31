@@ -60,25 +60,22 @@
     </Target>
 
     <Target Name="Brudixy_IncludeBundledProjectOutputs" BeforeTargets="Pack">
-      <!-- Query each referenced project's DocumentationFile (if set) -->
       <MSBuild Projects="@(ProjectReference)"
-               Targets="GetTargetPath;GetDocFile;GetPdbFile"
+               Targets="GetTargetPath"
                Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)"
                BuildInParallel="true">
         <Output TaskParameter="TargetOutputs" ItemName="_BundledAssemblies" />
-        <Output TaskParameter="TargetOutputs" ItemName="_BundledDocFiles" />
-        <Output TaskParameter="TargetOutputs" ItemName="_BundledPdbFiles" />
       </MSBuild>
 
       <ItemGroup>
         <!-- Reference output assembly path for each ProjectReference -->
         <_BundledAssemblies Include="@(_BundledAssemblies)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
 
-        <!-- DocumentationFile outputs (may be empty/not exist) -->
-        <_BundledDocFiles Include="@(_BundledDocFiles)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
-
-        <!-- PDB outputs (may be empty/not exist) -->
-        <_BundledPdbFiles Include="@(_BundledPdbFiles)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
+        <!-- Derive XML docs + PDB from the output assembly path -->
+        <_BundledDocFiles Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), \'.xml\'))')"
+                          Condition="Exists('$([System.IO.Path]::ChangeExtension(%(Identity), '.xml'))')" />
+        <_BundledPdbFiles Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), \'.pdb\'))')"
+                          Condition="Exists('$([System.IO.Path]::ChangeExtension(%(Identity), '.pdb'))')" />
 
         <!-- Pack them into this package -->
         <None Include="@(_BundledAssemblies)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
@@ -87,39 +84,10 @@
       </ItemGroup>
     </Target>
 
-    <!-- Helper target called via MSBuild to return DocumentationFile if configured in the referenced project -->
-    <Target Name="GetDocFile" Returns="$(DocumentationFile)">
-      <PropertyGroup>
-        <!-- Normalize DocumentationFile to an absolute path if present -->
-        <_DocFileRaw>$(DocumentationFile)</_DocFileRaw>
-        <_DocFileAbs Condition="'$(_DocFileRaw)' != '' and $([System.IO.Path]::IsPathRooted('$(_DocFileRaw)'))">$(_DocFileRaw)</_DocFileAbs>
-        <_DocFileAbs Condition="'$(_DocFileRaw)' != '' and !$([System.IO.Path]::IsPathRooted('$(_DocFileRaw)'))">$([System.IO.Path]::GetFullPath('$(_DocFileRaw)', '$(MSBuildProjectDirectory)'))</_DocFileAbs>
-      </PropertyGroup>
-
-      <ItemGroup>
-        <TargetOutputs Include="$(_DocFileAbs)" Condition="'$(_DocFileAbs)' != ''" />
-      </ItemGroup>
-    </Target>
-
-    <!-- Helper target called via MSBuild to return the project's produced PDB file (if any) -->
-    <Target Name="GetPdbFile" Returns="$(TargetPath)">
-      <PropertyGroup>
-        <_PdbFile>$([System.IO.Path]::ChangeExtension('$(TargetPath)', '.pdb'))</_PdbFile>
-      </PropertyGroup>
-
-      <ItemGroup>
-        <TargetOutputs Include="$(_PdbFile)" Condition="Exists('$(_PdbFile)')" />
-      </ItemGroup>
-    </Target>
-
-    <!-- Remove the old hardcoded bundling items (if present) to avoid duplicates. -->
-    <ItemGroup>
-      <None Remove="..\Brudixy.Core\bin\$(Configuration)\$(TargetFramework)\Brudixy.Core.dll" />
-      <None Remove="..\Brudixy.Interfaces\bin\$(Configuration)\$(TargetFramework)\Brudixy.Interfaces.dll" />
-
-      <None Remove="..\Brudixy.Core\bin\$(Configuration)\$(TargetFramework)\Brudixy.Core.xml" />
-      <None Remove="..\Brudixy.Interfaces\bin\$(Configuration)\$(TargetFramework)\Brudixy.Interfaces.xml" />
-    </ItemGroup>
+    <!--
+      Note: GetDocFile/GetPdbFile targets are intentionally not defined in referenced projects.
+      We derive *.xml and *.pdb from each referenced project's TargetPath instead.
+    -->
 
     <ItemGroup>
       <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
