@@ -15,8 +15,7 @@
     <PropertyGroup>
         <PackageId>Brudixy</PackageId>
         <Version>1.0.0</Version>
-        <Authors>Brudixy Contributors</Authors>
-        <Company>Brudixy</Company>
+        <Authors>CostaBru</Authors>
         <Product>Brudixy</Product>
         <Description>Extended DataSet functionality for Brudixy - Advanced data structure library for .NET with enhanced data manipulation APIs.</Description>
         <PackageTags>dataset;datatable;collections;performance;data-management</PackageTags>
@@ -36,13 +35,90 @@
 
     <ItemGroup>
       <!--
-        These are internal repo projects.
+        Internal repo projects.
 
-        IMPORTANT: Do NOT mark these as PrivateAssets=all. If you do, NuGet won't emit them as dependencies
-        when packing Brudixy, and package consumers won't get Brudixy.Core / Brudixy.Interfaces transitively.
+        We intentionally bundle their compiled assemblies into the Brudixy NuGet package,
+        and we do NOT want NuGet to treat them as external package dependencies.
       -->
-      <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" />
-      <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" />
+      <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" PrivateAssets="all" />
+      <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" PrivateAssets="all" />
+    </ItemGroup>
+
+    <!--
+      Build + bundle internal assemblies into this package.
+      This ensures consumers only need the Brudixy package and still get Brudixy.Core/Brudixy.Interfaces at compile time.
+
+      We avoid hard-coded bin paths by:
+      - explicitly building the project references before pack
+      - using ProjectReference metadata (GetTargetPath) to include the produced DLL/XML into lib/$(TargetFramework)/
+    -->
+
+    <Target Name="Brudixy_BuildBundledProjects" BeforeTargets="Pack">
+      <MSBuild Projects="@(ProjectReference)"
+               Targets="Build"
+               Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    </Target>
+
+    <Target Name="Brudixy_IncludeBundledProjectOutputs" BeforeTargets="Pack">
+      <!-- Query each referenced project's DocumentationFile (if set) -->
+      <MSBuild Projects="@(ProjectReference)"
+               Targets="GetTargetPath;GetDocFile;GetPdbFile"
+               Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)"
+               BuildInParallel="true">
+        <Output TaskParameter="TargetOutputs" ItemName="_BundledAssemblies" />
+        <Output TaskParameter="TargetOutputs" ItemName="_BundledDocFiles" />
+        <Output TaskParameter="TargetOutputs" ItemName="_BundledPdbFiles" />
+      </MSBuild>
+
+      <ItemGroup>
+        <!-- Reference output assembly path for each ProjectReference -->
+        <_BundledAssemblies Include="@(_BundledAssemblies)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
+
+        <!-- DocumentationFile outputs (may be empty/not exist) -->
+        <_BundledDocFiles Include="@(_BundledDocFiles)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
+
+        <!-- PDB outputs (may be empty/not exist) -->
+        <_BundledPdbFiles Include="@(_BundledPdbFiles)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
+
+        <!-- Pack them into this package -->
+        <None Include="@(_BundledAssemblies)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
+        <None Include="@(_BundledDocFiles)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
+        <None Include="@(_BundledPdbFiles)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
+      </ItemGroup>
+    </Target>
+
+    <!-- Helper target called via MSBuild to return DocumentationFile if configured in the referenced project -->
+    <Target Name="GetDocFile" Returns="$(DocumentationFile)">
+      <PropertyGroup>
+        <!-- Normalize DocumentationFile to an absolute path if present -->
+        <_DocFileRaw>$(DocumentationFile)</_DocFileRaw>
+        <_DocFileAbs Condition="'$(_DocFileRaw)' != '' and $([System.IO.Path]::IsPathRooted('$(_DocFileRaw)'))">$(_DocFileRaw)</_DocFileAbs>
+        <_DocFileAbs Condition="'$(_DocFileRaw)' != '' and !$([System.IO.Path]::IsPathRooted('$(_DocFileRaw)'))">$([System.IO.Path]::GetFullPath('$(_DocFileRaw)', '$(MSBuildProjectDirectory)'))</_DocFileAbs>
+      </PropertyGroup>
+
+      <ItemGroup>
+        <TargetOutputs Include="$(_DocFileAbs)" Condition="'$(_DocFileAbs)' != ''" />
+      </ItemGroup>
+    </Target>
+
+    <!-- Helper target called via MSBuild to return the project's produced PDB file (if any) -->
+    <Target Name="GetPdbFile" Returns="$(TargetPath)">
+      <PropertyGroup>
+        <_PdbFile>$([System.IO.Path]::ChangeExtension('$(TargetPath)', '.pdb'))</_PdbFile>
+      </PropertyGroup>
+
+      <ItemGroup>
+        <TargetOutputs Include="$(_PdbFile)" Condition="Exists('$(_PdbFile)')" />
+      </ItemGroup>
+    </Target>
+
+    <!-- Remove the old hardcoded bundling items (if present) to avoid duplicates. -->
+    <ItemGroup>
+      <None Remove="..\Brudixy.Core\bin\$(Configuration)\$(TargetFramework)\Brudixy.Core.dll" />
+      <None Remove="..\Brudixy.Interfaces\bin\$(Configuration)\$(TargetFramework)\Brudixy.Interfaces.dll" />
+
+      <None Remove="..\Brudixy.Core\bin\$(Configuration)\$(TargetFramework)\Brudixy.Core.xml" />
+      <None Remove="..\Brudixy.Interfaces\bin\$(Configuration)\$(TargetFramework)\Brudixy.Interfaces.xml" />
     </ItemGroup>
 
     <ItemGroup>

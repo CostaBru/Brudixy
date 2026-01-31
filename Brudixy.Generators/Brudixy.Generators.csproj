@@ -10,8 +10,7 @@
     <PropertyGroup>
         <PackageId>Brudixy.Generators</PackageId>
         <Version>1.0.0</Version>
-        <Authors>Brudixy Contributors</Authors>
-        <Company>Brudixy</Company>
+        <Authors>ConstBru</Authors>
         <Product>Brudixy</Product>
         <Description>Roslyn source generators for Brudixy data item implementations. Generates strongly-typed row classes, indexes, and storage implementations.</Description>
         <PackageTags>source-generator;roslyn;code-generation;brudixy;analyzer</PackageTags>

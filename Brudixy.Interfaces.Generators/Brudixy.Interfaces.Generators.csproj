@@ -10,8 +10,7 @@
     <PropertyGroup>
         <PackageId>Brudixy.Interfaces.Generators</PackageId>
         <Version>1.0.0</Version>
-        <Authors>Brudixy Contributors</Authors>
-        <Company>Brudixy</Company>
+        <Authors>ConstBru</Authors>
         <Product>Brudixy</Product>
         <Description>Source generator infrastructure for Brudixy storage type implementations. Provides base generators for table storage, type mapping, and conversion.</Description>
         <PackageTags>source-generator;roslyn;code-generation;brudixy</PackageTags>

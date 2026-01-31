@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <LangVersion>preview</LangVersion>
-        <IsPackable>true</IsPackable>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -16,8 +16,7 @@
     <PropertyGroup>
         <PackageId>Brudixy.Core</PackageId>
         <Version>1.0.0</Version>
-        <Authors>Brudixy Contributors</Authors>
-        <Company>Brudixy</Company>
+        <Authors>CostaBru</Authors>
         <Product>Brudixy</Product>
         <Description>Core library for Brudixy - Advanced data structure library for .NET with high-performance collections, change tracking, and serialization support.</Description>
         <PackageTags>dataset;datatable;collections;performance;indexing;change-tracking</PackageTags>
