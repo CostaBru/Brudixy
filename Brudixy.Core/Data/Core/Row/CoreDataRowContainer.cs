@@ -1868,10 +1868,16 @@ namespace Brudixy
 
         protected virtual void DisposeCore()
         {
-            if (ContainerDataProps != null)
+            try
             {
-                ContainerDataProps.DataRowState = RowState.Disposed;
-                ContainerDataProps.Dispose();
+                if (ContainerDataProps != null)
+                {
+                    ContainerDataProps.DataRowState = RowState.Disposed;
+                    ContainerDataProps.Dispose();
+                }
+            }
+            catch
+            {
             }
         }
 

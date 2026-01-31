@@ -9,8 +9,7 @@
     <PropertyGroup>
         <PackageId>Brudixy.TypeGenerator</PackageId>
         <Version>1.0.0</Version>
-        <Authors>Brudixy Contributors</Authors>
-        <Company>Brudixy</Company>
+        <Authors>ConstaBru</Authors>
         <Product>Brudixy</Product>
         <Description>YAML-based source generator for Brudixy. Generates strongly-typed DataSet and DataTable classes from YAML schema definitions with full indexing and relation support.</Description>
         <PackageTags>source-generator;roslyn;yaml;code-generation;brudixy;analyzer;schema</PackageTags>
@@ -31,12 +30,16 @@
     <ItemGroup>
         <!-- Pack analyzer outputs explicitly (no reference changes). -->
         <None Include="$(TargetPath)" Pack="true" PackagePath="analyzers/dotnet/cs" Condition="Exists('$(TargetPath)')" />
-        <None Include="..\Brudixy.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Condition="Exists('..\Brudixy.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Generators.dll')" />
-        <None Include="..\Brudixy.Interfaces.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Interfaces.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Condition="Exists('..\Brudixy.Interfaces.Generators\bin\$(Configuration)\netstandard2.0\Brudixy.Interfaces.Generators.dll')" />
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs" Link="BuiltinSupportStorageTypes.cs" />
+      <!-- NOTE (Option A): Brudixy.TypeGenerator must NOT include Brudixy.Interfaces.Generators analyzers.
+           They should never execute in consumer projects to avoid extra generator output and type identity conflicts. -->
+
+      <Compile Include="..\Brudixy.Interfaces.Generators\BuiltinSupportStorageTypes.cs">
+        <Link>BuiltinSupportStorageTypes.cs</Link>
+      </Compile>
+
       <Compile Include="..\Brudixy.TypeGenerator.Core\BaseTableParseException.cs" Link="BaseTableParseException.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\CodeGenerator.cs" Link="CodeGenerator.cs" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\ColumnInfo.cs" Link="ColumnInfo.cs" />
@@ -62,14 +65,12 @@
       <Compile Include="..\Brudixy.TypeGenerator.Core\Validation\*.cs" Link="Validation\%(Filename)%(Extension)" />
       <Compile Include="..\Brudixy.TypeGenerator.Core\Validation\Rules\*.cs" Link="Validation\Rules\%(Filename)%(Extension)" />
     </ItemGroup>
-    
+     
     <ItemGroup>
-        <!--
-          Internal projects are built to produce analyzer DLLs that we pack explicitly.
-          Mark them private so NuGet doesn't emit Brudixy.Generators / Brudixy.Interfaces.Generators dependencies.
-        -->
-        <ProjectReference Include="..\Brudixy.Generators\Brudixy.Generators.csproj" PrivateAssets="all" />
-        <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" PrivateAssets="all" />
+        <!-- Required to compile the source generator itself -->
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.10.0" PrivateAssets="all" />
+        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" PrivateAssets="all" />
+
         <PackageReference Include="YamlDotNet" Version="13.2.0" GeneratePathProperty="true" PrivateAssets="all" />
     </ItemGroup>
 

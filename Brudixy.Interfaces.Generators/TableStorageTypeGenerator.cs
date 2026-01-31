@@ -6,13 +6,13 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Brudixy.Interfaces.Generators
 {
-	
-	
+
+
     [Generator]
-    public class TableStorageTypeGenerator : ISourceGenerator
+    internal class TableStorageTypeGenerator : ISourceGenerator
     {
 	    public static List<StorageType> StorageTypes => BuiltinSupportStorageTypes.StorageTypes;
-	   
+
         public void Initialize(GeneratorInitializationContext context)
         {
         }
@@ -22,15 +22,15 @@ namespace Brudixy.Interfaces.Generators
 	        var sb = new StringBuilder();
 
 	        var storageTypes = StorageTypes;
-	        
+
 	        var predefinedCount = storageTypes.Count;
-	        
+
 	        for (var index = 0; index < predefinedCount; index++)
 	        {
 		        var val = index + 1;
-		        
+
 		        sb.Append($"	    {storageTypes[index].EnumName} = {val}, ");
-		        
+
 		        if (storageTypes[index].ArraySupport)
 		        {
 			        sb.Append($"{storageTypes[index].EnumName}Array = {val * 1000}, ");
@@ -47,7 +47,7 @@ namespace Brudixy.Interfaces.Generators
 	        var sourceBuilder = $@"
 namespace Brudixy
 {{
-    public enum TableStorageType 
+    public enum TableStorageType
     {{
 	    Empty = 0,
 	   {sb}

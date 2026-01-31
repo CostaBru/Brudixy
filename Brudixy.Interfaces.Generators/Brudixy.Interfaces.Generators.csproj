@@ -16,8 +16,8 @@
         <Description>Source generator infrastructure for Brudixy storage type implementations. Provides base generators for table storage, type mapping, and conversion.</Description>
         <PackageTags>source-generator;roslyn;code-generation;brudixy</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/brudixy</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/brudixy</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GeneratePackageOnBuild>false</GeneratePackageOnBuild>

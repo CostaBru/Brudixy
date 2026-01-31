@@ -15,7 +15,7 @@ namespace Brudixy.Interfaces.Generators
         {
 	        var sb = new StringBuilder();
 
-	        var storageTypes = TableStorageTypeGenerator.StorageTypes;
+	        var storageTypes = BuiltinSupportStorageTypes.StorageTypes;
 	        
 	        var predefinedCount = storageTypes.Count;
 	        

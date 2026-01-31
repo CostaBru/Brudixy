@@ -6,26 +6,7 @@
         <Nullable>disable</Nullable>
         <LangVersion>preview</LangVersion>
         <IsPackable>false</IsPackable>
-    </PropertyGroup>
-
-    <!-- NuGet Package Configuration -->
-    <PropertyGroup>
-        <PackageId>Brudixy.Interfaces</PackageId>
-        <Version>1.0.0</Version>
-        <Authors>Brudixy Contributors</Authors>
-        <Company>Brudixy</Company>
-        <Product>Brudixy</Product>
-        <Description>Interface definitions and shared contracts for the Brudixy ecosystem. Contains core interfaces, delegates, and annotations.</Description>
-        <PackageTags>interfaces;contracts;brudixy;dataset</PackageTags>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/brudixy/brudixy</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/brudixy/brudixy</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    </PropertyGroup>
+    </PropertyGroup>   
 
     <ItemGroup>
         <None Include="..\README.md" Pack="true" PackagePath="\" />
@@ -43,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Note that this is not a "normal" ProjectReference.
-         It needs the additional 'OutputItemType' and 'ReferenceOutputAssmbly' attributes. -->
-    <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\Brudixy.Interfaces.Generators\Brudixy.Interfaces.Generators.csproj" OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Brudixy.Interfaces.Generators
 {
-	public class StorageType
+	internal class StorageType
 	{
 		public string ShortAlias { get; }
 
@@ -38,7 +38,7 @@ namespace Brudixy.Interfaces.Generators
 		public string[] UserFriendlyAliases = new String[0];
 	}
 	
-    public static class BuiltinSupportStorageTypes
+	internal static class BuiltinSupportStorageTypes
     {
 	    public static List<StorageType> StorageTypes = new ()
 	    {

@@ -123,11 +123,17 @@ namespace Brudixy
 
         public virtual void Dispose()
         {
-            DataRowState = RowState.Disposed;
+            try
+            {
+                DataRowState = RowState.Disposed;
 
-            Data?.Dispose();
-            ExtProperties?.Dispose();
-            ChangedFields?.Dispose();
+                Data?.Dispose();
+                ExtProperties?.Dispose();
+                ChangedFields?.Dispose();
+            }
+            catch
+            {
+            }
         }
 
         public CoreContainerDataProps Clone()

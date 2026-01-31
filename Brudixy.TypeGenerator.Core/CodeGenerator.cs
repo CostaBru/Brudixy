@@ -3070,7 +3070,7 @@ namespace Brudixy.TypeGenerator.Core
                 return ("object", false);
             }
 	        
-            var type = TableStorageTypeGenerator.StorageTypes
+            var type = BuiltinSupportStorageTypes.StorageTypes
                 .FirstOrDefault(s => s.EnumName == strType);
 
             if (type != null)

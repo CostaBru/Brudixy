@@ -53,7 +53,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Brudixy.Core\Brudixy.Core.csproj" />
     <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" />
-    <ProjectReference Include="..\Brudixy.TypeGenerator.Core\Brudixy.TypeGenerator.Core.csproj" />
     <ProjectReference Include="..\Brudixy\Brudixy.csproj" />
   </ItemGroup>
 

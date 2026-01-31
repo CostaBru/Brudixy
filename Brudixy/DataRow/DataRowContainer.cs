@@ -1098,23 +1098,35 @@ namespace Brudixy
 
         protected override void DisposeCore()
         {
-            base.DisposeCore();
+            try
+            {
+                base.DisposeCore();
             
-            m_expressionCache?.Dispose();
-            m_dataFieldChangedEvent?.Dispose();
-            m_dataFieldChangingEvent?.Dispose();
-            m_dataXPropertyChangedEvent?.Dispose();
-            m_dataXPropertyChangingEvent?.Dispose();
-            m_metaDataChangedEvent?.Dispose();
-            m_eventsReferenceHolder.Dispose();
-            m_currentEditRow?.Dispose();
+                m_expressionCache?.Dispose();
+                m_dataFieldChangedEvent?.Dispose();
+                m_dataFieldChangingEvent?.Dispose();
+                m_dataXPropertyChangedEvent?.Dispose();
+                m_dataXPropertyChangingEvent?.Dispose();
+                m_metaDataChangedEvent?.Dispose();
+                m_eventsReferenceHolder.Dispose();
+                m_currentEditRow?.Dispose();
 
-            m_currentEditRow = null;
+                m_currentEditRow = null;
+            }
+            catch 
+            {
+            }
         }
         
         ~DataRowContainer()
         {
-            DisposeCore();
+            try
+            {
+                DisposeCore();
+            }
+            catch 
+            {
+            }
         }
 
         protected class DataExpressionCache : IDisposable
