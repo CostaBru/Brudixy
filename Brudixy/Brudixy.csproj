@@ -5,6 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>disable</Nullable>
         <LangVersion>preview</LangVersion>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment for publicly visible type or member -->
     </PropertyGroup>
 
     <PropertyGroup>
@@ -59,7 +61,7 @@
                Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
     </Target>
 
-    <Target Name="Brudixy_IncludeBundledProjectOutputs" BeforeTargets="Pack">
+    <Target Name="Brudixy_IncludeBundledProjectOutputs" BeforeTargets="_GetPackageFiles">
       <MSBuild Projects="@(ProjectReference)"
                Targets="GetTargetPath"
                Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)"
@@ -78,10 +80,16 @@
         <_BundledDocFiles Include="@(_BundledDocCandidates)" Condition="Exists('%(Identity)')" />
         <_BundledPdbFiles Include="@(_BundledPdbCandidates)" Condition="Exists('%(Identity)')" />
 
-        <!-- Pack them into this package -->
-        <None Include="@(_BundledAssemblies)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
-        <None Include="@(_BundledDocFiles)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
-        <None Include="@(_BundledPdbFiles)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
+        <!-- Pack them into this package using TfmSpecificPackageFile which properly marks them as compile references -->
+        <TfmSpecificPackageFile Include="@(_BundledAssemblies)">
+          <PackagePath>lib/$(TargetFramework)</PackagePath>
+        </TfmSpecificPackageFile>
+        <TfmSpecificPackageFile Include="@(_BundledDocFiles)">
+          <PackagePath>lib/$(TargetFramework)</PackagePath>
+        </TfmSpecificPackageFile>
+        <TfmSpecificPackageFile Include="@(_BundledPdbFiles)">
+          <PackagePath>lib/$(TargetFramework)</PackagePath>
+        </TfmSpecificPackageFile>
       </ItemGroup>
     </Target>
 
@@ -91,9 +99,16 @@
     -->
 
     <ItemGroup>
+      <!-- Direct dependencies of Brudixy -->
       <PackageReference Include="System.Text.Json" Version="9.0.0-preview.6.24327.7" />
       <PackageReference Include="YamlDotNet" Version="16.2.0" />
       <PackageReference Include="NJsonSchema" Version="11.1.0" />
+      
+      <!-- Transitive dependencies from bundled Brudixy.Core -->
+      <PackageReference Include="Akade.IndexedSet" Version="1.4.0" />
+      <PackageReference Include="JetBrains.Annotations" Version="2024.2.0-eap1" />
+      <PackageReference Include="Konsarpoo" Version="5.3.0" />
+      <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.6.0-preview8.19405.3" />
     </ItemGroup>
 
     <!-- File links from Brudixy.TypeGenerator.Core for YAML parsing infrastructure -->

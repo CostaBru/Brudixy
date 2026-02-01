@@ -6,6 +6,8 @@
         <Nullable>disable</Nullable>
         <LangVersion>preview</LangVersion>
         <IsPackable>false</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment for publicly visible type or member -->
     </PropertyGroup>   
 
     <ItemGroup>
