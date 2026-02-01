@@ -46,57 +46,26 @@
       <ProjectReference Include="..\Brudixy.Interfaces\Brudixy.Interfaces.csproj" PrivateAssets="all" />
     </ItemGroup>
 
-    <!--
-      Build + bundle internal assemblies into this package.
-      This ensures consumers only need the Brudixy package and still get Brudixy.Core/Brudixy.Interfaces at compile time.
-
-      We avoid hard-coded bin paths by:
-      - explicitly building the project references before pack
-      - using ProjectReference metadata (GetTargetPath) to include the produced DLL/XML into lib/$(TargetFramework)/
-    -->
-
-    <Target Name="Brudixy_BuildBundledProjects" BeforeTargets="Pack" Condition="'$(NoBuild)' != 'true'">
+    <!-- Build referenced projects before pack to ensure DLLs exist in OutputPath -->
+    <Target Name="BuildBundledProjects" BeforeTargets="GenerateNuspec" Condition="'$(NoBuild)' != 'true'">
       <MSBuild Projects="@(ProjectReference)"
                Targets="Build"
                Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
     </Target>
 
-    <Target Name="Brudixy_IncludeBundledProjectOutputs" BeforeTargets="_GetPackageFiles">
-      <MSBuild Projects="@(ProjectReference)"
-               Targets="GetTargetPath"
-               Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)"
-               BuildInParallel="true">
-        <Output TaskParameter="TargetOutputs" ItemName="_BundledAssemblies" />
-      </MSBuild>
-
-      <ItemGroup>
-        <!-- Reference output assembly path for each ProjectReference -->
-        <_BundledAssemblies Include="@(_BundledAssemblies)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
-
-        <!-- Derive XML docs + PDB from the output assembly path -->
-        <_BundledDocCandidates Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), &quot;.xml&quot;))')" />
-        <_BundledPdbCandidates Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), &quot;.pdb&quot;))')" />
-
-        <_BundledDocFiles Include="@(_BundledDocCandidates)" Condition="Exists('%(Identity)')" />
-        <_BundledPdbFiles Include="@(_BundledPdbCandidates)" Condition="Exists('%(Identity)')" />
-
-        <!-- Pack them into this package using TfmSpecificPackageFile which properly marks them as compile references -->
-        <TfmSpecificPackageFile Include="@(_BundledAssemblies)">
-          <PackagePath>lib/$(TargetFramework)</PackagePath>
-        </TfmSpecificPackageFile>
-        <TfmSpecificPackageFile Include="@(_BundledDocFiles)">
-          <PackagePath>lib/$(TargetFramework)</PackagePath>
-        </TfmSpecificPackageFile>
-        <TfmSpecificPackageFile Include="@(_BundledPdbFiles)">
-          <PackagePath>lib/$(TargetFramework)</PackagePath>
-        </TfmSpecificPackageFile>
-      </ItemGroup>
-    </Target>
-
-    <!--
-      Note: GetDocFile/GetPdbFile targets are intentionally not defined in referenced projects.
-      We derive *.xml and *.pdb from each referenced project's TargetPath instead.
+    <!-- 
+      Include companion assemblies in the package.
+      All assemblies in lib/<targetFramework>/ are automatically referenced by consuming projects.
+      This is the proven, reliable approach for bundling multiple assemblies into one package.
     -->
+    <ItemGroup>
+      <None Include="$(OutputPath)\Brudixy.Core.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+      <None Include="$(OutputPath)\Brudixy.Core.pdb" Pack="true" PackagePath="lib\$(TargetFramework)" Condition="Exists('$(OutputPath)\Brudixy.Core.pdb')" />
+      <None Include="$(OutputPath)\Brudixy.Core.xml" Pack="true" PackagePath="lib\$(TargetFramework)" Condition="Exists('$(OutputPath)\Brudixy.Core.xml')" />
+      <None Include="$(OutputPath)\Brudixy.Interfaces.dll" Pack="true" PackagePath="lib\$(TargetFramework)" />
+      <None Include="$(OutputPath)\Brudixy.Interfaces.pdb" Pack="true" PackagePath="lib\$(TargetFramework)" Condition="Exists('$(OutputPath)\Brudixy.Interfaces.pdb')" />
+      <None Include="$(OutputPath)\Brudixy.Interfaces.xml" Pack="true" PackagePath="lib\$(TargetFramework)" Condition="Exists('$(OutputPath)\Brudixy.Interfaces.xml')" />
+    </ItemGroup>
 
     <ItemGroup>
       <!-- Direct dependencies of Brudixy -->
