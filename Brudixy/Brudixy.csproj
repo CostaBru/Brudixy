@@ -72,10 +72,11 @@
         <_BundledAssemblies Include="@(_BundledAssemblies)" Condition="'%(Identity)' != '' and Exists('%(Identity)')" />
 
         <!-- Derive XML docs + PDB from the output assembly path -->
-        <_BundledDocFiles Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), \'.xml\'))')"
-                          Condition="Exists('$([System.IO.Path]::ChangeExtension(%(Identity), '.xml'))')" />
-        <_BundledPdbFiles Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), \'.pdb\'))')"
-                          Condition="Exists('$([System.IO.Path]::ChangeExtension(%(Identity), '.pdb'))')" />
+        <_BundledDocCandidates Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), &quot;.xml&quot;))')" />
+        <_BundledPdbCandidates Include="@(_BundledAssemblies->'$([System.IO.Path]::ChangeExtension(%(Identity), &quot;.pdb&quot;))')" />
+
+        <_BundledDocFiles Include="@(_BundledDocCandidates)" Condition="Exists('%(Identity)')" />
+        <_BundledPdbFiles Include="@(_BundledPdbCandidates)" Condition="Exists('%(Identity)')" />
 
         <!-- Pack them into this package -->
         <None Include="@(_BundledAssemblies)" Pack="true" PackagePath="lib\\$(TargetFramework)\\" Visible="false" />
