@@ -17,6 +17,12 @@ namespace Brudixy.TypeGenerator.Core
         public const string Indend4 = "               ";
         public const string Indend5 = "                   ";
         
+        /// <summary>
+        /// Thread-static context for nullable reference types during code generation.
+        /// </summary>
+        [ThreadStatic]
+        private static bool s_nullableReferenceTypes;
+        
         public static IEnumerable<Tuple<string, string, string>> GenerateTableFiles([NotNull] string fullName,
             [NotNull] IFileSystemAccessor fileSystemAccessor,
             [NotNull] ISchemaReader schemaReader,
@@ -391,8 +397,12 @@ namespace Brudixy.TypeGenerator.Core
             HashSet<string> skipColumns)
         {
             var stringBuilder = new StringBuilder();
+            var nullableRefTypes = table.CodeGenerationOptions.NullableReferenceTypes;
+            
+            // Set the nullable context for this generation
+            s_nullableReferenceTypes = nullableRefTypes;
 
-            CreateHeader(fullName, table.InterfaceNamespace, stringBuilder, table.InterfaceNamespace, table.CodeGenerationOptions.ExtraUsing);
+            CreateHeader(fullName, table.InterfaceNamespace, stringBuilder, table.InterfaceNamespace, table.CodeGenerationOptions.ExtraUsing, nullableRefTypes);
             
             stringBuilder.AppendLine(@$"{{");
 
@@ -415,7 +425,7 @@ namespace Brudixy.TypeGenerator.Core
 
                 WriteFieldPropertyComment(stringBuilder, column.Value, column.Key, Indend2);
 
-                var typeString = GetGenTypeString(column.Value);
+                var typeString = GetGenTypeString(column.Value, nullableRefTypes);
                 
                 var propertyName = column.Value.CodeProperty ?? column.Key;
                 
@@ -470,7 +480,7 @@ namespace Brudixy.TypeGenerator.Core
                 }
 
 
-                var typeString = GetGenTypeString(column.Value);
+                var typeString = GetGenTypeString(column.Value, nullableRefTypes);
 
                 var propertyName = column.Value.CodeProperty ?? column.Key;
                 
@@ -585,8 +595,11 @@ namespace Brudixy.TypeGenerator.Core
             HashSet<string> skipRelations = null)
         {
             var stringBuilder = new StringBuilder();
+            
+            // Set the nullable context for this generation
+            s_nullableReferenceTypes = table.CodeGenerationOptions.NullableReferenceTypes;
 
-            CreateHeader(fileFullName, table.Namespace, stringBuilder, table.InterfaceNamespace, table.CodeGenerationOptions.ExtraUsing);
+            CreateHeader(fileFullName, table.Namespace, stringBuilder, table.InterfaceNamespace, table.CodeGenerationOptions.ExtraUsing, table.CodeGenerationOptions.NullableReferenceTypes);
 
             stringBuilder.AppendLine(@"{");
 
@@ -601,8 +614,17 @@ namespace Brudixy.TypeGenerator.Core
             string nameSpace,
             StringBuilder stringBuilder,
             string interfaceNamespace,
-            List<string> extraUsing = null)
+            List<string> extraUsing = null,
+            bool nullableReferenceTypes = false)
         {
+            stringBuilder
+                .AppendLine("#pragma warning disable CS0109");
+            
+            if (nullableReferenceTypes)
+            {
+                stringBuilder.AppendLine("#nullable enable");
+            }
+            
             stringBuilder
                 .AppendLine("using System;")
                 .AppendLine("using System.Collections.Generic;")
@@ -2990,14 +3012,24 @@ namespace Brudixy.TypeGenerator.Core
 
         private static string GetGenTypeString(ColumnInfo column)
         {
-            return GetGenTypeString(column, out _);
+            return GetGenTypeString(column, out _, s_nullableReferenceTypes);
         }
         
-        public static string GetStorageFieldType(ColumnInfo strType)
+        private static string GetGenTypeString(ColumnInfo column, bool nullableReferenceTypes)
+        {
+            return GetGenTypeString(column, out _, nullableReferenceTypes);
+        }
+        
+        private static string GetGenTypeString(ColumnInfo column, out bool isStruct)
+        {
+            return GetGenTypeString(column, out isStruct, s_nullableReferenceTypes);
+        }
+        
+        public static string GetStorageFieldType(ColumnInfo strType, bool nullableReferenceTypes = false)
         {
             if (strType.Type == "Object")
             {
-                return "System.object";
+                return nullableReferenceTypes ? "System.object?" : "System.object";
             }
             
             if (strType.EnumType != null)
@@ -3024,7 +3056,9 @@ namespace Brudixy.TypeGenerator.Core
             
             if (strType.TypeModifier  == "Array")
             {
-                return strTypeDataType + "[]";
+                // Arrays are reference types
+                var nullableSuffix = nullableReferenceTypes && (strType.AllowNull ?? true) ? "?" : "";
+                return strTypeDataType + "[]" + nullableSuffix;
             }
 
             if (strType.TypeModifier  == "Range")
@@ -3036,13 +3070,19 @@ namespace Brudixy.TypeGenerator.Core
             {
                 return strTypeDataType + "?";
             }
+            
+            // For reference types in nullable context, add ? if AllowNull is true
+            if (nullableReferenceTypes && !strType.DataTypeIsStruct && (strType.AllowNull ?? true))
+            {
+                return strTypeDataType + "?";
+            }
 
             return strTypeDataType;
         }
 
-        private static string GetGenTypeString(ColumnInfo column, out bool isStruct)
+        private static string GetGenTypeString(ColumnInfo column, out bool isStruct, bool nullableReferenceTypes)
         {
-            var type = GetStorageFieldType(column);
+            var type = GetStorageFieldType(column, nullableReferenceTypes);
             
             isStruct = column.DataTypeIsStruct;
             

@@ -491,7 +491,7 @@ namespace Brudixy
             {
                 if (cellVal == null)
                 {
-                    dataItem.AddNew(rowHandle, dataItem.NextAutoIncrementValue(column), column);
+                    dataItem.AddNew(rowHandle, dataItem.GetAutomaticValue(column), column);
                 }
                 else
                 {

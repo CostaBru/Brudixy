@@ -56,8 +56,17 @@ namespace Brudixy
             UserTypeCloneRegistry[typeof(JsonObject)] = (j) => JsonNode.Parse(j.ToString());
             UserTypeCloneRegistry[typeof(XElement)] = (x) => XElement.Parse(x.ToString());
             UserTypeCloneRegistry[typeof(Uri)] = (x) => new Uri(x.ToString());
+            
+            DataItemFeatureSetup<Guid>.AutomaticValueFuncRepository = (col) => NewGuid();
+            DataItemFeatureSetup<Guid?>.AutomaticValueFuncRepository = (col) => NewGuid();
+            
+            DataItemFeatureSetup<DateTime>.AutomaticValueFuncRepository = (col) => UtcNow();
+            DataItemFeatureSetup<DateTime?>.AutomaticValueFuncRepository = (col) => UtcNow();
+            
+            DataItemFeatureSetup<DateTimeOffset>.AutomaticValueFuncRepository = (col) => UtcNow();
+            DataItemFeatureSetup<DateTimeOffset?>.AutomaticValueFuncRepository = (col) => UtcNow();
         }
-
+        
         public CoreDataTable([NotNull] string tableName) : this()
         {
             Name = tableName;

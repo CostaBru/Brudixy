@@ -147,7 +147,7 @@ namespace Brudixy
 
                 if (isAutomaticValue)
                 {
-                    var nextAutoIncrementValue = dataColumn.DataStorageLink.NextAutoIncrementValue(dataColumn);
+                    var nextAutoIncrementValue = dataColumn.DataStorageLink.GetAutomaticValue(dataColumn);
                     
                     data[columnHandle] = nextAutoIncrementValue;
                 }

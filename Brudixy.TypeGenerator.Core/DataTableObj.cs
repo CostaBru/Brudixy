@@ -25,6 +25,11 @@ namespace Brudixy.TypeGenerator.Core
         public List<string> ExtraUsing { get; set; } = new List<string>();
         
         public string AppendRowMethodName { get; set; }
+        
+        /// <summary>
+        /// When true, generates code with #nullable enable and uses ? for nullable reference types.
+        /// </summary>
+        public bool NullableReferenceTypes { get; set; } = false;
     }
     
     public class DataTableObj

@@ -15,7 +15,7 @@ namespace Brudixy
 
         bool SetValue(int rowHandle, T value, int? tranId, ICoreDataTableColumn column);
 
-        T NextAutoIncrementValueTyped(ICoreDataTableColumn column);
+        T GetAutomaticValueTyped(ICoreDataTableColumn column);
 
         void GetValidValue(ref T value, int rowHandle, ICoreDataTableColumn column);
     }

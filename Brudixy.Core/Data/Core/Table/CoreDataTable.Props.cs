@@ -23,6 +23,10 @@ namespace Brudixy
         protected internal string Name = "Table";
 
         public Thread SourceThread = Thread.CurrentThread;
+        
+        public static Func<DateTime> UtcNow = () => DateTime.UtcNow;
+
+        public static Func<Guid> NewGuid => () => Guid.CreateVersion7();
 
         [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute]
         string ICoreReadOnlyDataTable.TableName => Name;

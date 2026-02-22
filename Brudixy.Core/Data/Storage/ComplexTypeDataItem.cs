@@ -34,7 +34,7 @@ namespace Brudixy
             m_table = table;
         }
 
-        public object GetCurrentMax(ICoreDataTableColumn column)
+        public object GetLastautomaticValue(ICoreDataTableColumn column)
         {
             return null;
         }
@@ -388,7 +388,7 @@ namespace Brudixy
         {
         }
 
-        public object NextAutoIncrementValue(ICoreDataTableColumn column)
+        public object GetAutomaticValue(ICoreDataTableColumn column)
         {
             return null;
         }
@@ -637,7 +637,7 @@ namespace Brudixy
             return true;
         }
 
-        public T NextAutoIncrementValueTyped(ICoreDataTableColumn column)
+        public T GetAutomaticValueTyped(ICoreDataTableColumn column)
         {
             return default;
         }

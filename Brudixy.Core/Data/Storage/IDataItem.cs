@@ -43,7 +43,7 @@ namespace Brudixy
 
         void UpdateMax(object cellVal, ICoreDataTableColumn column);
 
-        object NextAutoIncrementValue(ICoreDataTableColumn column);
+        object GetAutomaticValue(ICoreDataTableColumn column);
 
         void RejectAllChanges(IReadOnlyDictionary<int, int> changesCount, ICoreDataTableColumn column);
 
@@ -88,6 +88,6 @@ namespace Brudixy
             CoreDataTable table
         );
 
-        object GetCurrentMax(ICoreDataTableColumn column);
+        object GetLastautomaticValue(ICoreDataTableColumn column);
     }
 }

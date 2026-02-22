@@ -325,6 +325,33 @@ Columns:
 
       Assert.AreEqual(2, strings.Length);
     }
+    
+    [Test]
+    public void TestMultiKeyGetRow() 
+    {
+      var yaml = @"
+---
+Table: TestTable
+Columns:
+  SessionId: Guid
+  UserId: Guid
+  Payload: String
+Indexes:
+  NameIndex:
+    Columns:
+      - SessionId
+      - UserId
+";
+
+      var name = @"c:\test\Core\Abs\Test.st.brudixy.yaml";
+
+      var data = _.Map((name, yaml));
+
+      var strings = DataCodeGenerator
+        .GenerateTableFiles(name, new FileSystemAccessMock(data), new YamlSchemaReader(),"c:\\test\\Core").ToArray();
+
+      Assert.AreEqual(2, strings.Length);
+    }
 
     private class FileSystemAccessMock : Brudixy.TypeGenerator.Core.IFileSystemAccessor
     {

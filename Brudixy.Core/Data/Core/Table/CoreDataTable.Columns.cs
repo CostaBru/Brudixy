@@ -140,10 +140,10 @@ namespace Brudixy
 
             if (dataItem is ITypedDataItem<T> dt)
             {
-                return dt.NextAutoIncrementValueTyped(column);
+                return dt.GetAutomaticValueTyped(column);
             }
             
-            var nextAutoIncrementValue = dataItem.NextAutoIncrementValue(column);
+            var nextAutoIncrementValue = dataItem.GetAutomaticValue(column);
             
             return Tool.ConvertBoxed<T>(nextAutoIncrementValue);
         }

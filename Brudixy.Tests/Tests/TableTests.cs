@@ -27,6 +27,32 @@ namespace Brudixy.Tests
         }
         
         [Test]
+        public void TestAutoValue()
+        {
+            var table = new DataTable();
+
+            table.AddColumn("ID", TableStorageType.Int32, allowNull: false, auto: true);
+            table.AddColumn("UID", TableStorageType.Guid, allowNull: false, auto: true);
+            table.AddColumn("DT", TableStorageType.DateTime, allowNull: true, auto: true);
+            table.AddColumn("DTO", TableStorageType.DateTimeOffset, allowNull: true, auto: true);
+
+            var newRow = table.NewRow();
+            
+            Assert.AreEqual(1, newRow.Field<int>("ID"));
+            Assert.AreNotEqual(Guid.Empty, newRow.Field<Guid>("UID"));
+            Assert.True(newRow.Field<DateTime>("DT") <= DateTime.UtcNow);
+            Assert.True(newRow.Field<DateTimeOffset>("DTO") <= DateTimeOffset.UtcNow);
+
+            var tableRow = table.AddRow(newRow);
+
+            tableRow.SetNull("DT");
+
+            var afterReset = tableRow.Field<DateTime?>("DT");
+            
+            Assert.Null(afterReset);
+        }
+        
+        [Test]
         public void TestExpressionBinValidationNotFailRightNode()
         {
             var table = new DataTable();

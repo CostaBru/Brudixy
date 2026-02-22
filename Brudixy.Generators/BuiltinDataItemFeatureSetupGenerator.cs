@@ -36,7 +36,7 @@ namespace Brudixy.Generators
 
                 if (type.AutoIncrementSupport)
                 {
-                    typeSpecificCode.AppendLine($"{tab}DataItemFeatureSetup<{t}>.IncrementFuncRepository = (x) => {{ var v = x; return ({t})(v + 1); }};");
+                    typeSpecificCode.AppendLine($"{tab}DataItemFeatureSetup<{t}>.IncrementFuncRepository = (c, x) => {{ var v = x; return ({t})(v + 1); }};");
                     typeSpecificCode.AppendLine($"{tab}DataItemFeatureSetup<{t}>.DivByIntFuncRepository = (x, l) => (System.Double)((System.Double)x / (System.Double)l);");
                 }
 
@@ -47,7 +47,7 @@ namespace Brudixy.Generators
 
                     if (type.AutoIncrementSupport)
                     {
-                        typeSpecificCode.AppendLine($"{tab}DataItemFeatureSetup<{t}?>.IncrementFuncRepository = ((x) => ({t}?)( (x ?? default({t})) + 1));");
+                        typeSpecificCode.AppendLine($"{tab}DataItemFeatureSetup<{t}?>.IncrementFuncRepository = ((c, x) => ({t}?)( (x ?? default({t})) + 1));");
                         typeSpecificCode.AppendLine($"{tab}DataItemFeatureSetup<{t}?>.DivByIntFuncRepository = (x, l) => (System.Double)((System.Double)(x ?? default({t})) / (System.Double)l);");
                     }
                 }

@@ -37,12 +37,12 @@ namespace Brudixy
         private Func<TableStorageType, TableStorageTypeModifier, T, T, bool> EqualsFunc { get; set; } = DataItemFeatureSetup<T>.EqualsFunc;
         private Func<IRandomAccessData<T>, T,  Func<TableStorageType, TableStorageTypeModifier, T, T, bool>, IEnumerable<int>> FilterFunc { get; set; } = DataItemFeatureSetup<T>.FilterFunc;
         private Func<IRandomAccessData<T>, IEnumerable<int>, AggregateType, object> AggregateFunc { get; set; } = DataItemFeatureSetup<T>.AggregateFunc;
-        private Func<Type, T, T> NextAutoIncrementFunc { get; set; }
+        private Func<ICoreDataTableColumn, Type, T, T> GetAutomaticValueFunc { get; set; }
         private Func<Type, T, T, T> UpdateAutoIncrementFunc { get; set; }
 
         public T DefaultNullValue => m_defaultNullValue;
 
-        private T m_max = default;
+        private T m_lastAutomaticValue = default;
         
         public DataItem()
         {
@@ -82,7 +82,7 @@ namespace Brudixy
             {
                 EqualsFunc = (t, tm, x, y) => m_equalityComparer.Equals(x, y);
 
-                NextAutoIncrementFunc = NextAutoIncImpl;
+                GetAutomaticValueFunc = GetAutomaticValueImpl;
                 UpdateAutoIncrementFunc = UpdateAutoIncImpl;
                 AggregateFunc = AggregateFuncImpl;
 
@@ -118,13 +118,20 @@ namespace Brudixy
             return v;
         }
 
-        private static T NextAutoIncImpl(Type t, T v)
+        private static T GetAutomaticValueImpl(ICoreDataTableColumn column, Type t, T v)
         {
             var incrementFunc = DataItemFeatureSetup<T>.IncrementFuncRepository;
             
             if (incrementFunc != null)
             {
-                return incrementFunc(v);
+                return incrementFunc(column, v);
+            }
+
+            var func = DataItemFeatureSetup<T>.AutomaticValueFuncRepository;
+
+            if (func != null)
+            {
+                return func(column);
             }
 
             return v;
@@ -871,30 +878,30 @@ namespace Brudixy
             {
                 if(value is T tv)
                 {
-                    m_max = UpdateAutoIncrementFunc(m_dataType, m_max, tv);
+                    m_lastAutomaticValue = UpdateAutoIncrementFunc(m_dataType, m_lastAutomaticValue, tv);
                 }
                 else 
                 {
-                    m_max = UpdateAutoIncrementFunc(m_dataType, m_max, ConvertBoxed(value, column));
+                    m_lastAutomaticValue = UpdateAutoIncrementFunc(m_dataType, m_lastAutomaticValue, ConvertBoxed(value, column));
                 }
             }
         }
 
         public void UpdateMax(T currentValue)
         {
-            m_max = currentValue;
+            m_lastAutomaticValue = currentValue;
         }
 
-        public object GetCurrentMax(ICoreDataTableColumn column) => m_max;
+        public object GetLastautomaticValue(ICoreDataTableColumn column) => m_lastAutomaticValue;
 
-        public object NextAutoIncrementValue(ICoreDataTableColumn column)
+        public object GetAutomaticValue(ICoreDataTableColumn column)
         {
-            if (NextAutoIncrementFunc != null)
+            if (GetAutomaticValueFunc != null)
             {
-                return m_max = NextAutoIncrementFunc(m_dataType,  m_max);
+                return m_lastAutomaticValue = GetAutomaticValueFunc(column, m_dataType,  m_lastAutomaticValue);
             }
 
-            return m_defaultBoxed;
+            return column.DefaultValue ?? m_defaultBoxed;
         }
 
         public void RejectAllChanges(IReadOnlyDictionary<int, int> changesCount, ICoreDataTableColumn column)
@@ -907,11 +914,16 @@ namespace Brudixy
             Storage.AcceptAllChanges();
         }
 
-        public T NextAutoIncrementValueTyped(ICoreDataTableColumn column)
+        public T GetAutomaticValueTyped(ICoreDataTableColumn column)
         {
-            if (NextAutoIncrementFunc != null)
+            if (GetAutomaticValueFunc != null)
             {
-                return m_max = NextAutoIncrementFunc(m_dataType, m_max);
+                return m_lastAutomaticValue = GetAutomaticValueFunc(column, m_dataType, m_lastAutomaticValue);
+            }
+
+            if (column.DefaultValue != null)
+            {
+                return Tool.ConvertBoxed<T>(column.DefaultValue);
             }
 
             return m_defaultNullValue;

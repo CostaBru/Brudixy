@@ -10,8 +10,10 @@ namespace Brudixy
     {
         public static Func<T, T, T> SumFuncRepository;
         public static Func<T, T, T> MaxFuncRepository;
-        public static Func<T, T> IncrementFuncRepository;
+        public static Func<ICoreDataTableColumn, T, T> IncrementFuncRepository;
         public static Func<T, int, double> DivByIntFuncRepository;
+        public static Func<ICoreDataTableColumn, T> AutomaticValueFuncRepository;
+        
         
         internal static Func<IRandomAccessTransactionData<T, T>, IRandomAccessTransactionData<T, T>> CopyFunc { get; set; } = (s) => s.Copy();
         internal static Func<IRandomAccessTransactionData<T, T>, IRandomAccessTransactionData<T, T>> CloneFunc { get; set; } = (s) => s.Clone();
