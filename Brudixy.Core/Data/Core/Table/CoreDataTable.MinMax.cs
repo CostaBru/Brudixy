@@ -67,7 +67,7 @@ namespace Brudixy
 
                 if (canUseAutoInc && column.IsAutomaticValue)
                 {
-                    return (IComparable)dataItem.GetLastautomaticValue(column);
+                    return (IComparable)dataItem.GetLastAutomaticValue(column);
                 }
                 
                 return dataItem.CalcMinMax(calcMax, column, StateInfo.RowHandles);

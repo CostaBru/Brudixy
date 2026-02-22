@@ -48,6 +48,7 @@ namespace Brudixy.Tests
 
 
         [Test]
+        [Ignore("BinaryFormatter")]
         public void LoadingData()
         {
             using var persistenceTable = GetTable();

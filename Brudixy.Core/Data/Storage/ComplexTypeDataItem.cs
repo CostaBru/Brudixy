@@ -34,7 +34,7 @@ namespace Brudixy
             m_table = table;
         }
 
-        public object GetLastautomaticValue(ICoreDataTableColumn column)
+        public object GetLastAutomaticValue(ICoreDataTableColumn column)
         {
             return null;
         }
@@ -384,7 +384,7 @@ namespace Brudixy
             return Storage.GetAge(rowHandle);
         }
 
-        public void UpdateMax(object cellVal, ICoreDataTableColumn column)
+        public void UpdateLastAutomaticValue(object cellVal, ICoreDataTableColumn column)
         {
         }
 

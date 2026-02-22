@@ -20,6 +20,13 @@ namespace Brudixy.Interfaces
             Name = name;
             Value = value;
         }
+
+        public JAttribute(JAttribute attribute, Func<object, object> clone)
+        {
+            Name = attribute.Name;
+           
+            Value = attribute.Value is ICloneable cl ? cl.Clone() : clone(attribute.Value);
+        }
         
         public string Name { get; set; }
         public object Value { get; set; }
@@ -50,7 +57,24 @@ namespace Brudixy.Interfaces
             Name = name;
             Value = value;
         }
-        
+
+        public JElement(JElement element, Func<object, object> clone)
+        {
+            Name = element.Name;
+
+            Value = element.Value is ICloneable cl ? cl.Clone() : clone(element.Value);
+
+            foreach (var attribute in element.m_attributes)
+            {
+                m_attributes.Add(new JAttribute(attribute, clone));
+            }
+
+            foreach (var el in element.m_elements)
+            {
+                m_elements.Add(new JElement(el, clone));
+            }
+        }
+
         [JsonPropertyOrder(0)]
         public string Name { get; set; }
         

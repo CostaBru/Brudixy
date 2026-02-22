@@ -159,14 +159,14 @@ namespace Brudixy
 
         internal void UpdateMax(CoreDataColumn column, object currentValue)
         {
-            column.DataStorageLink.UpdateMax(currentValue, column);
+            column.DataStorageLink.UpdateLastAutomaticValue(currentValue, column);
         }
 
         internal void UpdateMax<T>(int columnHandle, T currentValue) where T : struct
         {
             var valueByRef = GetColumn(columnHandle).DataStorageLink as DataItem<T>;
 
-            valueByRef?.UpdateMax(currentValue);
+            valueByRef?.UpdateLastAutomaticValue(currentValue);
         }
 
         public void DeleteRow(int rowHandle)

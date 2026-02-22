@@ -51,6 +51,32 @@ namespace Brudixy.Tests
             
             Assert.Null(afterReset);
         }
+
+        [Test]
+        public void TestJElementCopyCtr()
+        {
+            var a = new JElement("A", new UserClass(1, 1));
+
+            var b = new JElement("");
+            
+            a.AddElement(b);
+            
+            var aa = new JAttribute("aa", new UserClass(2, 2));
+            
+            a.AddAttribute(aa);
+
+            var copyA = new JElement(a, c =>
+            {
+                var copied = c;
+                CoreDataRowContainer.CopyIfNeededBoxed(ref copied);
+
+                return copied;
+            });
+            
+            Assert.False(ReferenceEquals(copyA.Elements.First(), a.Elements.First()));
+            Assert.False(ReferenceEquals(copyA.Value, a.Value));
+            Assert.False(ReferenceEquals(copyA.Attributes.First().Value, a.Attributes.First().Value));
+        }
         
         [Test]
         public void TestExpressionBinValidationNotFailRightNode()

@@ -97,7 +97,7 @@ namespace Brudixy
 
                 if (aggregateValue != null)
                 {
-                    dataItem.UpdateMax(aggregateValue, column);
+                    dataItem.UpdateLastAutomaticValue(aggregateValue, column);
                 }
             }
         }

@@ -41,7 +41,7 @@ namespace Brudixy
 
         uint GetAge(int rowHandle, ICoreDataTableColumn column);
 
-        void UpdateMax(object cellVal, ICoreDataTableColumn column);
+        void UpdateLastAutomaticValue(object cellVal, ICoreDataTableColumn column);
 
         object GetAutomaticValue(ICoreDataTableColumn column);
 
@@ -88,6 +88,6 @@ namespace Brudixy
             CoreDataTable table
         );
 
-        object GetLastautomaticValue(ICoreDataTableColumn column);
+        object GetLastAutomaticValue(ICoreDataTableColumn column);
     }
 }

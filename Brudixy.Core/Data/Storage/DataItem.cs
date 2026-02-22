@@ -38,7 +38,7 @@ namespace Brudixy
         private Func<IRandomAccessData<T>, T,  Func<TableStorageType, TableStorageTypeModifier, T, T, bool>, IEnumerable<int>> FilterFunc { get; set; } = DataItemFeatureSetup<T>.FilterFunc;
         private Func<IRandomAccessData<T>, IEnumerable<int>, AggregateType, object> AggregateFunc { get; set; } = DataItemFeatureSetup<T>.AggregateFunc;
         private Func<ICoreDataTableColumn, Type, T, T> GetAutomaticValueFunc { get; set; }
-        private Func<Type, T, T, T> UpdateAutoIncrementFunc { get; set; }
+        private Func<Type, T, T, T> UpdateLastAutomaticValueFunc { get; set; }
 
         public T DefaultNullValue => m_defaultNullValue;
 
@@ -83,7 +83,7 @@ namespace Brudixy
                 EqualsFunc = (t, tm, x, y) => m_equalityComparer.Equals(x, y);
 
                 GetAutomaticValueFunc = GetAutomaticValueImpl;
-                UpdateAutoIncrementFunc = UpdateAutoIncImpl;
+                UpdateLastAutomaticValueFunc = UpdateAutoIncImpl;
                 AggregateFunc = AggregateFuncImpl;
 
                 if (type == TableStorageType.Object)
@@ -872,27 +872,27 @@ namespace Brudixy
             }
         }
 
-        public void UpdateMax(object value, ICoreDataTableColumn column)
+        public void UpdateLastAutomaticValue(object value, ICoreDataTableColumn column)
         {
-            if (UpdateAutoIncrementFunc != null && value is not null)
+            if (UpdateLastAutomaticValueFunc != null && value is not null)
             {
                 if(value is T tv)
                 {
-                    m_lastAutomaticValue = UpdateAutoIncrementFunc(m_dataType, m_lastAutomaticValue, tv);
+                    m_lastAutomaticValue = UpdateLastAutomaticValueFunc(m_dataType, m_lastAutomaticValue, tv);
                 }
                 else 
                 {
-                    m_lastAutomaticValue = UpdateAutoIncrementFunc(m_dataType, m_lastAutomaticValue, ConvertBoxed(value, column));
+                    m_lastAutomaticValue = UpdateLastAutomaticValueFunc(m_dataType, m_lastAutomaticValue, ConvertBoxed(value, column));
                 }
             }
         }
 
-        public void UpdateMax(T currentValue)
+        public void UpdateLastAutomaticValue(T currentValue)
         {
             m_lastAutomaticValue = currentValue;
         }
 
-        public object GetLastautomaticValue(ICoreDataTableColumn column) => m_lastAutomaticValue;
+        public object GetLastAutomaticValue(ICoreDataTableColumn column) => m_lastAutomaticValue;
 
         public object GetAutomaticValue(ICoreDataTableColumn column)
         {
