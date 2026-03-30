@@ -164,6 +164,11 @@ namespace Brudixy.TypeGenerator.Core
                 resultColOption.CodeProperty = (string)kv.Value.GetOrDefault(nameof(ColumnInfo.CodeProperty));
                 resultColOption.EnumType = (string)kv.Value.GetOrDefault(nameof(ColumnInfo.EnumType));
 
+                if (resultColOption.Type == null)
+                {
+                    throw new Exception($"Column {kv.Key} does not have a type defined. Please define a type for the column either in the Columns section or in the ColumnOptions section.");
+                }
+
                 if (kv.Value.GetOrDefault(nameof(ColumnInfo.XProperties)) is Dictionary<object, object> xProps)
                 {
                     foreach (var xProp in xProps)

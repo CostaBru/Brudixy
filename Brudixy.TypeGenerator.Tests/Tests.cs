@@ -352,6 +352,30 @@ Indexes:
 
       Assert.AreEqual(2, strings.Length);
     }
+    
+    [Test]
+    public void TestTypo() 
+    {
+      var yaml = @"
+---
+Table: TestTable
+Columns:
+  SessionId: Guid
+ColumnOptions;
+  Sesion:
+    HasIndex: true
+";
+
+      var name = @"c:\test\Core\Abs\Test.st.brudixy.yaml";
+
+      var data = _.Map((name, yaml));
+
+      var strings = DataCodeGenerator
+        .GenerateTableFiles(name, new FileSystemAccessMock(data), new YamlSchemaReader(),"c:\\test\\Core").ToArray();
+
+      Assert.AreEqual(1, strings.Length);
+      Assert.True(strings[0].Item1.Contains("Error"));
+    }
 
     private class FileSystemAccessMock : Brudixy.TypeGenerator.Core.IFileSystemAccessor
     {
